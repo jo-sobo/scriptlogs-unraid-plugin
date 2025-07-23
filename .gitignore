@@ -1,0 +1,14 @@
+# Unraid specific
+*.plg.bak
+*.tmp
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
