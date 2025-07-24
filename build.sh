@@ -6,12 +6,10 @@ LETTER_SUFFIX="b" # Nimmt das erste Argument (z.B. "a")
 STAGE_INPUT="alpha"   # Nimmt das zweite Argument (z.B. "beta")
 STAGE_SUFFIX=""    # Standard ist ein Release ohne Zusatz
 
-# Fügt einen Zusatz wie "-beta" oder "-alpha" hinzu, wenn angegeben
 if [[ -n "$STAGE_INPUT" && "$STAGE_INPUT" != "release" ]]; then
   STAGE_SUFFIX="-$STAGE_INPUT"
 fi
 
-# Kombiniert die Teile zur finalen Versionsnummer
 VERSION="${BASE_VERSION}${LETTER_SUFFIX}${STAGE_SUFFIX}"
 # --- Ende der Konfiguration ---
 
@@ -31,16 +29,15 @@ mkdir -p ${PACKAGE_DIR_FINAL}
 # Erstelle die komplette Zielstruktur im temporären Ordner
 PLUGIN_DEST_PATH="${PACKAGE_DIR_TEMP}/usr/local/emhttp/plugins/${PLUGIN_NAME}"
 mkdir -p "${PLUGIN_DEST_PATH}"
-
-# Kopiere die Quelldateien in die korrekte Zielstruktur
 cp -R source/* "${PLUGIN_DEST_PATH}/"
 
 # Erstelle das .tar.gz Archiv
 FILENAME="${PLUGIN_NAME}-${VERSION}"
 tar -C ${PACKAGE_DIR_TEMP} -czvf ${PACKAGE_DIR_FINAL}/$FILENAME.tar.gz usr
 
-# Erstelle die .plg Datei für die Installation im Root-Verzeichnis
-cat << EOF > ${PLUGIN_NAME}.plg
+# --- KORRIGIERTER TEIL ZUM ERSTELLEN DER .PLG ---
+# Definiere den Inhalt der .plg-Datei als Variable. Das ist sicherer.
+read -r -d '' PLG_CONTENT << EOM
 <?xml version="1.0" standalone="yes"?>
 <!DOCTYPE PLUGIN [
 <!ENTITY name "${PLUGIN_NAME}">
@@ -68,7 +65,12 @@ rm -rf /usr/local/emhttp/plugins/&name;
 </INLINE>
 </FILE>
 </PLUGIN>
-EOF
+EOM
+
+# Schreibe den Inhalt der Variable in die .plg-Datei im Root-Verzeichnis
+echo "$PLG_CONTENT" > "${PLUGIN_NAME}.plg"
+# --- ENDE DER KORREKTUR ---
+
 
 # Aufräumen
 rm -rf ${PACKAGE_DIR_TEMP}
