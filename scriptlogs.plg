@@ -1,82 +1,27 @@
-<?xml version='1.0' standalone='yes'?>
+<?xml version="1.0" standalone="yes"?>
 <!DOCTYPE PLUGIN [
-  <!ENTITY name      "scriptlogs">
-  <!ENTITY author    "Jonas Sobottka">
-  <!ENTITY version   "2025.07.24b-alpha">
-  <!ENTITY gitURL    "https://github.com/jo-sobo/scriptlogs-unraid-plugin">
-  <!ENTITY pluginURL "&gitURL;/releases/download/&version;/&name;-&version;.txz">
+<!ENTITY name "scriptlogs">
+<!ENTITY author "jo-sobo">
+<!ENTITY version="2025.07.24b-alpha">
+<!ENTITY pluginURL="https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/master/scriptlogs.plg">
 ]>
-
-<PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&pluginURL;" min="6.8.0" support="&gitURL;/issues">
-
+<PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&pluginURL;" min="6.9.0">
 <CHANGES>
-##&name;
-
-###2025.07.24
-- Initial release
-- Dashboard integration for user script logs
-- Tab-based interface for running scripts
-- Real-time log monitoring
 </CHANGES>
-
-<!--
-This plugin provides a dashboard widget to monitor running user scripts and display their logs in real-time.
--->
-
-<FILE Run="/bin/bash">
+<FILE Name="/boot/config/plugins/&name;/&name;-&version;.tar.gz" Run="upgradepkg --install-new">
 <INLINE>
-# Remove old 'source' files
-rm -f $(ls /boot/config/plugins/&name;/&name;*.txz 2>/dev/null|head -n1)
-echo ""
-echo "----------------------------------------------------"
-echo " &name; has been installed."
-echo " Copyright 2025, &author;"
-echo " Version: &version;"
-echo "----------------------------------------------------"
-echo ""
+#remove old package
+removepkg &name;-&VER_OLD;.txz
+#install new package
+install -d -m 0755 /usr/local/emhttp/plugins/&name;
+upgradepkg --install-new /boot/config/plugins/&name;/&name;-&version;.tar.gz
 </INLINE>
 </FILE>
-
-<!--
-The 'source' file.
--->
-<FILE Name="/boot/config/plugins/&name;/&name;-&version;.txz" Run="upgradepkg --install-new">
-<URL>&pluginURL;</URL>
-</FILE>
-
-<!--
-The 'post-install' script
--->
-<FILE Run="/bin/bash">
+<FILE Name="/boot/config/plugins/&name;/&name;-&version;.tar.gz" Run="remove">
 <INLINE>
-echo ""
-echo "----------------------------------------------------"
-echo " &name; has been installed."
-echo " This plugin requires Unraid version 6.8.0 or higher"
-echo " Copyright 2025, &author;"
-echo " Version: &version;"
-echo "----------------------------------------------------"
-echo ""
-</INLINE>
-</FILE>
-
-<!--
-The 'remove' script.
--->
-<FILE Run="/bin/bash" Method="remove">
-<INLINE>
-removepkg &name;-&version;
+#remove package
+removepkg &name;-&version;.txz
 rm -rf /usr/local/emhttp/plugins/&name;
-rm -rf /boot/config/plugins/&name;
-
-echo ""
-echo "----------------------------------------------------"
-echo " &name; has been removed."
-echo " Copyright 2025, &author;"
-echo " Version: &version;"
-echo "----------------------------------------------------"
-echo ""
 </INLINE>
 </FILE>
-
 </PLUGIN>
