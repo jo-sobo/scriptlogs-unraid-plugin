@@ -1,5 +1,5 @@
 Menu="Dashboard"
-Icon="images/ScriptLogsLogo.png"
+Icon="scriptlogslogo.png"
 ---
 <?php
 

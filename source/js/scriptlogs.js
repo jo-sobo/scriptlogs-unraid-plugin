@@ -1,6 +1,6 @@
 function scriptlogs_init() {
-    // Dashboard-Box anzeigen
-    $('#db-box1.dash_scriptlogs').show();
+    // Dashboard-Box anzeigen - KORREKTE ID verwenden!
+    $('#db-scriptlogs').show();
     
     // Initial laden
     scriptlogs_refresh();
@@ -22,8 +22,13 @@ function scriptlogs_refresh() {
     });
 }
 
-// Dashboard-Integration
+// Dashboard-Integration - WICHTIG für Unraid!
 function scriptlogs_dash() {
     // Dashboard-spezifische Funktionen
     $('.dash_scriptlogs').show();
+    
+    // Widget in Dashboard registrieren
+    if (typeof addDashboardWidget === 'function') {
+        addDashboardWidget('scriptlogs', 'Script Logs');
+    }
 }
