@@ -3,7 +3,7 @@
   <!ENTITY name      "scriptlogs">
   <!ENTITY author    "jo-sobo">
   <!ENTITY version   "2025.07.24b-alpha">
-  <!ENTITY gitURL    "https://github.com/jo-sobo/scriptlogs">
+  <!ENTITY gitURL    "https://github.com/jo-sobo/scriptlogs-unraid-plugin">
   <!ENTITY pluginURL "&gitURL;/releases/download/&version;/&name;-&version;.txz">
 ]>
 

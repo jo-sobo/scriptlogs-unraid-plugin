@@ -3,14 +3,14 @@
 # --- Configuration ---
 PLUGIN_NAME="scriptlogs"
 AUTHOR="jo-sobo"
-GIT_URL="https://github.com/${AUTHOR}/${PLUGIN_NAME}"
+GIT_URL="https://github.com/${AUTHOR}/scriptlogs-unraid-plugin"
 PACKAGE_DIR_FINAL="packages"
 PACKAGE_DIR_TEMP="package-temp"
 
 # --- Versioning ---
 BASE_VERSION=$(date +'%Y.%m.%d')
-LETTER_SUFFIX="b"
-STAGE_INPUT="alpha"
+LETTER_SUFFIX="$1"
+STAGE_INPUT="$2"
 STAGE_SUFFIX=""
 
 if [[ -n "$STAGE_INPUT" && "$STAGE_INPUT" != "release" ]]; then
