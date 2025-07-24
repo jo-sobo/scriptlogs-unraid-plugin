@@ -19,10 +19,6 @@
 - Real-time log monitoring
 </CHANGES>
 
-<!--
-This plugin provides a dashboard widget to monitor running user scripts and display their logs in real-time.
--->
-
 <FILE Run="/bin/bash">
 <INLINE>
 # Remove old source files
@@ -37,16 +33,10 @@ echo ""
 </INLINE>
 </FILE>
 
-<!--
-The 'source' file.
--->
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.txz" Run="upgradepkg --install-new">
 <URL>&pluginURL;</URL>
 </FILE>
 
-<!--
-The 'post-install' script
--->
 <FILE Run="/bin/bash">
 <INLINE>
 echo ""
@@ -60,9 +50,6 @@ echo ""
 </INLINE>
 </FILE>
 
-<!--
-The 'remove' script.
--->
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
 removepkg &name;-&version;
