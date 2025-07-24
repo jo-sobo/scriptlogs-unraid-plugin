@@ -1,9 +1,37 @@
 <?php
 
-require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
+// === DEBUGGING-CODE START ===
+// Aktiviere volles PHP-Error-Logging in eine separate Datei
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+ini_set('log_errors', 1);
+ini_set('error_log', '/tmp/scriptlogs_debug.log'); // Unser dediziertes Log-File
 
-require_once '/usr/local/emhttp/plugins/scriptlogs/include/Scriptlogs.php';
+// Schreibe eine Startmarkierung ins Log, um zu sehen, ob die Datei überhaupt ausgeführt wird
+error_log("--- [DEBUG] Scriptlogs.page wird ausgeführt ---");
+// === DEBUGGING-CODE ENDE ===
 
-new Scriptlogs();
+
+// Wir packen den eigentlichen Code in einen try-catch-Block, um jeden Fehler abzufangen
+try {
+    // Lade zuerst das Unraid Framework
+    require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
+    error_log("[DEBUG] Helpers.php erfolgreich geladen.");
+
+    // Lade dann die Klasse deines Plugins
+    require_once '/usr/local/emhttp/plugins/scriptlogs/include/Scriptlogs.php';
+    error_log("[DEBUG] Scriptlogs.php erfolgreich geladen.");
+
+    // Erstelle eine neue Instanz der Klasse
+    new Scriptlogs();
+    error_log("[DEBUG] 'new Scriptlogs()' erfolgreich ausgeführt.");
+
+} catch (Throwable $t) {
+    // Fange jeden möglichen Fehler ab und schreibe ihn ins Log
+    error_log("[FATAL ERROR] Ein Fehler wurde abgefangen: " . $t->getMessage() . "\n" . $t->getTraceAsString());
+}
+
+error_log("--- [DEBUG] Scriptlogs.page wurde beendet ---");
 
 ?>
