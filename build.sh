@@ -31,11 +31,11 @@ PLUGIN_DEST_PATH="${PACKAGE_DIR_TEMP}/usr/local/emhttp/plugins/${PLUGIN_NAME}"
 mkdir -p "${PLUGIN_DEST_PATH}"
 cp -R source/* "${PLUGIN_DEST_PATH}/"
 
-# Erstelle das .tar.gz Archiv (im Beispiel war es .txz, aber .tar.gz ist moderner und funktioniert)
+# Erstelle das .tar.gz Archiv
 FILENAME="${PLUGIN_NAME}-${VERSION}"
 tar -C ${PACKAGE_DIR_TEMP} -czvf ${PACKAGE_DIR_FINAL}/$FILENAME.tar.gz usr
 
-# --- .PLG-Datei erstellen (im korrekten, robusten Format) ---
+# --- .PLG-Datei erstellen (im vollständigen, robusten Format) ---
 read -r -d '' PLG_CONTENT << EOM
 <?xml version="1.0" standalone="yes"?>
 <!DOCTYPE PLUGIN [
@@ -50,15 +50,31 @@ read -r -d '' PLG_CONTENT << EOM
 ###&version;
 - Release
 </CHANGES>
+
+<FILE Run="/bin/bash">
+<INLINE>
+echo ""
+echo "----------------------------------------------------"
+echo " Installing &name; version &version;"
+echo "----------------------------------------------------"
+echo ""
+</INLINE>
+</FILE>
+
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.tar.gz" Run="upgradepkg --install-new">
     <URL>&pluginURL;</URL>
 </FILE>
+
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
 removepkg &name;-&version;
 rm -rf /usr/local/emhttp/plugins/&name;
 rm -rf /boot/config/plugins/&name;
-echo "&name; wurde entfernt."
+echo ""
+echo "----------------------------------------------------"
+echo " &name; has been removed."
+echo "----------------------------------------------------"
+echo ""
 </INLINE>
 </FILE>
 </PLUGIN>
