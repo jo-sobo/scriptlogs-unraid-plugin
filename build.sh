@@ -1,91 +1,153 @@
 #!/bin/bash
 
-# --- Konfiguration ---
+# --- Configuration ---
 PLUGIN_NAME="scriptlogs"
 AUTHOR="jo-sobo"
 GIT_URL="https://github.com/${AUTHOR}/${PLUGIN_NAME}"
 PACKAGE_DIR_FINAL="packages"
 PACKAGE_DIR_TEMP="package-temp"
 
-# --- Versionierung ---
+# --- Versioning ---
 BASE_VERSION=$(date +'%Y.%m.%d')
 LETTER_SUFFIX="b"
 STAGE_INPUT="alpha"
 STAGE_SUFFIX=""
+
 if [[ -n "$STAGE_INPUT" && "$STAGE_INPUT" != "release" ]]; then
   STAGE_SUFFIX="-$STAGE_INPUT"
 fi
+
 VERSION="${BASE_VERSION}${LETTER_SUFFIX}${STAGE_SUFFIX}"
 
-# --- Build-Prozess ---
-echo "Starte Build für Version ${VERSION}..."
+# --- Build Process ---
+echo "Starting build for version ${VERSION}..."
 
-# Aufräumen
+# Clean up
 rm -rf ${PACKAGE_DIR_TEMP}
 rm -rf ${PACKAGE_DIR_FINAL}
 mkdir -p ${PACKAGE_DIR_TEMP}
 mkdir -p ${PACKAGE_DIR_FINAL}
 
-# Erstelle die Zielstruktur und kopiere Dateien
+# Create target structure and copy files
 PLUGIN_DEST_PATH="${PACKAGE_DIR_TEMP}/usr/local/emhttp/plugins/${PLUGIN_NAME}"
 mkdir -p "${PLUGIN_DEST_PATH}"
 cp -R source/* "${PLUGIN_DEST_PATH}/"
 
-# Erstelle das .tar.gz Archiv
-FILENAME="${PLUGIN_NAME}-${VERSION}"
-tar -C ${PACKAGE_DIR_TEMP} -czvf ${PACKAGE_DIR_FINAL}/$FILENAME.tar.gz usr
+# Set proper permissions
+echo "Setting proper permissions..."
+find "${PLUGIN_DEST_PATH}" -type f -name "*.php" -exec chmod 644 {} \;
+find "${PLUGIN_DEST_PATH}" -type f -name "*.page" -exec chmod 644 {} \;
+find "${PLUGIN_DEST_PATH}" -type f -name "*.js" -exec chmod 644 {} \;
+find "${PLUGIN_DEST_PATH}" -type f -name "*.css" -exec chmod 644 {} \;
+find "${PLUGIN_DEST_PATH}" -type f -name "*.svg" -exec chmod 644 {} \;
+find "${PLUGIN_DEST_PATH}" -type d -exec chmod 755 {} \;
 
-# --- .PLG-Datei erstellen (im vollständigen, robusten Format) ---
-read -r -d '' PLG_CONTENT << EOM
-<?xml version="1.0" standalone="yes"?>
+# Create .txz archive
+FILENAME="${PLUGIN_NAME}-${VERSION}"
+echo "Creating package: ${FILENAME}.txz"
+tar -C ${PACKAGE_DIR_TEMP} -cJf ${PACKAGE_DIR_FINAL}/${FILENAME}.txz usr
+
+# Verify package creation
+if [ ! -f "${PACKAGE_DIR_FINAL}/${FILENAME}.txz" ]; then
+    echo "❌ Error: Package creation failed!"
+    exit 1
+fi
+
+echo "✅ Package created: $(du -h ${PACKAGE_DIR_FINAL}/${FILENAME}.txz | cut -f1)"
+
+# --- Create .PLG file ---
+echo "Generating .plg file..."
+
+cat > "${PLUGIN_NAME}.plg" << EOF
+<?xml version='1.0' standalone='yes'?>
 <!DOCTYPE PLUGIN [
-<!ENTITY name "${PLUGIN_NAME}">
-<!ENTITY author "${AUTHOR}">
-<!ENTITY version="${VERSION}">
-<!ENTITY gitURL="${GIT_URL}">
-<!ENTITY pluginURL="&gitURL;/releases/download/&version;/&name;-&version;.tar.gz">
+  <!ENTITY name      "${PLUGIN_NAME}">
+  <!ENTITY author    "${AUTHOR}">
+  <!ENTITY version   "${VERSION}">
+  <!ENTITY gitURL    "${GIT_URL}">
+  <!ENTITY pluginURL "&gitURL;/releases/download/&version;/&name;-&version;.txz">
 ]>
-<PLUGIN name="&name;" author="&author;" version="&version;" min="6.9.0" support="&gitURL;/issues">
+
+<PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&pluginURL;" min="6.9.0" support="&gitURL;/issues">
+
 <CHANGES>
-###&version;
-- Release
+##&name;
+
+###${VERSION}
+- Automated build release
+- Dashboard integration for user script logs
+- Tab-based interface for running scripts
+- Real-time log monitoring
 </CHANGES>
+
+<!--
+This plugin provides a dashboard widget to monitor running user scripts and display their logs in real-time.
+-->
 
 <FILE Run="/bin/bash">
 <INLINE>
+# Remove old source files
+rm -f \$(ls /boot/config/plugins/&name;/&name;*.txz 2>/dev/null|head -n1)
 echo ""
 echo "----------------------------------------------------"
-echo " Installing &name; version &version;"
+echo " &name; has been installed."
+echo " Copyright 2025, &author;"
+echo " Version: &version;"
 echo "----------------------------------------------------"
 echo ""
 </INLINE>
 </FILE>
 
-<FILE Name="/boot/config/plugins/&name;/&name;-&version;.tar.gz" Run="upgradepkg --install-new">
-    <URL>&pluginURL;</URL>
+<!--
+The 'source' file.
+-->
+<FILE Name="/boot/config/plugins/&name;/&name;-&version;.txz" Run="upgradepkg --install-new">
+<URL>&pluginURL;</URL>
 </FILE>
 
+<!--
+The 'post-install' script
+-->
+<FILE Run="/bin/bash">
+<INLINE>
+echo ""
+echo "----------------------------------------------------"
+echo " &name; has been installed."
+echo " This plugin requires Unraid version 6.9.0 or higher"
+echo " Copyright 2025, &author;"
+echo " Version: &version;"
+echo "----------------------------------------------------"
+echo ""
+</INLINE>
+</FILE>
+
+<!--
+The 'remove' script.
+-->
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
 removepkg &name;-&version;
 rm -rf /usr/local/emhttp/plugins/&name;
 rm -rf /boot/config/plugins/&name;
+
 echo ""
 echo "----------------------------------------------------"
 echo " &name; has been removed."
+echo " Copyright 2025, &author;"
+echo " Version: &version;"
 echo "----------------------------------------------------"
 echo ""
 </INLINE>
 </FILE>
+
 </PLUGIN>
-EOM
+EOF
 
-echo "$PLG_CONTENT" > "${PLUGIN_NAME}.plg"
-
-# Aufräumen
+# Clean up temp directory
 rm -rf ${PACKAGE_DIR_TEMP}
 
-echo "Build erfolgreich abgeschlossen!"
-echo "Neue Version: ${VERSION}"
-echo "TAR-Datei: ${PACKAGE_DIR_FINAL}/${FILENAME}.tar.gz"
-echo "PLG-Datei wurde im Hauptverzeichnis aktualisiert."
+echo ""
+echo "🎉 Build completed successfully!"
+echo "📦 Version: ${VERSION}"
+echo "📁 Package: ${PACKAGE_DIR_FINAL}/${FILENAME}.txz"
+echo "📄 PLG file: ${PLUGIN_NAME}.plg"
