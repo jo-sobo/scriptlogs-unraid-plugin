@@ -4,7 +4,7 @@
 # Creates a .txz package for Unraid plugin installation
 
 PLUGIN_NAME="scriptlogs"
-VERSION="2025.07.24"
+VERSION="2025.01.24a"
 BUILD_DIR="build"
 PACKAGE_NAME="${PLUGIN_NAME}-${VERSION}.txz"
 
@@ -27,10 +27,10 @@ find ${BUILD_DIR}/${PLUGIN_NAME} -type f -name "*.css" -exec chmod 644 {} \;
 find ${BUILD_DIR}/${PLUGIN_NAME} -type f -name "*.svg" -exec chmod 644 {} \;
 find ${BUILD_DIR}/${PLUGIN_NAME} -type d -exec chmod 755 {} \;
 
-# Create the package
+# Create the package (Unraid expects .txz = tar with xz compression)
 echo "Creating package..."
 cd ${BUILD_DIR}
-tar -czf ../${PACKAGE_NAME} ${PLUGIN_NAME}/
+tar -cJf ../${PACKAGE_NAME} ${PLUGIN_NAME}/
 cd ..
 
 # Clean up build directory
