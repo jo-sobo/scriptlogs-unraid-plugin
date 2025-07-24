@@ -1,0 +1,17 @@
+<svg width="160" height="160" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!-- Rahmen -->
+  <rect x="16" y="16" width="128" height="128" rx="20" fill="#1E1E1E" stroke="#2E2E2E" stroke-width="2"/>
+
+  <!-- Live-Indikator kleiner -->
+  <circle cx="112" cy="48" r="12" fill="#FF3B30">
+    <animate attributeName="opacity" values="1;0.2;1" dur="1.3s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Prompt-Zeile mit Cursor -->
+  <text x="32" y="54" font-family="monospace" font-size="20" fill="#00FFAA">&gt;_</text>
+
+  <!-- Log-Zeilen: neu verteilt -->
+  <rect x="32" y="84" width="88" height="5" rx="2" fill="#C0C0C0"/>
+  <rect x="32" y="100" width="72" height="5" rx="2" fill="#AAAAAA"/>
+  <rect x="32" y="116" width="54" height="5" rx="2" fill="#888888"/>
+</svg>

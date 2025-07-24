@@ -1,6 +1,6 @@
 Menu="Dashboard"
 Title="Script Logs"
-Icon="scriptlogs.png"
+Icon="images/ScriptLogsLogo.svg"
 ---
 <?php
 $plugin = "scriptlogs";
