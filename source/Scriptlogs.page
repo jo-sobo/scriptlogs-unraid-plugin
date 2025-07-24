@@ -1,9 +1,20 @@
+Menu="Dashboard"
+Icon="scriptlogs.png"
+---
 <?php
 
 require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
-
 require_once '/usr/local/emhttp/plugins/scriptlogs/include/Scriptlogs.php';
 
-new Scriptlogs();
+// Prüfen ob AJAX-Request für Logs
+if (isset($_GET['action']) && $_GET['action'] === 'getLogs') {
+    $scriptlogs = new Scriptlogs();
+    $scriptlogs->getLogsJson();
+    exit;
+}
+
+// Normale Dashboard-Anzeige
+$scriptlogs = new Scriptlogs();
+$scriptlogs->display();
 
 ?>

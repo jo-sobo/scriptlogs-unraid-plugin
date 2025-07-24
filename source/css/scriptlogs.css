@@ -1,0 +1,39 @@
+.dash_scriptlogs {
+    min-width: 600px;
+}
+
+#scriptlogs-container {
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 4px;
+    max-height: 220px;
+}
+
+#scriptlogs-container pre {
+    color: #f0f0f0;
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+#scriptlogs-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+#scriptlogs-container::-webkit-scrollbar-track {
+    background: #2a2a2a;
+}
+
+#scriptlogs-container::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+#scriptlogs-container::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+.log-entries {
+    font-weight: bold;
+    color: #4CAF50;
+}

@@ -1,15 +1,29 @@
-$(function() {
-    setInterval(updateScriptLogs, 5000); // Update alle 5 Sekunden
-});
+function scriptlogs_init() {
+    // Dashboard-Box anzeigen
+    $('#db-box1.dash_scriptlogs').show();
+    
+    // Initial laden
+    scriptlogs_refresh();
+}
 
-function updateScriptLogs() {
-    $.post('/plugins/scriptlogs/script.php', { action: 'get_logs' })
-        .done(function(data) {
+function scriptlogs_refresh() {
+    $.get('/Dashboard/scriptlogs?action=getLogs', function(data) {
+        if (data && data.logs) {
+            $('#log-content').text(data.logs);
+            $('.log-entries').text(data.lineCount + ' Zeilen');
+            
+            // Auto-scroll nach unten
             var container = $('#scriptlogs-container');
-            container.find('pre').text(data);
             container.scrollTop(container[0].scrollHeight);
-        })
-        .fail(function() {
-            console.error('Fehler beim Aktualisieren der Script-Logs.');
-        });
+        }
+    }).fail(function() {
+        $('#log-content').text('Fehler beim Laden der Logs');
+        $('.log-entries').text('Fehler');
+    });
+}
+
+// Dashboard-Integration
+function scriptlogs_dash() {
+    // Dashboard-spezifische Funktionen
+    $('.dash_scriptlogs').show();
 }
