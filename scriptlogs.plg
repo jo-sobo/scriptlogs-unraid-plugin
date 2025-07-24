@@ -14,24 +14,7 @@
 
 ###2025.07.24b-alpha
 - Automated build release
-- Dashboard integration for user script logs
-- Tab-based interface for running scripts
-- Real-time log monitoring
 </CHANGES>
-
-<FILE Run="/bin/bash">
-<INLINE>
-# Remove old source files
-rm -f $(ls /boot/config/plugins/&name;/&name;*.txz 2>/dev/null|head -n1)
-echo ""
-echo "----------------------------------------------------"
-echo " &name; has been installed."
-echo " Copyright 2025, &author;"
-echo " Version: &version;"
-echo "----------------------------------------------------"
-echo ""
-</INLINE>
-</FILE>
 
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.txz" Run="upgradepkg --install-new">
 <URL>&pluginURL;</URL>
@@ -39,11 +22,13 @@ echo ""
 
 <FILE Run="/bin/bash">
 <INLINE>
+# Fix permissions after unpacking on the Unraid server
+chmod -R 755 /usr/local/emhttp/plugins/&name;
+find /usr/local/emhttp/plugins/&name; -type f -exec chmod 644 {} \;
+
 echo ""
 echo "----------------------------------------------------"
 echo " &name; has been installed."
-echo " This plugin requires Unraid version 6.9.0 or higher"
-echo " Copyright 2025, &author;"
 echo " Version: &version;"
 echo "----------------------------------------------------"
 echo ""
@@ -55,12 +40,9 @@ echo ""
 removepkg &name;-&version;
 rm -rf /usr/local/emhttp/plugins/&name;
 rm -rf /boot/config/plugins/&name;
-
 echo ""
 echo "----------------------------------------------------"
 echo " &name; has been removed."
-echo " Copyright 2025, &author;"
-echo " Version: &version;"
 echo "----------------------------------------------------"
 echo ""
 </INLINE>
