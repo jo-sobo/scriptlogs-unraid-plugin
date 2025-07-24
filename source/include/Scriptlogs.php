@@ -1,11 +1,11 @@
 <?php
 
-// Sicherstellen, dass die dashboardApp Klasse verfügbar ist
-if (!class_exists('dashboardApp')) {
-    require_once '/usr/local/emhttp/plugins/dynamix/include/dashboardApp.php';
+
+if (!class_exists('DashboardApps')) {
+    require_once '/usr/local/emhttp/plugins/dynamix/include/DashboardApps.php';
 }
 
-class Scriptlogs extends dashboardApp {
+class Scriptlogs extends DashboardApps {
 
     public $pluginName = 'scriptlogs';
     public $cardName = 'Script Logs';
@@ -25,7 +25,7 @@ class Scriptlogs extends dashboardApp {
             </style>';
         }
 
-        // Hauptcontainer mit Unraid-Dashboard-Struktur - EINDEUTIGE ID!
+        // Hauptcontainer mit Unraid-Dashboard-Struktur
         echo '
         <table id="db-scriptlogs" class="dash_scriptlogs dashboard box1" style="display:none">
             <thead sort="954"><tr class="hidden"><td></td><td colspan="3"></td><td></td></tr></thead>
@@ -33,7 +33,7 @@ class Scriptlogs extends dashboardApp {
                 <tr>
                     <td></td>
                     <td class="next" colspan="3">
-                        <i class="icon-notebook"></i>
+                        <i class="fa fa-file-text-o"></i>
                         <div class="section">Script Logs<br>
                             <span id="log-status">Status: <span class="log-entries">Loading...</span></span>
                         </div>
@@ -54,26 +54,23 @@ class Scriptlogs extends dashboardApp {
             </tbody>
         </table>';
 
-        // JavaScript einbinden
-        if (file_exists("/usr/local/emhttp/plugins/{$this->pluginName}/js/scriptlogs.js")) {
-            echo '<script type="text/javascript" src="/plugins/' . $this->pluginName . '/js/scriptlogs.js"></script>';
-        }
+        // JavaScript einbinden - EXPLIZIT
+        echo '<script type="text/javascript" src="/plugins/' . $this->pluginName . '/js/scriptlogs.js"></script>';
         
         // JavaScript für Auto-Refresh und Dashboard-Integration
         echo '<script type="text/javascript">
-            $(function() {
-                if (typeof scriptlogs_init === "function") {
-                    scriptlogs_init();
-                }
-                // Dashboard-Integration
-                if (typeof scriptlogs_dash === "function") {
-                    $(scriptlogs_dash);
-                }
+            $(document).ready(function() {
+                console.log("Scriptlogs: Document ready");
+                
+                // Widget anzeigen
+                $("#db-scriptlogs").show();
+                
+                // Initial laden
+                scriptlogs_refresh();
+                
                 // Auto-refresh alle 5 Sekunden
                 setInterval(function() {
-                    if (typeof scriptlogs_refresh === "function") {
-                        scriptlogs_refresh();
-                    }
+                    scriptlogs_refresh();
                 }, 5000);
             });
         </script>';
