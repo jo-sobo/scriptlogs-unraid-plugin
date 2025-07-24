@@ -34,14 +34,16 @@ mkdir -p "${PLUGIN_DEST_PATH}"
 cp -R source/* "${PLUGIN_DEST_PATH}/"
 
 # === ANPASSUNG START ===
-# Der alte Block zum Setzen der Berechtigungen wurde entfernt.
+# Setze explizit die korrekten Berechtigungen für den Webserver
+echo "Setting permissions..."
+find "${PLUGIN_DEST_PATH}" -type d -exec chmod 755 {} \;
+find "${PLUGIN_DEST_PATH}" -type f -exec chmod 644 {} \;
+# === ANPASSUNG ENDE ===
 
-# Create .txz archive and set correct ownership during packaging
+# Create .txz archive and set correct ownership
 FILENAME="${PLUGIN_NAME}-${VERSION}"
 echo "Creating package: ${FILENAME}.txz"
-# Die Flags --owner=root und --group=root sind die entscheidende Änderung
 tar --owner=root --group=root -C ${PACKAGE_DIR_TEMP} -cJf ${PACKAGE_DIR_FINAL}/${FILENAME}.txz usr
-# === ANPASSUNG ENDE ===
 
 # Verify package creation
 if [ ! -f "${PACKAGE_DIR_FINAL}/${FILENAME}.txz" ]; then
