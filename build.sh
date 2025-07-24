@@ -4,7 +4,7 @@
 # Creates a .txz package for Unraid plugin installation
 
 PLUGIN_NAME="scriptlogs"
-VERSION="2025.07.24a-alpha"
+VERSION="2025.07.24b-alpha"
 BUILD_DIR="build"
 PACKAGES_DIR="packages"
 PACKAGE_NAME="${PLUGIN_NAME}-${VERSION}.txz"
