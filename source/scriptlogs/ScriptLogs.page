@@ -1,0 +1,43 @@
+Menu="Dashboard"
+Title="Script Logs"
+Icon="scriptlogs.png"
+---
+<?php
+$plugin = "scriptlogs";
+$skin = $display['theme'];
+$csrf_token = $var['csrf_token'];
+?>
+
+<link type="text/css" rel="stylesheet" href="<?autov("/plugins/$plugin/css/scriptlogs.css")?>">
+
+<div>
+    <div class="scriptlogs-container">
+        <div class="scriptlogs-header">
+            <h3>Running User Scripts</h3>
+            <div class="scriptlogs-refresh">
+                <i class="fa fa-refresh" onclick="refreshScriptLogs()"></i>
+            </div>
+        </div>
+        
+        <div class="scriptlogs-content">
+            <div class="scriptlogs-tabs" id="scriptlogs-tabs">
+                <!-- Tabs werden hier dynamisch eingefügt -->
+            </div>
+            
+            <div class="scriptlogs-panels" id="scriptlogs-panels">
+                <div class="no-scripts" id="no-scripts">
+                    <p>No running scripts found</p>
+                </div>
+                <!-- Log-Panels werden hier dynamisch eingefügt -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="<?autov("/plugins/$plugin/js/scriptlogs.js")?>"></script>
+<script>
+    // Initialize the script logs dashboard
+    $(document).ready(function() {
+        initScriptLogsDashboard();
+    });
+</script>

@@ -1,0 +1,229 @@
+/* ScriptLogs Dashboard Plugin Styles */
+
+.scriptlogs-container {
+    background: var(--panel-bg, #1e1e1e);
+    border: 1px solid var(--border-color, #333);
+    border-radius: 8px;
+    padding: 0;
+    margin: 10px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.scriptlogs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color, #333);
+    background: var(--header-bg, #2a2a2a);
+    border-radius: 8px 8px 0 0;
+}
+
+.scriptlogs-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-color, #fff);
+}
+
+.scriptlogs-refresh {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.scriptlogs-refresh:hover {
+    background: var(--hover-bg, #404040);
+}
+
+.scriptlogs-refresh i {
+    color: var(--accent-color, #4CAF50);
+    font-size: 14px;
+}
+
+.scriptlogs-content {
+    padding: 0;
+}
+
+/* Tab Navigation */
+.scriptlogs-tabs {
+    display: flex;
+    background: var(--tab-bg, #252525);
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border-color, #333);
+}
+
+.scriptlogs-tab {
+    padding: 12px 20px;
+    background: transparent;
+    border: none;
+    color: var(--text-color-muted, #aaa);
+    cursor: pointer;
+    font-size: 13px;
+    white-space: nowrap;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+}
+
+.scriptlogs-tab:hover {
+    background: var(--hover-bg, #2f2f2f);
+    color: var(--text-color, #fff);
+}
+
+.scriptlogs-tab.active {
+    background: var(--active-tab-bg, #1a1a1a);
+    color: var(--accent-color, #4CAF50);
+    border-bottom-color: var(--accent-color, #4CAF50);
+}
+
+.scriptlogs-tab .script-status {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success-color, #4CAF50);
+    margin-right: 8px;
+    animation: pulse 2s infinite;
+}
+
+/* Tab Panels */
+.scriptlogs-panels {
+    position: relative;
+    height: 400px;
+    overflow: hidden;
+}
+
+.scriptlogs-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.scriptlogs-panel.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.scriptlogs-log {
+    height: 100%;
+    overflow-y: auto;
+    padding: 15px 20px;
+    background: var(--log-bg, #1a1a1a);
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--log-text, #e0e0e0);
+}
+
+/* No Scripts Message */
+.no-scripts {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-color-muted, #888);
+    font-style: italic;
+}
+
+/* Log Content Styling */
+.log-error {
+    color: var(--error-color, #f44336);
+    font-weight: bold;
+}
+
+.log-warning {
+    color: var(--warning-color, #ff9800);
+    font-weight: bold;
+}
+
+.log-success {
+    color: var(--success-color, #4CAF50);
+    font-weight: bold;
+}
+
+/* Scrollbar Styling */
+.scriptlogs-log::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scriptlogs-log::-webkit-scrollbar-track {
+    background: var(--scrollbar-track, #2a2a2a);
+}
+
+.scriptlogs-log::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb, #555);
+    border-radius: 4px;
+}
+
+.scriptlogs-log::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover, #777);
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-color-muted, #888);
+}
+
+.loading:after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color, #333);
+    border-top: 2px solid var(--accent-color, #4CAF50);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .scriptlogs-container {
+        margin: 5px 0;
+    }
+    
+    .scriptlogs-header {
+        padding: 12px 15px;
+    }
+    
+    .scriptlogs-tab {
+        padding: 10px 15px;
+        font-size: 12px;
+    }
+    
+    .scriptlogs-log {
+        padding: 12px 15px;
+        font-size: 11px;
+    }
+    
+    .scriptlogs-panels {
+        height: 300px;
+    }
+}
