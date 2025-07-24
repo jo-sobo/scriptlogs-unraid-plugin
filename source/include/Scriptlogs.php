@@ -1,6 +1,10 @@
 <?php
 
+require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
+
+
 class Scriptlogs extends dashboardApp {
+
     public $pluginName = 'scriptlogs';
     public $cardName = 'Script Logs';
     private $logFile = '/tmp/user.scripts/logs/in_progress'; // Pfad anpassen, falls nötig!
@@ -20,7 +24,10 @@ class Scriptlogs extends dashboardApp {
     public function getLogs() {
         if (file_exists($this->logFile)) {
             $lines = file($this->logFile, FILE_IGNORE_NEW_LINES);
-            $last_lines = array_slice($lines, -100); // Zeigt die letzten 100 Zeilen
+            if ($lines === false) {
+                return 'Fehler beim Lesen der Log-Datei.';
+            }
+            $last_lines = array_slice($lines, -100);
             return htmlspecialchars(implode("\n", $last_lines));
         } else {
             return "Log-Datei nicht gefunden unter:\n" . htmlspecialchars($this->logFile);
