@@ -14,3 +14,6 @@ Coming soon...
 
 ##Development
 Work in progress...
+
+## License
+This project is licensed under the GPL v3 License - see the [LICENSE](LICENSE) file for details.
