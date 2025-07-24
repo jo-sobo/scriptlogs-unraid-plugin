@@ -1,81 +1,75 @@
 #!/bin/bash
 
-# --- Konfiguration der Versionierung ---
-BASE_VERSION=$(date +'%Y.%m.%d')
-LETTER_SUFFIX="b" # Nimmt das erste Argument (z.B. "a")
-STAGE_INPUT="alpha"   # Nimmt das zweite Argument (z.B. "beta")
-STAGE_SUFFIX=""    # Standard ist ein Release ohne Zusatz
-
-if [[ -n "$STAGE_INPUT" && "$STAGE_INPUT" != "release" ]]; then
-  STAGE_SUFFIX="-$STAGE_INPUT"
-fi
-
-VERSION="${BASE_VERSION}${LETTER_SUFFIX}${STAGE_SUFFIX}"
-# --- Ende der Konfiguration ---
-
-
-# Konfiguration
+# --- Konfiguration ---
 PLUGIN_NAME="scriptlogs"
 AUTHOR="jo-sobo"
+GIT_URL="https://github.com/${AUTHOR}/${PLUGIN_NAME}"
 PACKAGE_DIR_FINAL="packages"
 PACKAGE_DIR_TEMP="package-temp"
 
-# Aufräumen und Verzeichnisse erstellen
+# --- Versionierung ---
+BASE_VERSION=$(date +'%Y.%m.%d')
+LETTER_SUFFIX="b"
+STAGE_INPUT="alpha"
+STAGE_SUFFIX=""
+if [[ -n "$STAGE_INPUT" && "$STAGE_INPUT" != "release" ]]; then
+  STAGE_SUFFIX="-$STAGE_INPUT"
+fi
+VERSION="${BASE_VERSION}${LETTER_SUFFIX}${STAGE_SUFFIX}"
+
+# --- Build-Prozess ---
+echo "Starte Build für Version ${VERSION}..."
+
+# Aufräumen
 rm -rf ${PACKAGE_DIR_TEMP}
 rm -rf ${PACKAGE_DIR_FINAL}
 mkdir -p ${PACKAGE_DIR_TEMP}
 mkdir -p ${PACKAGE_DIR_FINAL}
 
-# Erstelle die komplette Zielstruktur im temporären Ordner
+# Erstelle die Zielstruktur und kopiere Dateien
 PLUGIN_DEST_PATH="${PACKAGE_DIR_TEMP}/usr/local/emhttp/plugins/${PLUGIN_NAME}"
 mkdir -p "${PLUGIN_DEST_PATH}"
 cp -R source/* "${PLUGIN_DEST_PATH}/"
 
-# Erstelle das .tar.gz Archiv
+# Erstelle das .tar.gz Archiv (im Beispiel war es .txz, aber .tar.gz ist moderner und funktioniert)
 FILENAME="${PLUGIN_NAME}-${VERSION}"
 tar -C ${PACKAGE_DIR_TEMP} -czvf ${PACKAGE_DIR_FINAL}/$FILENAME.tar.gz usr
 
-# --- KORRIGIERTER TEIL ZUM ERSTELLEN DER .PLG ---
-# Definiere den Inhalt der .plg-Datei als Variable. Das ist sicherer.
+# --- .PLG-Datei erstellen (im korrekten, robusten Format) ---
 read -r -d '' PLG_CONTENT << EOM
 <?xml version="1.0" standalone="yes"?>
 <!DOCTYPE PLUGIN [
 <!ENTITY name "${PLUGIN_NAME}">
 <!ENTITY author "${AUTHOR}">
 <!ENTITY version="${VERSION}">
-<!ENTITY pluginURL="https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/master/scriptlogs.plg">
+<!ENTITY gitURL="${GIT_URL}">
+<!ENTITY pluginURL="&gitURL;/releases/download/&version;/&name;-&version;.tar.gz">
 ]>
-<PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&pluginURL;" min="6.9.0">
+<PLUGIN name="&name;" author="&author;" version="&version;" min="6.9.0" support="&gitURL;/issues">
 <CHANGES>
+###&version;
+- Release
 </CHANGES>
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.tar.gz" Run="upgradepkg --install-new">
-<INLINE>
-#remove old package
-removepkg &name;-&VER_OLD;.txz
-#install new package
-install -d -m 0755 /usr/local/emhttp/plugins/&name;
-upgradepkg --install-new /boot/config/plugins/&name;/&name;-&version;.tar.gz
-</INLINE>
+    <URL>&pluginURL;</URL>
 </FILE>
-<FILE Name="/boot/config/plugins/&name;/&name;-&version;.tar.gz" Run="remove">
+<FILE Run="/bin/bash" Method="remove">
 <INLINE>
-#remove package
-removepkg &name;-&version;.txz
+removepkg &name;-&version;
 rm -rf /usr/local/emhttp/plugins/&name;
+rm -rf /boot/config/plugins/&name;
+echo "&name; wurde entfernt."
 </INLINE>
 </FILE>
 </PLUGIN>
 EOM
 
-# Schreibe den Inhalt der Variable in die .plg-Datei im Root-Verzeichnis
 echo "$PLG_CONTENT" > "${PLUGIN_NAME}.plg"
-# --- ENDE DER KORREKTUR ---
-
 
 # Aufräumen
 rm -rf ${PACKAGE_DIR_TEMP}
 
 echo "Build erfolgreich abgeschlossen!"
 echo "Neue Version: ${VERSION}"
-echo "TAR-Datei liegt im Ordner '${PACKAGE_DIR_FINAL}'."
+echo "TAR-Datei: ${PACKAGE_DIR_FINAL}/${FILENAME}.tar.gz"
 echo "PLG-Datei wurde im Hauptverzeichnis aktualisiert."
