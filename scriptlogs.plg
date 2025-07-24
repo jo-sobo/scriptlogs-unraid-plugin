@@ -1,17 +1,16 @@
 <?xml version='1.0' standalone='yes'?>
 <!DOCTYPE PLUGIN [
-  <!ENTITY name      "scriptlogs">
-  <!ENTITY author    "jo-sobo">
-  <!ENTITY version   "2025.07.25a-alpha">
-  <!ENTITY gitURL    "https://github.com/jo-sobo/scriptlogs-unraid-plugin">
-  <!ENTITY pluginURL "&gitURL;/releases/download/&version;/&name;-&version;.txz">
+ <!ENTITY name "scriptlogs">
+ <!ENTITY author "jo-sobo">
+ <!ENTITY version "2025.07.25a-alpha">
+ <!ENTITY gitURL "https://github.com/jo-sobo/scriptlogs-unraid-plugin">
+ <!ENTITY pluginURL "&gitURL;/releases/download/&version;/&name;-&version;.txz">
 ]>
 
 <PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&pluginURL;" min="6.9.0" support="&gitURL;/issues">
 
 <CHANGES>
 ##&name;
-
 ###2025.07.25a-alpha
 - Automated build release
 </CHANGES>
@@ -22,9 +21,11 @@
 
 <FILE Run="/bin/bash">
 <INLINE>
-# Fix permissions after unpacking on the Unraid server
+# Fix ownership and permissions after unpacking on the Unraid server
+chown -R root:root /usr/local/emhttp/plugins/&name;
 chmod -R 755 /usr/local/emhttp/plugins/&name;
 find /usr/local/emhttp/plugins/&name; -type f -exec chmod 644 {} \;
+find /usr/local/emhttp/plugins/&name; -name "*.page" -exec chmod 755 {} \;
 
 echo ""
 echo "----------------------------------------------------"
@@ -40,6 +41,7 @@ echo ""
 removepkg &name;-&version;
 rm -rf /usr/local/emhttp/plugins/&name;
 rm -rf /boot/config/plugins/&name;
+
 echo ""
 echo "----------------------------------------------------"
 echo " &name; has been removed."
