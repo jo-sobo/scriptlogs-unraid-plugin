@@ -33,19 +33,15 @@ PLUGIN_DEST_PATH="${PACKAGE_DIR_TEMP}/usr/local/emhttp/plugins/${PLUGIN_NAME}"
 mkdir -p "${PLUGIN_DEST_PATH}"
 cp -R source/* "${PLUGIN_DEST_PATH}/"
 
-# Set proper permissions
-echo "Setting proper permissions..."
-find "${PLUGIN_DEST_PATH}" -type f -name "*.php" -exec chmod 644 {} \;
-find "${PLUGIN_DEST_PATH}" -type f -name "*.page" -exec chmod 644 {} \;
-find "${PLUGIN_DEST_PATH}" -type f -name "*.js" -exec chmod 644 {} \;
-find "${PLUGIN_DEST_PATH}" -type f -name "*.css" -exec chmod 644 {} \;
-find "${PLUGIN_DEST_PATH}" -type f -name "*.svg" -exec chmod 644 {} \;
-find "${PLUGIN_DEST_PATH}" -type d -exec chmod 755 {} \;
+# === ANPASSUNG START ===
+# Der alte Block zum Setzen der Berechtigungen wurde entfernt.
 
-# Create .txz archive
+# Create .txz archive and set correct ownership during packaging
 FILENAME="${PLUGIN_NAME}-${VERSION}"
 echo "Creating package: ${FILENAME}.txz"
-tar -C ${PACKAGE_DIR_TEMP} -cJf ${PACKAGE_DIR_FINAL}/${FILENAME}.txz usr
+# Die Flags --owner=root und --group=root sind die entscheidende Änderung
+tar --owner=root --group=root -C ${PACKAGE_DIR_TEMP} -cJf ${PACKAGE_DIR_FINAL}/${FILENAME}.txz usr
+# === ANPASSUNG ENDE ===
 
 # Verify package creation
 if [ ! -f "${PACKAGE_DIR_FINAL}/${FILENAME}.txz" ]; then
@@ -80,10 +76,6 @@ cat > "${PLUGIN_NAME}.plg" << EOF
 - Real-time log monitoring
 </CHANGES>
 
-<!--
-This plugin provides a dashboard widget to monitor running user scripts and display their logs in real-time.
--->
-
 <FILE Run="/bin/bash">
 <INLINE>
 # Remove old source files
@@ -98,16 +90,10 @@ echo ""
 </INLINE>
 </FILE>
 
-<!--
-The 'source' file.
--->
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.txz" Run="upgradepkg --install-new">
 <URL>&pluginURL;</URL>
 </FILE>
 
-<!--
-The 'post-install' script
--->
 <FILE Run="/bin/bash">
 <INLINE>
 echo ""
@@ -121,9 +107,6 @@ echo ""
 </INLINE>
 </FILE>
 
-<!--
-The 'remove' script.
--->
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
 removepkg &name;-&version;
