@@ -33,25 +33,20 @@ PLUGIN_DEST_PATH="${PACKAGE_DIR_TEMP}/usr/local/emhttp/plugins/${PLUGIN_NAME}"
 mkdir -p "${PLUGIN_DEST_PATH}"
 cp -R source/* "${PLUGIN_DEST_PATH}/"
 
-# === ANPASSUNG START ===
-# Setze explizit die korrekten Berechtigungen für den Webserver
-echo "Setting permissions..."
-find "${PLUGIN_DEST_PATH}" -type d -exec chmod 755 {} \;
-find "${PLUGIN_DEST_PATH}" -type f -exec chmod 644 {} \;
-# === ANPASSUNG ENDE ===
-
-# Create .txz archive and set correct ownership
+# Create .txz archive using tar (works on macOS)
 FILENAME="${PLUGIN_NAME}-${VERSION}"
-echo "Creating package: ${FILENAME}.txz"
-tar --owner=root --group=root -C ${PACKAGE_DIR_TEMP} -cJf ${PACKAGE_DIR_FINAL}/${FILENAME}.txz usr
+PACKAGE_PATH="${PACKAGE_DIR_FINAL}/${FILENAME}.txz"
+echo "Creating package with tar: ${FILENAME}.txz"
+tar -C ${PACKAGE_DIR_TEMP} -cJf "${PACKAGE_PATH}" usr
+
 
 # Verify package creation
-if [ ! -f "${PACKAGE_DIR_FINAL}/${FILENAME}.txz" ]; then
+if [ ! -f "${PACKAGE_PATH}" ]; then
     echo "❌ Error: Package creation failed!"
     exit 1
 fi
 
-echo "✅ Package created: $(du -h ${PACKAGE_DIR_FINAL}/${FILENAME}.txz | cut -f1)"
+echo "✅ Package created: $(du -h ${PACKAGE_PATH} | cut -f1)"
 
 # --- Create .PLG file ---
 echo "Generating .plg file..."
@@ -73,24 +68,7 @@ cat > "${PLUGIN_NAME}.plg" << EOF
 
 ###${VERSION}
 - Automated build release
-- Dashboard integration for user script logs
-- Tab-based interface for running scripts
-- Real-time log monitoring
 </CHANGES>
-
-<FILE Run="/bin/bash">
-<INLINE>
-# Remove old source files
-rm -f \$(ls /boot/config/plugins/&name;/&name;*.txz 2>/dev/null|head -n1)
-echo ""
-echo "----------------------------------------------------"
-echo " &name; has been installed."
-echo " Copyright 2025, &author;"
-echo " Version: &version;"
-echo "----------------------------------------------------"
-echo ""
-</INLINE>
-</FILE>
 
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.txz" Run="upgradepkg --install-new">
 <URL>&pluginURL;</URL>
@@ -98,11 +76,13 @@ echo ""
 
 <FILE Run="/bin/bash">
 <INLINE>
+# Fix permissions after unpacking on the Unraid server
+chmod -R 755 /usr/local/emhttp/plugins/&name;
+find /usr/local/emhttp/plugins/&name; -type f -exec chmod 644 {} \;
+
 echo ""
 echo "----------------------------------------------------"
 echo " &name; has been installed."
-echo " This plugin requires Unraid version 6.9.0 or higher"
-echo " Copyright 2025, &author;"
 echo " Version: &version;"
 echo "----------------------------------------------------"
 echo ""
@@ -114,12 +94,9 @@ echo ""
 removepkg &name;-&version;
 rm -rf /usr/local/emhttp/plugins/&name;
 rm -rf /boot/config/plugins/&name;
-
 echo ""
 echo "----------------------------------------------------"
 echo " &name; has been removed."
-echo " Copyright 2025, &author;"
-echo " Version: &version;"
 echo "----------------------------------------------------"
 echo ""
 </INLINE>
@@ -134,5 +111,5 @@ rm -rf ${PACKAGE_DIR_TEMP}
 echo ""
 echo "🎉 Build completed successfully!"
 echo "📦 Version: ${VERSION}"
-echo "📁 Package: ${PACKAGE_DIR_FINAL}/${FILENAME}.txz"
+echo "📁 Package: ${PACKAGE_PATH}"
 echo "📄 PLG file: ${PLUGIN_NAME}.plg"
