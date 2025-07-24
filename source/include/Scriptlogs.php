@@ -1,13 +1,10 @@
 <?php
 
-require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
-
-
 class Scriptlogs extends dashboardApp {
 
     public $pluginName = 'scriptlogs';
     public $cardName = 'Script Logs';
-    private $logFile = '/tmp/user.scripts/logs/in_progress'; // Pfad anpassen, falls nötig!
+    private $logFile = '/tmp/user.scripts/logs/in_progress';
 
     public function __construct() {
         $this->jsFile = "/plugins/{$this->pluginName}/js/scriptlogs.js";
