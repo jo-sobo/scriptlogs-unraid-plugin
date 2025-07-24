@@ -11,15 +11,31 @@
 ###&version;
 - Release
 </CHANGES>
+
+<FILE Run="/bin/bash">
+<INLINE>
+echo ""
+echo "----------------------------------------------------"
+echo " Installing &name; version &version;"
+echo "----------------------------------------------------"
+echo ""
+</INLINE>
+</FILE>
+
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.tar.gz" Run="upgradepkg --install-new">
     <URL>&pluginURL;</URL>
 </FILE>
+
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
 removepkg &name;-&version;
 rm -rf /usr/local/emhttp/plugins/&name;
 rm -rf /boot/config/plugins/&name;
-echo "&name; wurde entfernt."
+echo ""
+echo "----------------------------------------------------"
+echo " &name; has been removed."
+echo "----------------------------------------------------"
+echo ""
 </INLINE>
 </FILE>
 </PLUGIN>
