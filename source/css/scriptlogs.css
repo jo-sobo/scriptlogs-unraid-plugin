@@ -1,0 +1,31 @@
+.dash_scriptlogs {
+    min-width: 600px;
+}
+
+#scriptlogs-container {
+    background-color: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 3px;
+}
+
+#scriptlogs-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+#scriptlogs-container::-webkit-scrollbar-track {
+    background: #2a2a2a;
+}
+
+#scriptlogs-container::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 3px;
+}
+
+#scriptlogs-container::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+.scriptlogs-entries {
+    font-weight: bold;
+    color: #4CAF50;
+}

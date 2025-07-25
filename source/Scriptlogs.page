@@ -6,115 +6,79 @@ require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
 
 $logFile = '/tmp/user.scripts/logs/in_progress';
 
-// AJAX-Handler für Log-Updates
+// AJAX-Handler
 if (isset($_GET['action']) && $_GET['action'] === 'getLogs') {
     header('Content-Type: application/json');
     
     $logs = '';
-    $fileExists = false;
+    $fileExists = file_exists($logFile);
     
-    if (file_exists($logFile)) {
-        $fileExists = true;
+    if ($fileExists) {
         $lines = file($logFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         if ($lines !== false) {
-            $last_lines = array_slice($lines, -50); // Nur 50 Zeilen für bessere Performance
+            $last_lines = array_slice($lines, -50);
             $logs = htmlspecialchars(implode("\n", $last_lines), ENT_QUOTES, 'UTF-8');
         } else {
             $logs = 'Fehler beim Lesen der Log-Datei.';
         }
     } else {
-        $logs = "Log-Datei nicht gefunden:\n" . $logFile;
+        $logs = 'Log-Datei nicht vorhanden.';
     }
     
     echo json_encode([
         'logs' => $logs,
         'lineCount' => substr_count($logs, "\n") + 1,
-        'timestamp' => date('H:i:s'),
         'fileExists' => $fileExists
     ]);
     exit;
 }
 
-// Initial Log-Inhalt laden
-function getInitialLogs($logFile) {
-    if (file_exists($logFile)) {
-        $lines = file($logFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        if ($lines !== false && count($lines) > 0) {
-            $last_lines = array_slice($lines, -50);
-            return htmlspecialchars(implode("\n", $last_lines), ENT_QUOTES, 'UTF-8');
-        }
-        return 'Log-Datei ist leer.';
+// Initial logs laden
+$initialLogs = '';
+$fileExists = file_exists($logFile);
+
+if ($fileExists) {
+    $lines = file($logFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if ($lines !== false && count($lines) > 0) {
+        $last_lines = array_slice($lines, -50);
+        $initialLogs = htmlspecialchars(implode("\n", $last_lines), ENT_QUOTES, 'UTF-8');
+    } else {
+        $initialLogs = 'Log-Datei ist leer.';
     }
-    return 'Log-Datei nicht vorhanden.';
+} else {
+    $initialLogs = 'Log-Datei nicht vorhanden.';
 }
 
-$initialLogs = getInitialLogs($logFile);
 $initialLineCount = max(1, substr_count($initialLogs, "\n") + 1);
-$fileExists = file_exists($logFile);
 ?>
 
 <style type="text/css">
-.scriptlogs-widget {
-    min-width: 600px;
-}
-
-.scriptlogs-container {
-    height: 200px;
-    overflow-y: auto;
-    font-family: 'Courier New', Consolas, monospace;
-    font-size: 11px;
-    background-color: #1a1a1a;
-    color: #e0e0e0;
-    padding: 8px;
-    border: 1px solid #444;
-    border-radius: 4px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
-
-.scriptlogs-container::-webkit-scrollbar {
-    width: 6px;
-}
-
-.scriptlogs-container::-webkit-scrollbar-track {
-    background: #2a2a2a;
-}
-
-.scriptlogs-container::-webkit-scrollbar-thumb {
-    background: #555;
-    border-radius: 3px;
-}
-
-.scriptlogs-status {
-    font-weight: bold;
-    color: <?= $fileExists ? '#4CAF50' : '#f44336' ?>;
-}
+    @import url("/plugins/scriptlogs/css/scriptlogs.css");
 </style>
 
-<table id="scriptlogs-dashboard-widget" class="scriptlogs-widget dashboard box1" style="display:none">
-    <thead sort="998"><tr class="hidden"><td></td><td colspan="3"></td><td></td></tr></thead>
-    <tbody sort="998" class="sortable">
+<table id='db-scriptlogs' class='dash_scriptlogs dashboard box1' style='display:none'>
+    <thead sort='955'><tr class='hidden'><td></td><td colspan='3'></td><td></td></tr></thead>
+    <tbody sort='955' class='sortable'>
         <tr>
             <td></td>
-            <td class="next" colspan="3">
-                <i class="fa fa-terminal"></i>
-                <div class="section">Script Logs<br>
-                    <span>Status: <span class="scriptlogs-status" id="scriptlogs-status"><?= $initialLineCount ?> Zeilen</span></span>
+            <td class='next' colspan='3'>
+                <i class='fa fa-terminal'></i>
+                <div class='section'>Script Logs<br>
+                    <span id='scriptlogs-status'>Status: <span class='scriptlogs-entries'><?= $initialLineCount ?> Zeilen</span></span>
                 </div>
-                <i class="fa fa-fw chevron mt0" id="scriptlogs-chevron" onclick="toggleChevron('scriptlogs-chevron',0)"></i>
+                <i class='fa fa-fw chevron mt0' id='dash_scriptlogs_toggle' onclick='toggleChevron("dash_scriptlogs_toggle",0)'></i>
                 <br><br>
             </td>
             <td></td>
         </tr>
-        <tr class="scriptlogs-chevron scriptlogs-content">
+        <tr class="dash_scriptlogs_toggle scriptlogs-content">
             <td></td>
             <td colspan="3">
-                <div class="scriptlogs-container" id="scriptlogs-log-container">
-                    <div id="scriptlogs-content"><?= $initialLogs ?></div>
+                <div id="scriptlogs-container" style="height:200px; overflow-y:auto; font-family: monospace; font-size: 11px; background-color: #1a1a1a; color: #e0e0e0; padding: 8px; border: 1px solid #444; border-radius: 3px;">
+                    <pre id="scriptlogs-logs" style="margin: 0; white-space: pre-wrap; word-wrap: break-word;"><?= $initialLogs ?></pre>
                 </div>
-                <div style="margin-top: 5px; font-size: 10px; color: #888;">
+                <div style="margin-top: 5px; font-size: 10px; color: #888; text-align: right;">
                     Letztes Update: <span id="scriptlogs-timestamp"><?= date('H:i:s') ?></span>
-                    | Auto-Refresh alle 5s
                 </div>
             </td>
             <td></td>
@@ -122,96 +86,9 @@ $fileExists = file_exists($logFile);
     </tbody>
 </table>
 
+<script type="text/javascript" src="/plugins/scriptlogs/js/scriptlogs.js"></script>
 <script type="text/javascript">
-// Namespace für Scriptlogs um Konflikte zu vermeiden
-window.ScriptlogsWidget = {
-    refreshInterval: null,
-    
-    init: function() {
-        console.log('Scriptlogs: Initialisierung gestartet');
-        
-        // Widget anzeigen
-        $('#scriptlogs-dashboard-widget').show();
-        
-        // Initial nach unten scrollen
-        this.scrollToBottom();
-        
-        // Auto-refresh starten
-        this.startAutoRefresh();
-        
-        console.log('Scriptlogs: Widget erfolgreich geladen');
-    },
-    
-    refresh: function() {
-        var self = this;
-        
-        $.get('/Dashboard/scriptlogs?action=getLogs')
-            .done(function(data) {
-                if (data && typeof data.logs !== 'undefined') {
-                    $('#scriptlogs-content').text(data.logs);
-                    $('#scriptlogs-status').text(data.lineCount + ' Zeilen');
-                    $('#scriptlogs-timestamp').text(data.timestamp);
-                    
-                    // Status-Farbe aktualisieren
-                    if (data.fileExists) {
-                        $('#scriptlogs-status').css('color', '#4CAF50');
-                    } else {
-                        $('#scriptlogs-status').css('color', '#f44336');
-                    }
-                    
-                    self.scrollToBottom();
-                }
-            })
-            .fail(function(xhr, status, error) {
-                console.log('Scriptlogs: Fehler beim Laden der Logs:', error);
-                $('#scriptlogs-content').text('Fehler beim Laden: ' + error);
-                $('#scriptlogs-status').text('Fehler').css('color', '#f44336');
-            });
-    },
-    
-    scrollToBottom: function() {
-        var container = $('#scriptlogs-log-container');
-        if (container.length) {
-            container.scrollTop(container[0].scrollHeight);
-        }
-    },
-    
-    startAutoRefresh: function() {
-        var self = this;
-        
-        // Vorherigen Timer löschen falls vorhanden
-        if (this.refreshInterval) {
-            clearInterval(this.refreshInterval);
-        }
-        
-        // Neuen Timer starten
-        this.refreshInterval = setInterval(function() {
-            self.refresh();
-        }, 5000); // 5 Sekunden
-    },
-    
-    stopAutoRefresh: function() {
-        if (this.refreshInterval) {
-            clearInterval(this.refreshInterval);
-            this.refreshInterval = null;
-        }
-    }
-};
-
-// Widget initialisieren wenn DOM bereit ist
-$(document).ready(function() {
-    // Warten bis alle anderen Dashboard-Widgets geladen sind
-    setTimeout(function() {
-        if (typeof window.ScriptlogsWidget !== 'undefined') {
-            window.ScriptlogsWidget.init();
-        }
-    }, 500);
-});
-
-// Cleanup wenn Seite verlassen wird
-$(window).on('beforeunload', function() {
-    if (typeof window.ScriptlogsWidget !== 'undefined') {
-        window.ScriptlogsWidget.stopAutoRefresh();
-    }
-});
+    $(scriptlogs_status);
+    setInterval(scriptlogs_status, 5000); // Auto-refresh alle 5 Sekunden
+    $(scriptlogs_dash);
 </script>
