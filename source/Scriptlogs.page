@@ -1,18 +1,15 @@
-Menu="Dashboard"
+Menu="Dashboard:0"
 Icon="ScriptLogsLogo.png"
 ---
 <?php
 require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
 
-$logFile = '/tmp/user.scripts/logs/in_progress';
-
-// AJAX-Handler
+// AJAX-Anfragen müssen ganz am Anfang behandelt werden, bevor irgendeine Ausgabe erfolgt.
 if (isset($_GET['action']) && $_GET['action'] === 'getLogs') {
     header('Content-Type: application/json');
-    
+    $logFile = '/tmp/user.scripts/logs/in_progress';
     $logs = '';
     $fileExists = file_exists($logFile);
-    
     if ($fileExists) {
         $lines = file($logFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         if ($lines !== false) {
@@ -24,7 +21,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'getLogs') {
     } else {
         $logs = 'Log-Datei nicht vorhanden.';
     }
-    
     echo json_encode([
         'logs' => $logs,
         'lineCount' => substr_count($logs, "\n") + 1,
@@ -33,11 +29,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'getLogs') {
     exit;
 }
 
-// Initial logs laden
-$initialLogs = '';
-$fileExists = file_exists($logFile);
 
-if ($fileExists) {
+// PHP-Code zum initialen Laden der Logs für die Kachel
+$logFile = '/tmp/user.scripts/logs/in_progress';
+$initialLogs = '';
+if (file_exists($logFile)) {
     $lines = file($logFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     if ($lines !== false && count($lines) > 0) {
         $last_lines = array_slice($lines, -50);
@@ -49,46 +45,43 @@ if ($fileExists) {
     $initialLogs = 'Log-Datei nicht vorhanden.';
 }
 
+// Alle dynamischen Werte in Variablen speichern
 $initialLineCount = max(1, substr_count($initialLogs, "\n") + 1);
+$timestamp = date('H:i:s');
+$pluginname = "scriptlogs";
+
+// Hier wird die Kachel für das Dashboard-System definiert
+$mytiles[$pluginname]['column1'] = <<<EOT
+<tbody id="db-scriptlogs" title="Script Logs">
+    <tr>
+        <td class="next" colspan="3">
+            <i class="fa fa-terminal"></i>
+            <div class="section">Script Logs<br>
+                <span id="scriptlogs-status">Status: <span class="scriptlogs-entries">{$initialLineCount} Zeilen</span></span>
+            </div>
+            <i class="fa fa-fw chevron mt0" id="dash_scriptlogs_toggle" onclick="toggleChevron('dash_scriptlogs_toggle',0)"></i>
+            <br><br>
+        </td>
+    </tr>
+    <tr class="dash_scriptlogs_toggle scriptlogs-content">
+        <td colspan="3">
+            <div id="scriptlogs-container" style="height:200px; overflow-y:auto; font-family: monospace; font-size: 11px; background-color: #1a1a1a; color: #e0e0e0; padding: 8px; border: 1px solid #444; border-radius: 3px;">
+                <pre id="scriptlogs-logs" style="margin: 0; white-space: pre-wrap; word-wrap: break-word;">{$initialLogs}</pre>
+            </div>
+            <div style="margin-top: 5px; font-size: 10px; color: #888; text-align: right;">
+                Letztes Update: <span id="scriptlogs-timestamp">{$timestamp}</span>
+            </div>
+        </td>
+    </tr>
+</tbody>
+EOT;
 ?>
 
-<style type="text/css">
-    @import url("/plugins/scriptlogs/css/scriptlogs.css");
-</style>
-
-<table id='db-scriptlogs' class='dash_scriptlogs dashboard box1' style='display:none'>
-    <thead sort='955'><tr class='hidden'><td></td><td colspan='3'></td><td></td></tr></thead>
-    <tbody sort='955' class='sortable'>
-        <tr>
-            <td></td>
-            <td class='next' colspan='3'>
-                <i class='fa fa-terminal'></i>
-                <div class='section'>Script Logs<br>
-                    <span id='scriptlogs-status'>Status: <span class='scriptlogs-entries'><?= $initialLineCount ?> Zeilen</span></span>
-                </div>
-                <i class='fa fa-fw chevron mt0' id='dash_scriptlogs_toggle' onclick='toggleChevron("dash_scriptlogs_toggle",0)'></i>
-                <br><br>
-            </td>
-            <td></td>
-        </tr>
-        <tr class="dash_scriptlogs_toggle scriptlogs-content">
-            <td></td>
-            <td colspan="3">
-                <div id="scriptlogs-container" style="height:200px; overflow-y:auto; font-family: monospace; font-size: 11px; background-color: #1a1a1a; color: #e0e0e0; padding: 8px; border: 1px solid #444; border-radius: 3px;">
-                    <pre id="scriptlogs-logs" style="margin: 0; white-space: pre-wrap; word-wrap: break-word;"><?= $initialLogs ?></pre>
-                </div>
-                <div style="margin-top: 5px; font-size: 10px; color: #888; text-align: right;">
-                    Letztes Update: <span id="scriptlogs-timestamp"><?= date('H:i:s') ?></span>
-                </div>
-            </td>
-            <td></td>
-        </tr>
-    </tbody>
-</table>
-
-<script type="text/javascript" src="/plugins/scriptlogs/js/scriptlogs.js"></script>
 <script type="text/javascript">
-    $(scriptlogs_status);
-    setInterval(scriptlogs_status, 5000); // Auto-refresh alle 5 Sekunden
-    $(scriptlogs_dash);
+    $(function() {
+        // Die Funktion ist bereits in scriptlogs.js definiert und wird automatisch geladen.
+        // Wir müssen sie hier nur noch aufrufen.
+        scriptlogs_status();
+        setInterval(scriptlogs_status, 5000); // Auto-refresh alle 5 Sekunden
+    });
 </script>
