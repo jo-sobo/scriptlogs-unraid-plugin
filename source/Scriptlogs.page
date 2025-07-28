@@ -2,17 +2,14 @@ Menu="Dashboard:0"
 Icon="ScriptLogsLogo.png"
 ---
 <?php
-// This file is now only for rendering the dashboard tile.
 require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
 
-// Load settings for the tile display
 $cfg = parse_plugin_cfg('scriptlogs', true);
 $enabled_scripts_str = $cfg['ENABLED_SCRIPTS'] ?? '';
 $enabled_scripts_js = !empty($enabled_scripts_str) ? json_encode(explode(',', $enabled_scripts_str)) : '[]';
 
 $pluginname = "scriptlogs";
 
-// The HTML structure for the tile.
 $mytiles[$pluginname]['column1'] = <<<EOT
 <tbody id="db-scriptlogs" title="Script Logs">
     <tr>
@@ -20,12 +17,10 @@ $mytiles[$pluginname]['column1'] = <<<EOT
             <i class="fa fa-terminal"></i>
             <div class="section">
                 Script Logs
-                <div id="script-tabs-container" style="margin-top: 5px; display: flex; flex-wrap: wrap; gap: 5px;">
+                <div id="script-tabs-container" style="margin-top: 15px; display: flex; flex-wrap: wrap; gap: 5px;">
                     </div>
             </div>
-
             <a href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings"><i class="fa fa-fw fa-cog control"></i></a>
-
             <i class="fa fa-fw chevron mt0" id="dash_scriptlogs_toggle" onclick="toggleChevron('dash_scriptlogs_toggle',0)"></i>
         </td>
     </tr>
@@ -56,40 +51,35 @@ EOT;
 
         $.getJSON('/plugins/scriptlogs/scriptlogs_api.php?action=get_script_states', function(scripts) {
             const tabContainer = $('#script-tabs-container');
+            const logContainer = $('#scriptlogs-container');
             const logDisplay = $('#scriptlogs-logs');
             const timestampDisplay = $('#scriptlogs-timestamp');
-            
+            const logEl = logContainer[0]; // Pure DOM element for precise calculations
+
             const previouslySelected = tabContainer.find('.selected-script').data('script-name');
+
+            // Smart Scrolling Logic - Part 1: Check position BEFORE updating content
+            const isScrolledToBottom = logEl.scrollHeight - Math.ceil(logEl.scrollTop) - logEl.clientHeight <= 1;
             
             tabContainer.empty();
 
             if (scripts && Array.isArray(scripts) && scripts.length > 0) {
                 scripts.forEach(script => {
-                    let bgColor = '#555'; // Gray for idle
-                    if (script.status === 'running') bgColor = '#4CAF50'; // Green for running
-                    if (script.status === 'error') bgColor = '#f44336'; // Red for error
+                    let bgColor = '#555'; // idle
+                    if (script.status === 'running') bgColor = '#4CAF50'; // running
 
                     const tab = $('<div>')
                         .addClass('script-tab')
                         .text(script.name)
-                        .css({
-                            'background-color': bgColor,
-                            'color': 'white',
-                            'padding': '4px 8px',
-                            'border-radius': '3px',
-                            'cursor': 'pointer',
-                            'font-size': '10px'
-                        })
+                        .css({ 'background-color': bgColor, 'color': 'white', 'padding': '4px 8px', 'border-radius': '3px', 'cursor': 'pointer', 'font-size': '10px' })
                         .data('script-name', script.name)
                         .data('log-content', script.log);
 
                     tab.on('click', function() {
-                        tabContainer.find('.script-tab').css('border', 'none').removeClass('selected-script');
-                        $(this).css('border', '1px solid #FFF').addClass('selected-script');
+                        tabContainer.find('.script-tab').removeClass('selected-script').css('border', '1px solid transparent');
+                        $(this).addClass('selected-script').css('border', '1px solid #FFF');
                         logDisplay.text($(this).data('log-content'));
-                        
-                        const logContainer = $('#scriptlogs-container');
-                        logContainer.scrollTop(logContainer[0].scrollHeight);
+                        logEl.scrollTop = logEl.scrollHeight; // Always scroll to bottom on manual click
                     });
 
                     tabContainer.append(tab);
@@ -100,16 +90,26 @@ EOT;
                 });
 
                 if (selectedTab.length > 0) {
-                    selectedTab.trigger('click');
+                    selectedTab.addClass('selected-script').css('border', '1px solid #FFF');
+                    // Update the log content for the currently selected tab
+                    const activeScript = scripts.find(s => s.name === previouslySelected);
+                    if (activeScript) {
+                        logDisplay.text(activeScript.log);
+                    }
                 } else if (tabContainer.children().length > 0) {
                     tabContainer.children().first().trigger('click');
+                    return; // Exit, as the click handler manages the scroll
                 }
             } else {
                 logDisplay.text('No scripts selected to display.');
             }
 
-            timestampDisplay.text(new Date().toLocaleTimeString());
+            // Smart Scrolling Logic - Part 2: Only scroll if we were at the bottom before
+            if (isScrolledToBottom) {
+                logEl.scrollTop = logEl.scrollHeight;
+            }
 
+            timestampDisplay.text(new Date().toLocaleTimeString());
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.error("Scriptlogs AJAX Error:", textStatus, errorThrown);
             $('#scriptlogs-logs').text('Error loading script states. Check browser console (F12) for details.');
