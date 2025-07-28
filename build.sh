@@ -72,7 +72,7 @@ cat > "${PLUGIN_NAME}.plg" << EOF
 
 <CHANGES>
 ##&name;
-###${VERSION}
+###\${VERSION}
 - Automated build release
 </CHANGES>
 
@@ -80,7 +80,7 @@ cat > "${PLUGIN_NAME}.plg" << EOF
 <URL>&pluginURL;</URL>
 </FILE>
 
-<FILE Name="/boot/config/plugins/&name;/&name;.cfg" Name="scriptlogs.cfg">
+<FILE Name="/boot/config/plugins/&name;/&name;.cfg">
   <INLINE>
     REFRESH_ENABLED="1"
     REFRESH_INTERVAL="10"
