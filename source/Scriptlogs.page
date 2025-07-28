@@ -89,7 +89,8 @@ EOT;
             return;
         }
 
-        $.get('/Dashboard/scriptlogs?action=get_script_states', function(scripts) {
+        // Use $.getJSON to ensure the response is parsed as a JavaScript array/object.
+        $.getJSON('/Dashboard/scriptlogs?action=get_script_states', function(scripts) {
             const tabContainer = $('#script-tabs-container');
             const logDisplay = $('#scriptlogs-logs');
             const timestampDisplay = $('#scriptlogs-timestamp');
@@ -98,7 +99,7 @@ EOT;
             
             tabContainer.empty();
 
-            if (scripts && scripts.length > 0) {
+            if (scripts && Array.isArray(scripts) && scripts.length > 0) {
                 scripts.forEach(script => {
                     let bgColor = '#555'; // Gray for idle
                     if (script.status === 'running') bgColor = '#4CAF50'; // Green for running
