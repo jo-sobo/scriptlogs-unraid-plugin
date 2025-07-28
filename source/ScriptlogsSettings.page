@@ -8,27 +8,27 @@ require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
 $plugin_name = 'scriptlogs';
 $cfg_file = "/boot/config/plugins/{$plugin_name}/{$plugin_name}.cfg";
 
-// Load the current settings
-$cfg = parse_plugin_cfg($plugin_name, true);
-
 // Save the new settings when the form is submitted
-if ($_POST['#apply']) {
+if (isset($_POST['#apply'])) {
   // Update settings from the form
-  $cfg['REFRESH_ENABLED'] = $_POST['REFRESH_ENABLED'];
-  $cfg['REFRESH_INTERVAL'] = $_POST['REFRESH_INTERVAL'];
-  // Convert the checkbox array into a comma-separated string
-  $cfg['ENABLED_SCRIPTS'] = isset($_POST['ENABLED_SCRIPTS']) ? implode(',', $_POST['ENABLED_SCRIPTS']) : '';
+  $new_cfg = [
+    'REFRESH_ENABLED' => $_POST['REFRESH_ENABLED'],
+    'REFRESH_INTERVAL' => $_POST['REFRESH_INTERVAL'],
+    'ENABLED_SCRIPTS' => isset($_POST['ENABLED_SCRIPTS']) ? implode(',', $_POST['ENABLED_SCRIPTS']) : ''
+  ];
 
   // Write the new settings to the .cfg file
   $ini = '';
-  foreach ($cfg as $key => $value) {
+  foreach ($new_cfg as $key => $value) {
     $ini .= "{$key}=\"{$value}\"\n";
   }
   file_put_contents($cfg_file, $ini);
   
-  // Reload the page to show the saved values
-  header("Location: {$_SERVER['REQUEST_URI']}");
-  exit;
+  // Important: Set the $cfg variable to our new settings so the page renders with the updated values.
+  $cfg = $new_cfg;
+} else {
+  // If not saving, load the current settings from the file
+  $cfg = parse_plugin_cfg($plugin_name, true);
 }
 
 // Find all available user scripts
@@ -45,7 +45,7 @@ if (is_dir($user_scripts_path)) {
 }
 
 // Convert the enabled scripts string into an array for the checkboxes
-$enabled_scripts_array = explode(',', $cfg['ENABLED_SCRIPTS']);
+$enabled_scripts_array = isset($cfg['ENABLED_SCRIPTS']) ? explode(',', $cfg['ENABLED_SCRIPTS']) : [];
 ?>
 
 <form name="scriptlogs_settings" method="post">
