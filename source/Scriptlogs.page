@@ -3,7 +3,6 @@ Icon="ScriptLogsLogo.png"
 ---
 <?php
 // This file is now only for rendering the dashboard tile.
-// The AJAX logic has been moved to scriptlogs_api.php.
 require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
 
 // Load settings for the tile display
@@ -24,6 +23,10 @@ $mytiles[$pluginname]['column1'] = <<<EOT
                 <div id="script-tabs-container" style="margin-top: 5px; display: flex; flex-wrap: wrap; gap: 5px;">
                     </div>
             </div>
+
+            <a href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings"><i class="fa fa-fw fa-cog control"></i></a>
+
+            <i class="fa fa-fw chevron mt0" id="dash_scriptlogs_toggle" onclick="toggleChevron('dash_scriptlogs_toggle',0)"></i>
         </td>
     </tr>
     <tr class="dash_scriptlogs_toggle scriptlogs-content">
@@ -51,7 +54,6 @@ EOT;
             return;
         }
 
-        // The URL now points to our new, clean API file.
         $.getJSON('/plugins/scriptlogs/scriptlogs_api.php?action=get_script_states', function(scripts) {
             const tabContainer = $('#script-tabs-container');
             const logDisplay = $('#scriptlogs-logs');
@@ -99,7 +101,7 @@ EOT;
 
                 if (selectedTab.length > 0) {
                     selectedTab.trigger('click');
-                } else {
+                } else if (tabContainer.children().length > 0) {
                     tabContainer.children().first().trigger('click');
                 }
             } else {
