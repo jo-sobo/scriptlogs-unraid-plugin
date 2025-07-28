@@ -80,6 +80,14 @@ cat > "${PLUGIN_NAME}.plg" << EOF
 <URL>&pluginURL;</URL>
 </FILE>
 
+<FILE Name="/boot/config/plugins/&name;/&name;.cfg" Name="scriptlogs.cfg">
+  <INLINE>
+    REFRESH_ENABLED="1"
+    REFRESH_INTERVAL="10"
+    ENABLED_SCRIPTS=""
+  </INLINE>
+</FILE>
+
 <FILE Run="/bin/bash">
 <INLINE>
 # Fix ownership and permissions after unpacking on the Unraid server
