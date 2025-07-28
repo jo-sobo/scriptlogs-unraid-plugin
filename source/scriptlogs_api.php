@@ -13,7 +13,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_script_states') {
 
     foreach ($enabled_scripts as $script_name) {
         $script_data = ['name' => $script_name, 'status' => 'idle', 'log' => ''];
-        $pid_file = "/var/run/user.scripts/pid.{$script_name}";
+        
+        // --- FIX: Replace spaces with underscores for the PID file name ---
+        $pid_file_name = str_replace(' ', '_', $script_name);
+        $pid_file = "/var/run/user.scripts/pid.{$pid_file_name}";
+        
         $log_file_finished = "/tmp/user.scripts/logs/{$script_name}";
         $log_file_inprogress = '/tmp/user.scripts/logs/in_progress';
 
