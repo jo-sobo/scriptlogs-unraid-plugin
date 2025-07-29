@@ -13,13 +13,26 @@ STAGE_INPUT="$2"
 STAGE_SUFFIX=""
 
 if [[ -n "$STAGE_INPUT" && "$STAGE_INPUT" != "release" ]]; then
-    STAGE_SUFFIX="-$STAGE_INPUT"
+    STAGE_SUFFIX="-${STAGE_INPUT}"
 fi
 
 VERSION="${BASE_VERSION}${LETTER_SUFFIX}${STAGE_SUFFIX}"
 
+# --- Branch & URL Logic based on 'dev' flag ---
+if [[ "$STAGE_INPUT" == "dev" ]]; then
+  # Settings for a 'dev' build
+  BRANCH="dev"
+  PLUGIN_URL_STRUCTURE="&gitURL;/raw/&branch;/packages/&name;-&version;.txz"
+  CHANGES_TEXT="- Development build from the 'dev' branch. For testing purposes only."
+else
+  # Settings for a 'release' build
+  BRANCH="main"
+  PLUGIN_URL_STRUCTURE="&gitURL;/releases/download/&version;/&name;-&version;.txz"
+  CHANGES_TEXT="- Automated build release."
+fi
+
 # --- Build Process ---
-echo "Starting build for version ${VERSION}..."
+echo "Starting build for version ${VERSION} on branch ${BRANCH}..."
 
 # Clean up
 rm -rf ${PACKAGE_DIR_TEMP}
@@ -32,22 +45,18 @@ PLUGIN_DEST_PATH="${PACKAGE_DIR_TEMP}/usr/local/emhttp/plugins/${PLUGIN_NAME}"
 mkdir -p "${PLUGIN_DEST_PATH}"
 cp -R source/* "${PLUGIN_DEST_PATH}/"
 
-# Fix permissions and ownership in the temp directory
 # Set correct permissions before packaging
 find "${PLUGIN_DEST_PATH}" -type d -exec chmod 755 {} \;
 find "${PLUGIN_DEST_PATH}" -type f -exec chmod 644 {} \;
-
-# Make .page files executable if needed
 find "${PLUGIN_DEST_PATH}" -name "*.page" -exec chmod 755 {} \;
 
-# Create .txz archive using tar (works on macOS)
+# Create .txz archive
 FILENAME="${PLUGIN_NAME}-${VERSION}"
 PACKAGE_PATH="${PACKAGE_DIR_FINAL}/${FILENAME}.txz"
 
-echo "Creating package with tar: ${FILENAME}.txz"
+echo "Creating package: ${FILENAME}.txz"
 tar -C ${PACKAGE_DIR_TEMP} -cJf "${PACKAGE_PATH}" usr
 
-# Verify package creation
 if [ ! -f "${PACKAGE_PATH}" ]; then
     echo "❌ Error: Package creation failed!"
     exit 1
@@ -56,7 +65,7 @@ fi
 echo "✅ Package created: $(du -h ${PACKAGE_PATH} | cut -f1)"
 
 # --- Create .PLG file ---
-echo "Generating .plg file..."
+echo "Generating ${PLUGIN_NAME}.plg for '${BRANCH}' target..."
 
 cat > "${PLUGIN_NAME}.plg" << EOF
 <?xml version='1.0' standalone='yes'?>
@@ -64,16 +73,17 @@ cat > "${PLUGIN_NAME}.plg" << EOF
  <!ENTITY name "${PLUGIN_NAME}">
  <!ENTITY author "${AUTHOR}">
  <!ENTITY version "${VERSION}">
+ <!ENTITY branch "${BRANCH}">
  <!ENTITY gitURL "${GIT_URL}">
- <!ENTITY pluginURL "&gitURL;/releases/download/&version;/&name;-&version;.txz">
+ <!ENTITY pluginURL "${PLUGIN_URL_STRUCTURE}">
+ <!ENTITY selfURL "&gitURL;/raw/&branch;/&name;.plg">
 ]>
 
-<PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&pluginURL;" min="6.9.0" support="&gitURL;/issues">
+<PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&selfURL;" min="6.9.0" support="&gitURL;/issues">
 
 <CHANGES>
-##&name;
-###\${VERSION}
-- Automated build release
+### ${VERSION}
+${CHANGES_TEXT}
 </CHANGES>
 
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.txz" Run="upgradepkg --install-new">
@@ -99,7 +109,7 @@ find /usr/local/emhttp/plugins/&name; -name "*.page" -exec chmod 755 {} \;
 
 echo ""
 echo "----------------------------------------------------"
-echo " &name; has been installed."
+echo " &name; (&branch; build) has been installed."
 echo " Version: &version;"
 echo "----------------------------------------------------"
 echo ""
