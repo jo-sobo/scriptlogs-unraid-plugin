@@ -13,23 +13,24 @@
     background: #777;
 }
 
-/* --- NEW: Flexbox structure for the widget header --- */
+/* Flexbox structure for the widget header */
 .widget-header {
     display: flex;
-    justify-content: space-between; /* Pushes left and right sides apart */
-    align-items: center;             /* Vertically aligns everything in the middle */
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
 }
 
 .widget-header-left {
     display: flex;
     align-items: center;
-    gap: 8px; /* Adds space between the terminal icon and the title */
+    gap: 8px;
 }
 
-/* The controls no longer need absolute positioning */
+/* The controls container with the fix */
 .widget-controls {
     display: flex;
+    align-items: center; /* Ensures vertical alignment for all items inside */
     gap: 8px;
 }
 
