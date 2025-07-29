@@ -14,7 +14,7 @@
 <CHANGES>
 ### &version;
 - Development build from the 'dev' branch. For testing purposes only.
-</CHANGES>
+</CHANGanges>
 
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.txz" Run="upgradepkg --install-new">
 <URL>&pluginURL;</URL>
