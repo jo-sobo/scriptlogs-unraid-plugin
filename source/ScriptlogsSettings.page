@@ -10,7 +10,6 @@ $cfg_file = "/boot/config/plugins/{$plugin_name}/{$plugin_name}.cfg";
 
 // Save the new settings when the form is submitted
 if (isset($_POST['#apply'])) {
-  // Update settings from the form
   $new_cfg = [
     'REFRESH_ENABLED' => $_POST['REFRESH_ENABLED'],
     'REFRESH_INTERVAL' => $_POST['REFRESH_INTERVAL'],
@@ -19,25 +18,20 @@ if (isset($_POST['#apply'])) {
     'SHOW_IDLE_LOGS' => isset($_POST['SHOW_IDLE_LOGS']) ? '1' : '0'
   ];
 
-  // Write the new settings to the .cfg file
   $ini = '';
   foreach ($new_cfg as $key => $value) {
     $ini .= "{$key}=\"{$value}\"\n";
   }
   file_put_contents($cfg_file, $ini);
   
-  // Important: Set the $cfg variable to our new settings so the page renders with the updated values.
   $cfg = $new_cfg;
 } else {
-  // If not saving, load the current settings from the file
   $cfg = parse_plugin_cfg($plugin_name, true);
 }
 
-// Find all available user scripts
 $user_scripts_path = '/boot/config/plugins/user.scripts/scripts';
 $available_scripts = [];
 if (is_dir($user_scripts_path)) {
-  // Scan the directory for all folders (each is a script)
   $scripts = array_diff(scandir($user_scripts_path), ['.', '..']);
   foreach ($scripts as $script_name) {
     if (is_dir("{$user_scripts_path}/{$script_name}")) {
@@ -46,7 +40,6 @@ if (is_dir($user_scripts_path)) {
   }
 }
 
-// Convert the enabled scripts string into an array for the checkboxes
 $enabled_scripts_array = isset($cfg['ENABLED_SCRIPTS']) ? explode(',', $cfg['ENABLED_SCRIPTS']) : [];
 ?>
 
@@ -71,7 +64,7 @@ $enabled_scripts_array = isset($cfg['ENABLED_SCRIPTS']) ? explode(',', $cfg['ENA
         <dt>Show Last Log for Idle Scripts:</dt>
         <dd>
           <input type="checkbox" name="SHOW_IDLE_LOGS" value="1" <?=($cfg['SHOW_IDLE_LOGS'] ?? '0') === '1' ? 'checked' : ''?>>
-          <span>(If enabled, shows the last completed log for scripts that are not currently running)</span>
+          <span>(Shows the last available log. Note: Only runs in the background produce a log file that can be displayed here.)</span>
         </dd>
       </dl>
 
@@ -83,17 +76,4 @@ $enabled_scripts_array = isset($cfg['ENABLED_SCRIPTS']) ? explode(',', $cfg['ENA
         <?php else: ?>
           <?php foreach ($available_scripts as $script): ?>
             <div class="script-item">
-              <input type="checkbox" name="ENABLED_SCRIPTS[]" value="<?=htmlspecialchars($script)?>" <?=in_array($script, $enabled_scripts_array) ? 'checked' : ''?>>
-              <label><?=htmlspecialchars($script)?></label>
-            </div>
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </div>
-      
-      <div class="buttons">
-        <input type="submit" name="#apply" value="Apply">
-        <input type="button" value="Done" onclick="done()">
-      </div>
-    </div>
-  </div>
-</form>
+              <input type="
