@@ -1,36 +1,43 @@
-/* Container for the control icons (settings, collapse) */
-.widget-controls {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    display: flex; /* Aligns icons horizontally */
-    gap: 8px;      /* Adds space between icons */
-}
-
-/* Ensure icons are clickable and styled correctly */
-.widget-controls a, .widget-controls i {
-    color: #c0c0c0;
-    text-decoration: none;
-}
-
-.widget-controls a:hover, .widget-controls i:hover {
-    color: #ffffff;
-}
-
 /* Custom Scrollbar for the Log Container */
 #scriptlogs-container::-webkit-scrollbar {
     width: 6px;
 }
-
 #scriptlogs-container::-webkit-scrollbar-track {
     background: #2a2a2a;
 }
-
 #scriptlogs-container::-webkit-scrollbar-thumb {
     background: #555;
     border-radius: 3px;
 }
-
 #scriptlogs-container::-webkit-scrollbar-thumb:hover {
     background: #777;
+}
+
+/* --- NEW: Flexbox structure for the widget header --- */
+.widget-header {
+    display: flex;
+    justify-content: space-between; /* Pushes left and right sides apart */
+    align-items: center;             /* Vertically aligns everything in the middle */
+    width: 100%;
+}
+
+.widget-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Adds space between the terminal icon and the title */
+}
+
+/* The controls no longer need absolute positioning */
+.widget-controls {
+    display: flex;
+    gap: 8px;
+}
+
+/* General styling for control icons */
+.widget-controls a, .widget-controls i {
+    color: #c0c0c0;
+    text-decoration: none;
+}
+.widget-controls a:hover, .widget-controls i:hover {
+    color: #ffffff;
 }
