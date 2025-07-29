@@ -85,6 +85,7 @@ cat > "${PLUGIN_NAME}.plg" << EOF
     REFRESH_ENABLED="1"
     REFRESH_INTERVAL="10"
     ENABLED_SCRIPTS=""
+    SHOW_IDLE_LOGS="0"
   </INLINE>
 </FILE>
 

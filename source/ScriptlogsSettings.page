@@ -14,7 +14,9 @@ if (isset($_POST['#apply'])) {
   $new_cfg = [
     'REFRESH_ENABLED' => $_POST['REFRESH_ENABLED'],
     'REFRESH_INTERVAL' => $_POST['REFRESH_INTERVAL'],
-    'ENABLED_SCRIPTS' => isset($_POST['ENABLED_SCRIPTS']) ? implode(',', $_POST['ENABLED_SCRIPTS']) : ''
+    'ENABLED_SCRIPTS' => isset($_POST['ENABLED_SCRIPTS']) ? implode(',', $_POST['ENABLED_SCRIPTS']) : '',
+    // Handle checkbox: if it's not submitted, its value is '0' (off)
+    'SHOW_IDLE_LOGS' => isset($_POST['SHOW_IDLE_LOGS']) ? '1' : '0'
   ];
 
   // Write the new settings to the .cfg file
@@ -56,14 +58,20 @@ $enabled_scripts_array = isset($cfg['ENABLED_SCRIPTS']) ? explode(',', $cfg['ENA
         <dt>Automatic Refresh:</dt>
         <dd>
           <select name="REFRESH_ENABLED" class="form-control">
-            <?=mk_option($cfg['REFRESH_ENABLED'], "1", "Enabled");?>
-            <?=mk_option($cfg['REFRESH_ENABLED'], "0", "Disabled");?>
+            <?=mk_option($cfg['REFRESH_ENABLED'] ?? '1', "1", "Enabled");?>
+            <?=mk_option($cfg['REFRESH_ENABLED'] ?? '1', "0", "Disabled");?>
           </select>
         </dd>
         
         <dt>Refresh Interval (in seconds):</dt>
         <dd>
-          <input type="number" name="REFRESH_INTERVAL" class="form-control" min="1" value="<?=$cfg['REFRESH_INTERVAL']?>">
+          <input type="number" name="REFRESH_INTERVAL" class="form-control" min="1" value="<?=$cfg['REFRESH_INTERVAL'] ?? '10'?>">
+        </dd>
+
+        <dt>Show Last Log for Idle Scripts:</dt>
+        <dd>
+          <input type="checkbox" name="SHOW_IDLE_LOGS" value="1" <?=($cfg['SHOW_IDLE_LOGS'] ?? '0') === '1' ? 'checked' : ''?>>
+          <span>(If enabled, shows the last completed log for scripts that are not currently running)</span>
         </dd>
       </dl>
 
