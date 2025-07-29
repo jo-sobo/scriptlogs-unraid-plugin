@@ -1,3 +1,22 @@
+/* Container for the control icons (settings, collapse) */
+.widget-controls {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex; /* Aligns icons horizontally */
+    gap: 8px;      /* Adds space between icons */
+}
+
+/* Ensure icons are clickable and styled correctly */
+.widget-controls a, .widget-controls i {
+    color: #c0c0c0;
+    text-decoration: none;
+}
+
+.widget-controls a:hover, .widget-controls i:hover {
+    color: #ffffff;
+}
+
 /* Custom Scrollbar for the Log Container */
 #scriptlogs-container::-webkit-scrollbar {
     width: 6px;

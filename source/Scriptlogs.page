@@ -14,17 +14,21 @@ $pluginname = "scriptlogs";
 $mytiles[$pluginname]['column1'] = <<<EOT
 <tbody id="db-scriptlogs" title="Script Logs">
     <tr>
-        <td class="next" colspan="3">
+        <td class="next" colspan="3" style="position: relative;">
+
+            <div class="widget-controls">
+                <a href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings"><i class="fa fa-fw fa-cog control"></i></a>
+                <i class="fa fa-fw chevron mt0" id="dash_scriptlogs_toggle" onclick="toggleChevron('dash_scriptlogs_toggle',0)"></i>
+            </div>
+
             <i class="fa fa-terminal fa-lg"></i>
             <div class="section">
                 Script Logs
-                </div>
+            </div>
             
             <div id="script-tabs-container" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px;">
                 </div>
 
-            <a href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings"><i class="fa fa-fw fa-cog control"></i></a>
-            <i class="fa fa-fw chevron mt0" id="dash_scriptlogs_toggle" onclick="toggleChevron('dash_scriptlogs_toggle',0)"></i>
         </td>
     </tr>
     <tr class="dash_scriptlogs_toggle scriptlogs-content">
