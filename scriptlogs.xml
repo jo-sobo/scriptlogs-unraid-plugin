@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Container>
+    <Plugin>True</Plugin>
+    <PluginURL>https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs.plg</PluginURL>
+    <PluginAuthor>jo-sobo</PluginAuthor>
+    <Beta>true</Beta>
+    <Category>Tools:Utilities</Category>
+    <Name>Scriptlogs</Name>
+    <Description>
+        A dashboard widget to monitor the status and view the logs of your selected User Scripts in real-time, directly on the Unraid dashboard.
+    </Description>
+    <Requires>
+        **User Scripts** plugin by Andrew Zawadzki
+    </Requires>
+    <Project>https://github.com/jo-sobo/scriptlogs-unraid-plugin</Project>
+    <Support>https://github.com/jo-sobo/scriptlogs-unraid-plugin/issues</Support>
+    <Icon>https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/source/ScriptLogsLogo.png</Icon>
+    <License>MIT License</License>
+</Container>
