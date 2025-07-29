@@ -55,5 +55,11 @@ Live logs are read from the temporary `log.txt` files created by the User Script
 
 A big thank you to **Andrew Zawadzki** for creating and maintaining the excellent User Scripts plugin.
 
+## ☕ Donation
+
+If you appreciate my work and would like to support my efforts as a hobbyist developer, you can buy me a coffee! Every bit of support helps me to continue creating and maintaining projects like this one.
+
+You can donate here: https://coff.ee/magnum.308
+
 ## License
 This project is licensed under the GPL v3 License - see the [LICENSE](LICENSE) file for details.
