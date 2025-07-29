@@ -21,7 +21,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_script_states') {
         if ($is_running) {
             $script_data['status'] = 'running';
             
-            // --- NEW: Differentiate between foreground (startScript.sh) and background runs ---
+            // Differentiate between foreground (startScript.sh) and background runs ---
             if (strpos($process_output, 'startScript.sh') !== false) {
                 // Script is running in the foreground
                 $script_data['log'] = "Script is running in the foreground.\nView its live log in the 'User Scripts' plugin window.";
