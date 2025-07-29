@@ -8,18 +8,21 @@ $cfg = parse_plugin_cfg('scriptlogs', true);
 $enabled_scripts_str = $cfg['ENABLED_SCRIPTS'] ?? '';
 $enabled_scripts_js = !empty($enabled_scripts_str) ? json_encode(explode(',', $enabled_scripts_str)) : '[]';
 
+
 $pluginname = "scriptlogs";
 
 $mytiles[$pluginname]['column1'] = <<<EOT
 <tbody id="db-scriptlogs" title="Script Logs">
     <tr>
         <td class="next" colspan="3">
-            <i class="fa fa-terminal"></i>
+            <i class="fa fa-terminal fa-lg"></i>
             <div class="section">
                 Script Logs
-                <div id="script-tabs-container" style="margin-top: 15px; display: flex; flex-wrap: wrap; gap: 5px;">
-                    </div>
-            </div>
+                </div>
+            
+            <div id="script-tabs-container" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px;">
+                </div>
+
             <a href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings"><i class="fa fa-fw fa-cog control"></i></a>
             <i class="fa fa-fw chevron mt0" id="dash_scriptlogs_toggle" onclick="toggleChevron('dash_scriptlogs_toggle',0)"></i>
         </td>
