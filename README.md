@@ -25,7 +25,7 @@ This plugin **requires** the **[User Scripts](https://forums.unraid.net/topic/48
 3.  Paste the following URL into the text box and click **Install**:
 
     ```
-    [https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs.plg](https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs.plg)
+    https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs.plg
     ```
 
 ## ⚙️ Configuration
