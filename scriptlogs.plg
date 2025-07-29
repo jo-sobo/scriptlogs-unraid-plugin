@@ -39,7 +39,7 @@ find /usr/local/emhttp/plugins/&name; -name "*.page" -exec chmod 755 {} \;
 
 echo ""
 echo "----------------------------------------------------"
-echo " &name; (dev branch) has been installed."
+echo " &name; (&branch; build) has been installed."
 echo " Version: &version;"
 echo "----------------------------------------------------"
 echo ""
