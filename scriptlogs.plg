@@ -12,7 +12,7 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&selfURL;" min="6.9.0" support="&gitURL;/issues">
 
 <CHANGES>
-### &version;
+### 2025.07.29a-dev
 - Development build from the 'dev' branch. For testing purposes only.
 </CHANGES>
 
