@@ -13,32 +13,14 @@
     background: #777;
 }
 
-/* Flexbox structure for the widget header */
-.widget-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-.widget-header-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* The controls container with the fix */
-.widget-controls {
-    display: flex;
-    align-items: center; /* Ensures vertical alignment for all items inside */
-    gap: 8px;
-}
-
-/* General styling for control icons */
-.widget-controls a, .widget-controls i {
+/* --- FINAL FIX for the Settings Icon --- */
+/* Position our custom settings icon next to the auto-injected Unraid icons */
+#scriptlogs-settings-icon {
+    float: right;
+    margin-top: 2px;
+    margin-right: 26px; /* Creates space next to the chevron icon */
     color: #c0c0c0;
-    text-decoration: none;
 }
-.widget-controls a:hover, .widget-controls i:hover {
+#scriptlogs-settings-icon:hover {
     color: #ffffff;
 }

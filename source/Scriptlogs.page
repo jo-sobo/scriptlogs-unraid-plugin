@@ -16,15 +16,11 @@ $mytiles[$pluginname]['column1'] = <<<EOT
     <tr>
         <td class="next" colspan="3">
 
-            <div class="widget-header">
-                <div class="widget-header-left">
-                    <i class="fa fa-terminal fa-lg"></i>
-                    <div class="section">Script Logs</div>
-                </div>
-                <div class="widget-controls">
-                    <a href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings"><i class="fa fa-fw fa-cog control"></i></a>
-                    <i class="fa fa-fw chevron mt0" id="dash_scriptlogs_toggle" onclick="toggleChevron('dash_scriptlogs_toggle',0)"></i>
-                </div>
+            <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings"><i class="fa fa-fw fa-cog control"></i></a>
+            
+            <i class="fa fa-terminal fa-lg"></i>
+            <div class="section">
+                Script Logs
             </div>
             
             <div id="script-tabs-container" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px;">
