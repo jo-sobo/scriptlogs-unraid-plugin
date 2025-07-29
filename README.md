@@ -4,7 +4,8 @@
 
 This plugin adds a configurable widget to the Unraid Dashboard, allowing you to see the status and log output of your favorite scripts without needing to keep the User Scripts page open.
 
-![Scriptlogs Widget Screenshot](https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs_screenshot.png)
+![Scriptlogs Widget Screenshot running script](https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs_screenshot_running.png)
+![Scriptlogs Widget Screenshot idle script](https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs_screenshot_idle.png)
 
 ## ✨ Features
 
