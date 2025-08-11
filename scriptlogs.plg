@@ -2,7 +2,7 @@
 <!DOCTYPE PLUGIN [
  <!ENTITY name "scriptlogs">
  <!ENTITY author "jo-sobo">
- <!ENTITY version "2025.08.11b-dev">
+ <!ENTITY version "2025.08.11c-dev">
  <!ENTITY branch "dev">
  <!ENTITY gitURL "https://github.com/jo-sobo/scriptlogs-unraid-plugin">
  <!ENTITY pluginURL "&gitURL;/raw/&branch;/packages/&name;-&version;.txz">
@@ -12,7 +12,7 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&selfURL;" min="6.9.0" support="&gitURL;/issues">
 
 <CHANGES>
-### 2025.08.11b-dev
+### 2025.08.11c-dev
 - Development build from the 'dev' branch. For testing purposes only.
 </CHANGES>
 
@@ -33,19 +33,18 @@
 <INLINE>
 # --- CORRECTED PERMISSION SETTINGS ---
 # This new method is more precise and avoids using the overly broad 'chmod -R 755',
-# which could trigger security mechanisms like AppArmor and break system commands.
 
 # Set ownership for all plugin files and directories.
 chown -R root:root /usr/local/emhttp/plugins/&name;
 
 # Set permissions for directories to 755 to allow traversal.
-find /usr/local/emhttp/plugins/&name; -type d -exec chmod 755 {} +
+find -P /usr/local/emhttp/plugins/&name; -type d -exec chmod 755 {} +
 
 # Set a secure default permission for all files to 644 (read/write for owner, read-only for others).
-find /usr/local/emhttp/plugins/&name; -type f -exec chmod 644 {} +
+find -P /usr/local/emhttp/plugins/&name; -type f -exec chmod 644 {} +
 
 # Specifically grant execute permissions only to .page files, as required by Unraid.
-find /usr/local/emhttp/plugins/&name; -name "*.page" -exec chmod 755 {} +
+find -P /usr/local/emhttp/plugins/&name; -name "*.page" -exec chmod 755 {} +
 
 echo ""
 echo "----------------------------------------------------"

@@ -109,13 +109,13 @@ ${CHANGES_TEXT}
 chown -R root:root /usr/local/emhttp/plugins/&name;
 
 # Set permissions for directories to 755 to allow traversal.
-find /usr/local/emhttp/plugins/&name; -type d -exec chmod 755 {} +
+find -P /usr/local/emhttp/plugins/&name; -type d -exec chmod 755 {} +
 
 # Set a secure default permission for all files to 644 (read/write for owner, read-only for others).
-find /usr/local/emhttp/plugins/&name; -type f -exec chmod 644 {} +
+find -P /usr/local/emhttp/plugins/&name; -type f -exec chmod 644 {} +
 
 # Specifically grant execute permissions only to .page files, as required by Unraid.
-find /usr/local/emhttp/plugins/&name; -name "*.page" -exec chmod 755 {} +
+find -P /usr/local/emhttp/plugins/&name; -name "*.page" -exec chmod 755 {} +
 
 echo ""
 echo "----------------------------------------------------"
