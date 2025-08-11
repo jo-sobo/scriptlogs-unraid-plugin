@@ -36,7 +36,8 @@ echo "Starting build for version ${VERSION} on branch ${BRANCH}..."
 
 # Clean up
 rm -rf ${PACKAGE_DIR_TEMP}
-rm -rf ${PACKAGE_DIR_FINAL}
+# The following line is commented out to prevent deleting previous builds from the final packages directory.
+# rm -rf ${PACKAGE_DIR_FINAL}
 mkdir -p ${PACKAGE_DIR_TEMP}
 mkdir -p ${PACKAGE_DIR_FINAL}
 
@@ -101,11 +102,20 @@ ${CHANGES_TEXT}
 
 <FILE Run="/bin/bash">
 <INLINE>
-# Fix ownership and permissions after unpacking on the Unraid server
+# --- CORRECTED PERMISSION SETTINGS ---
+# This new method is more precise and avoids using the overly broad 'chmod -R 755',
+
+# Set ownership for all plugin files and directories.
 chown -R root:root /usr/local/emhttp/plugins/&name;
-chmod -R 755 /usr/local/emhttp/plugins/&name;
-find /usr/local/emhttp/plugins/&name; -type f -exec chmod 644 {} \;
-find /usr/local/emhttp/plugins/&name; -name "*.page" -exec chmod 755 {} \;
+
+# Set permissions for directories to 755 to allow traversal.
+find /usr/local/emhttp/plugins/&name; -type d -exec chmod 755 {} +
+
+# Set a secure default permission for all files to 644 (read/write for owner, read-only for others).
+find /usr/local/emhttp/plugins/&name; -type f -exec chmod 644 {} +
+
+# Specifically grant execute permissions only to .page files, as required by Unraid.
+find /usr/local/emhttp/plugins/&name; -name "*.page" -exec chmod 755 {} +
 
 echo ""
 echo "----------------------------------------------------"
