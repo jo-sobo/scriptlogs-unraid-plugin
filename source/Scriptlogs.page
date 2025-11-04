@@ -41,7 +41,7 @@ $tabs_aria_label = htmlspecialchars(_('Script logs tabs'), ENT_QUOTES, 'UTF-8');
 $log_placeholder = htmlspecialchars(_('Select a script to see its log.'), ENT_QUOTES, 'UTF-8');
 $last_update_label = htmlspecialchars(_('Last Update:'), ENT_QUOTES, 'UTF-8');
 
-$common_body = <<<HTML
+$tile_body = <<<HTML
 <div class="scriptlogs-body">
     <div id="script-tabs-container" class="scriptlogs-tabs" role="tablist" aria-label="{$tabs_aria_label}"></div>
 
@@ -54,7 +54,9 @@ $common_body = <<<HTML
         <span id="scriptlogs-timestamp"></span>
     </div>
 </div>
+HTML;
 
+$config_script = <<<HTML
 <script>
     window.scriptlogsConfig = {$tile_config_json};
 </script>
@@ -79,7 +81,8 @@ if ($isResponsiveWebgui) {
         </span>
     </span>
 </span>
-{$common_body}
+{$tile_body}
+{$config_script}
 HTML;
 } else {
     $tile['content'] = <<<HTML
@@ -95,27 +98,53 @@ HTML;
         </a>
     </span>
 </div>
-{$common_body}
+{$tile_body}
+{$config_script}
 HTML;
 }
 
-if (!function_exists('create_tile')) {
-    error_log('[scriptlogs] create_tile() is not available; dashboard tile cannot be registered.');
-    return;
+$legacy_tile_markup = <<<HTML
+<link rel="stylesheet" type="text/css" href="/plugins/scriptlogs/css/scriptlogs.css">
+<tbody id="db-scriptlogs" title="{$tile_title}">
+    <tr>
+        <td class="next" colspan="3">
+            <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings" aria-label="Scriptlogs Settings">
+                <i class="fa fa-fw fa-cog control" aria-hidden="true"></i>
+            </a>
+            <i class="fa fa-terminal fa-lg" aria-hidden="true"></i>
+            <div class="section">
+                {$tile_title}<br>
+                <span>{$tile_subtitle}</span>
+            </div>
+        </td>
+    </tr>
+    <tr class="dash_scriptlogs_toggle scriptlogs-content">
+        <td colspan="3">
+            {$tile_body}
+        </td>
+    </tr>
+</tbody>
+{$config_script}
+<script defer src="/plugins/scriptlogs/js/scriptlogs.js"></script>
+HTML;
+
+if (function_exists('register_dashboard_tile')) {
+    $registration_result = @register_dashboard_tile($tile);
+
+    if (is_string($registration_result) && trim($registration_result) !== '') {
+        echo $registration_result;
+        return;
+    }
+
+    if ($registration_result) {
+        return;
+    }
+
+    error_log('[scriptlogs] register_dashboard_tile() returned falsy result; falling back to legacy tile registration.');
+} else {
+    error_log('[scriptlogs] register_dashboard_tile() is not available; falling back to legacy tile registration.');
 }
 
-error_log('[scriptlogs] attempting to register tile: ' . json_encode([
-    'name'   => $tile['name'] ?? null,
-    'title'  => $tile['title'] ?? null,
-    'script' => $tile['script'] ?? null,
-    'style'  => $tile['style'] ?? null,
-]));
-
-$tile_markup = create_tile($tile);
-
-if (empty($tile_markup)) {
-    error_log('[scriptlogs] create_tile() returned empty markup; tile will not appear on dashboard.');
-}
-
-echo $tile_markup;
+$mytiles['scriptlogs']['column1'] = $legacy_tile_markup;
+return;
 ?>
