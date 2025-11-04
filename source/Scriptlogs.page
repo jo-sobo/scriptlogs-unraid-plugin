@@ -48,7 +48,7 @@ $tile['content'] = <<<EOT
 </div>
 
 <script>
-    window.scriptlogsConfig = <?=$tile_config_json?>;
+    window.scriptlogsConfig = {$tile_config_json};
 </script>
 EOT;
 
