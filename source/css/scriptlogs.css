@@ -79,7 +79,7 @@
     white-space: nowrap !important;
     text-overflow: ellipsis !important;
     overflow: hidden !important;
-    min-height: 2.925rem !important;
+    min-height: 3.3rem !important;
     margin-bottom: -1px !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
@@ -92,36 +92,60 @@
 }
 
 .scriptlogs-body--legacy .script-tab {
-    font-size: 0.8125rem;
-    min-height: 2.53125rem;
-    padding: 0.65rem 1.05rem;
+    font-size: 0.8125rem !important;
+    min-height: 2.85rem !important;
+    padding: 0.65rem 1.05rem !important;
 }
 
 .scriptlogs-tabs .script-tab.script-tab--running {
-    background-color: var(--scriptlogs-tab-running-bg);
-    border-color: var(--scriptlogs-tab-running-border) !important;
+    background-color: var(--scriptlogs-tab-bg) !important;
+    border-top: 3px solid var(--success-border, #2f6f2a) !important;
+    border-left: 1px solid var(--scriptlogs-tab-border) !important;
+    border-right: 1px solid var(--scriptlogs-tab-border) !important;
+    border-bottom: none !important;
     color: #4ade80 !important;
+    padding-top: calc(0.75rem - 2px) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.scriptlogs-body--legacy .script-tab.script-tab--running {
+    padding-top: calc(0.65rem - 2px) !important;
 }
 
 .scriptlogs-tabs .script-tab.selected-script,
 .scriptlogs-tabs .script-tab[aria-pressed="true"],
 .scriptlogs-tabs .script-tab[aria-selected="true"] {
-    background-color: var(--scriptlogs-bg);
+    background-color: var(--scriptlogs-bg) !important;
     color: var(--scriptlogs-text-primary) !important;
-    border-color: var(--scriptlogs-border) !important;
+    border-top: 1px solid var(--scriptlogs-border) !important;
+    border-left: 1px solid var(--scriptlogs-border) !important;
+    border-right: 1px solid var(--scriptlogs-border) !important;
     border-bottom: none !important;
-    box-shadow: none;
-    z-index: 2;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    z-index: 2 !important;
 }
 
 .scriptlogs-tabs .script-tab.script-tab--running.selected-script,
 .scriptlogs-tabs .script-tab.script-tab--running[aria-pressed="true"],
 .scriptlogs-tabs .script-tab.script-tab--running[aria-selected="true"] {
-    background-color: var(--scriptlogs-bg);
+    background-color: var(--scriptlogs-bg) !important;
     color: #4ade80 !important;
-    border-color: var(--scriptlogs-border) !important;
+    border-top: 3px solid var(--success-border, #2f6f2a) !important;
+    border-left: 1px solid var(--scriptlogs-border) !important;
+    border-right: 1px solid var(--scriptlogs-border) !important;
     border-bottom: none !important;
-    box-shadow: none;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    z-index: 2 !important;
+    padding-top: calc(0.75rem - 2px) !important;
+}
+
+.scriptlogs-body--legacy .script-tab.script-tab--running.selected-script,
+.scriptlogs-body--legacy .script-tab.script-tab--running[aria-pressed="true"],
+.scriptlogs-body--legacy .script-tab.script-tab--running[aria-selected="true"] {
+    padding-top: calc(0.65rem - 2px) !important;
 }
 
 .scriptlogs-tabs .script-tab:not(.selected-script):hover,
@@ -129,22 +153,33 @@
     border-color: var(--scriptlogs-tab-hover-border) !important;
     background-color: #323232 !important;
     color: var(--scriptlogs-text-primary) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
 }
 
 .scriptlogs-tabs .script-tab:focus-visible {
-    outline: 2px solid var(--scriptlogs-border);
-    outline-offset: 2px;
+    outline: 2px solid var(--scriptlogs-border) !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
 }
 
 .scriptlogs-tabs .script-tab.script-tab--running:not(.selected-script):hover,
 .scriptlogs-tabs .script-tab.script-tab--running:not([aria-pressed="true"]):hover {
-    border-color: var(--scriptlogs-tab-running-border) !important;
+    border-top: 3px solid var(--success-border, #2f6f2a) !important;
+    border-left: 1px solid var(--scriptlogs-tab-hover-border) !important;
+    border-right: 1px solid var(--scriptlogs-tab-hover-border) !important;
+    background-color: #323232 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
 }
 
 .scriptlogs-tabs .script-tab:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    border-bottom: none;
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    border-bottom: none !important;
+    background-color: var(--scriptlogs-tab-bg) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
 }
 
 .scriptlogs-log {
@@ -206,10 +241,10 @@
 }
 
 .scriptlogs-tabs:not(:empty) + .scriptlogs-collapsible .scriptlogs-log {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-top-color: var(--scriptlogs-border);
-    margin-top: 0;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    border-top-color: var(--scriptlogs-border) !important;
+    margin-top: 0 !important;
 }
 
 .scriptlogs-collapsible {
