@@ -60,7 +60,7 @@
     -webkit-appearance: none !important;
     -moz-appearance: none !important;
     border: 1px solid var(--scriptlogs-tab-border) !important;
-    border-bottom: none !important;
+    border-bottom: 1px solid var(--scriptlogs-tab-border) !important;
     background-color: var(--scriptlogs-tab-bg) !important;
     background-image: none !important;
     color: var(--scriptlogs-text-primary) !important;
@@ -80,7 +80,7 @@
     text-overflow: ellipsis !important;
     overflow: hidden !important;
     min-height: 3.3rem !important;
-    margin-bottom: -1px !important;
+    margin-bottom: 0 !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
     margin-top: 0 !important;
@@ -116,36 +116,38 @@
 .scriptlogs-tabs .script-tab.selected-script,
 .scriptlogs-tabs .script-tab[aria-pressed="true"],
 .scriptlogs-tabs .script-tab[aria-selected="true"] {
-    background-color: var(--scriptlogs-bg) !important;
+    background-color: var(--scriptlogs-tab-bg) !important;
     color: var(--scriptlogs-text-primary) !important;
-    border-top: 1px solid var(--scriptlogs-border) !important;
-    border-left: 1px solid var(--scriptlogs-border) !important;
-    border-right: 1px solid var(--scriptlogs-border) !important;
-    border-bottom: none !important;
+    border-top: 1px solid var(--scriptlogs-tab-border) !important;
+    border-left: 1px solid var(--scriptlogs-tab-border) !important;
+    border-right: 1px solid var(--scriptlogs-tab-border) !important;
+    border-bottom: 3px solid #ff8c00 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    z-index: 2 !important;
+    z-index: 1 !important;
 }
 
 .scriptlogs-tabs .script-tab.script-tab--running.selected-script,
 .scriptlogs-tabs .script-tab.script-tab--running[aria-pressed="true"],
 .scriptlogs-tabs .script-tab.script-tab--running[aria-selected="true"] {
-    background-color: var(--scriptlogs-bg) !important;
+    background-color: var(--scriptlogs-tab-bg) !important;
     color: #4ade80 !important;
     border-top: 3px solid var(--success-border, #2f6f2a) !important;
-    border-left: 1px solid var(--scriptlogs-border) !important;
-    border-right: 1px solid var(--scriptlogs-border) !important;
-    border-bottom: none !important;
+    border-left: 1px solid var(--scriptlogs-tab-border) !important;
+    border-right: 1px solid var(--scriptlogs-tab-border) !important;
+    border-bottom: 3px solid #ff8c00 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    z-index: 2 !important;
+    z-index: 1 !important;
     padding-top: calc(0.75rem - 2px) !important;
+    padding-bottom: calc(0.75rem - 2px) !important;
 }
 
 .scriptlogs-body--legacy .script-tab.script-tab--running.selected-script,
 .scriptlogs-body--legacy .script-tab.script-tab--running[aria-pressed="true"],
 .scriptlogs-body--legacy .script-tab.script-tab--running[aria-selected="true"] {
     padding-top: calc(0.65rem - 2px) !important;
+    padding-bottom: calc(0.65rem - 2px) !important;
 }
 
 .scriptlogs-tabs .script-tab:not(.selected-script):hover,
@@ -347,7 +349,7 @@
 .scriptlogs-header__left {
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1.5rem;
 }
 
 .scriptlogs-header__icon {
@@ -378,7 +380,7 @@
 .scriptlogs-legacy-header__left {
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1.5rem;
 }
 
 .scriptlogs-legacy-header__icon {
