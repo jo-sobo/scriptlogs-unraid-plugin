@@ -2,7 +2,7 @@
 .scriptlogs-body {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0 !important;
     isolation: isolate;
     --scriptlogs-bg: var(--bg-elevation-2, var(--bg-elevation-1, #1a1a1a));
     --scriptlogs-border: var(--border-secondary, #444);
@@ -24,16 +24,16 @@
 }
 
 .scriptlogs-body--responsive {
-    gap: 0.25rem;
+    gap: 0 !important;
 }
 
 .scriptlogs-body--legacy {
-    gap: 0.2rem;
+    gap: 0 !important;
 }
 
 @media (max-width: 480px) {
     .scriptlogs-body {
-        gap: 0.2rem;
+        gap: 0 !important;
     }
 }
 
@@ -186,7 +186,7 @@
     position: relative;
     background-color: var(--scriptlogs-bg);
     border: 1px solid var(--scriptlogs-border);
-    border-radius: 0.75rem;
+    border-radius: 0 !important;
     padding: 1rem;
     color: var(--scriptlogs-text-primary);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -241,9 +241,7 @@
 }
 
 .scriptlogs-tabs:not(:empty) + .scriptlogs-collapsible .scriptlogs-log {
-    border-top-left-radius: 0 !important;
-    border-top-right-radius: 0 !important;
-    border-top-color: var(--scriptlogs-border) !important;
+    border-radius: 0 !important;
     margin-top: 0 !important;
 }
 
@@ -257,6 +255,7 @@
     align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
+    margin-top: 1rem !important;
 }
 
 .scriptlogs-autoscroll-container {
