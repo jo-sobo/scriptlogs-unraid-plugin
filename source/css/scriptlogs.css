@@ -79,7 +79,7 @@
     white-space: nowrap !important;
     text-overflow: ellipsis !important;
     overflow: hidden !important;
-    min-height: 2.6rem !important;
+    min-height: 2.925rem !important;
     margin-bottom: -1px !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
@@ -93,22 +93,22 @@
 
 .scriptlogs-body--legacy .script-tab {
     font-size: 0.8125rem;
-    min-height: 2.25rem;
+    min-height: 2.53125rem;
     padding: 0.65rem 1.05rem;
 }
 
 .scriptlogs-tabs .script-tab.script-tab--running {
     background-color: var(--scriptlogs-tab-running-bg);
     border-color: var(--scriptlogs-tab-running-border) !important;
-    color: var(--scriptlogs-text-primary) !important;
+    color: #4ade80 !important;
 }
 
 .scriptlogs-tabs .script-tab.selected-script,
 .scriptlogs-tabs .script-tab[aria-pressed="true"],
 .scriptlogs-tabs .script-tab[aria-selected="true"] {
-    background-color: var(--scriptlogs-tab-active-bg);
+    background-color: var(--scriptlogs-bg);
     color: var(--scriptlogs-text-primary) !important;
-    border-color: var(--scriptlogs-tab-active-border) !important;
+    border-color: var(--scriptlogs-border) !important;
     border-bottom: none !important;
     box-shadow: none;
     z-index: 2;
@@ -117,8 +117,9 @@
 .scriptlogs-tabs .script-tab.script-tab--running.selected-script,
 .scriptlogs-tabs .script-tab.script-tab--running[aria-pressed="true"],
 .scriptlogs-tabs .script-tab.script-tab--running[aria-selected="true"] {
-    background-color: var(--scriptlogs-tab-running-bg);
-    border-color: var(--scriptlogs-tab-running-border) !important;
+    background-color: var(--scriptlogs-bg);
+    color: #4ade80 !important;
+    border-color: var(--scriptlogs-border) !important;
     border-bottom: none !important;
     box-shadow: none;
 }
@@ -156,19 +157,19 @@
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-size: 1rem;
     line-height: 1.5;
-    max-height: min(320px, 45vh);
+    height: 320px;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--scriptlogs-tab-border) transparent;
 }
 
 .scriptlogs-body--legacy .scriptlogs-log {
-    max-height: 240px;
+    height: 240px;
 }
 
 @media (max-width: 480px) {
     .scriptlogs-log {
-        max-height: min(360px, 50vh);
+        height: 280px;
     }
 }
 
@@ -204,10 +205,10 @@
     max-height: none;
 }
 
-.scriptlogs-tabs:not(:empty) + .scriptlogs-log {
+.scriptlogs-tabs:not(:empty) + .scriptlogs-collapsible .scriptlogs-log {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
-    border-top-color: var(--scriptlogs-tab-active-border);
+    border-top-color: var(--scriptlogs-border);
     margin-top: 0;
 }
 
