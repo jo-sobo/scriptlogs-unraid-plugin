@@ -1,85 +1,326 @@
-/* Custom Scrollbar for the Log Container */
-#scriptlogs-container::-webkit-scrollbar {
-    width: 6px;
-}
-#scriptlogs-container::-webkit-scrollbar-track {
-    background: #2a2a2a;
-}
-#scriptlogs-container::-webkit-scrollbar-thumb {
-    background: #555;
-    border-radius: 3px;
-}
-#scriptlogs-container::-webkit-scrollbar-thumb:hover {
-    background: #777;
-}
-
-/* Settings Icon Positioning - Modernized */
-.tile-header {
+/* Scriptlogs Dashboard Widget */
+.scriptlogs-body {
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: 10px;
+    flex-direction: column;
+    gap: 1rem;
+    isolation: isolate;
+    --scriptlogs-bg: var(--bg-elevation-2, var(--bg-elevation-1, #1a1a1a));
+    --scriptlogs-border: var(--border-secondary, #444);
+    --scriptlogs-text-primary: var(--text-primary, #e0e0e0);
+    --scriptlogs-text-secondary: var(--text-secondary, #c0c0c0);
+    --scriptlogs-text-muted: var(--text-tertiary, #888);
+    --scriptlogs-tab-bg: var(--bg-elevation-3, #2a2a2a);
+    --scriptlogs-tab-border: var(--border-primary, #555);
+    --scriptlogs-accent: var(--accent-color, #f7931e);
+    --scriptlogs-accent-hover: var(--accent-hover, var(--accent-color, #f7931e));
+    --scriptlogs-success-bg: var(--success-bg, #234f1e);
+    --scriptlogs-success-border: var(--success-border, #2f6f2a);
 }
 
-#scriptlogs-settings-icon {
-    color: #c0c0c0;
-    transition: color 0.2s ease;
+.scriptlogs-body--responsive {
+    gap: 1rem;
 }
 
-#scriptlogs-settings-icon:hover {
-    color: #ffffff;
+.scriptlogs-body--legacy {
+    gap: 0.75rem;
 }
 
-/* Script Tabs Container */
-#script-tabs-container {
-    margin-top: 10px;
+@media (max-width: 480px) {
+    .scriptlogs-body {
+        gap: 0.75rem;
+    }
+}
+
+.scriptlogs-tabs {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-block: 0.5rem 0;
 }
 
-/* Script Tab Styling */
-.script-tab {
-    background-color: #555;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 3px;
+.scriptlogs-body--legacy .scriptlogs-tabs {
+    gap: 0.4rem;
+}
+
+.scriptlogs-tabs:empty {
+    display: none;
+}
+
+.scriptlogs-tabs .script-tab {
+    appearance: none;
+    border: 1px solid var(--scriptlogs-tab-border);
+    background-color: var(--scriptlogs-tab-bg);
+    color: var(--scriptlogs-text-primary);
+    padding: 0.35rem 0.7rem;
+    border-radius: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
     cursor: pointer;
-    font-size: 10px;
-    border: 1px solid transparent;
-    transition: all 0.2s ease;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    max-width: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
-.script-tab:hover {
-    opacity: 0.8;
+.scriptlogs-body--legacy .script-tab {
+    font-size: 0.7rem;
 }
 
-.script-tab.selected-script {
-    border: 1px solid #fff;
+.scriptlogs-tabs .script-tab.script-tab--running {
+    background-color: var(--scriptlogs-success-bg);
+    border-color: var(--scriptlogs-success-border);
 }
 
-/* Log Container */
-#scriptlogs-container {
-    height: 200px;
+.scriptlogs-tabs .script-tab.selected-script,
+.scriptlogs-tabs .script-tab[aria-selected="true"] {
+    border-color: var(--scriptlogs-accent);
+    box-shadow: 0 0 0 1px var(--scriptlogs-accent);
+}
+
+.scriptlogs-tabs .script-tab:not(.selected-script):hover {
+    border-color: var(--scriptlogs-accent-hover);
+}
+
+.scriptlogs-tabs .script-tab:focus-visible {
+    outline: 2px solid var(--scriptlogs-accent);
+    outline-offset: 2px;
+}
+
+.scriptlogs-tabs .script-tab:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.scriptlogs-log {
+    background-color: var(--scriptlogs-bg);
+    border: 1px solid var(--scriptlogs-border);
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    color: var(--scriptlogs-text-primary);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    max-height: min(320px, 45vh);
     overflow-y: auto;
-    font-family: monospace;
-    font-size: 11px;
-    background-color: #1a1a1a;
-    color: #e0e0e0;
-    padding: 8px;
-    border: 1px solid #444;
+    scrollbar-width: thin;
+    scrollbar-color: var(--scriptlogs-tab-border) transparent;
+}
+
+.scriptlogs-body--legacy .scriptlogs-log {
+    max-height: 240px;
+}
+
+@media (max-width: 480px) {
+    .scriptlogs-log {
+        max-height: min(360px, 50vh);
+    }
+}
+
+#scriptlogs-container {
+    padding: 0;
+    border: none;
+    background: none;
+    height: auto;
+}
+
+.scriptlogs-log::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scriptlogs-log::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scriptlogs-log::-webkit-scrollbar-thumb {
+    background: var(--scriptlogs-tab-border);
     border-radius: 3px;
+}
+
+.scriptlogs-log::-webkit-scrollbar-thumb:hover {
+    background: var(--scriptlogs-accent);
 }
 
 #scriptlogs-logs {
     margin: 0;
     white-space: pre-wrap;
-    word-wrap: break-word;
+    word-break: break-word;
 }
 
-/* Timestamp */
 .scriptlogs-timestamp-container {
-    margin-top: 5px;
-    font-size: 10px;
-    color: #888;
-    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--scriptlogs-text-muted);
+}
+
+.scriptlogs-timestamp-label {
+    font-weight: 600;
+    color: var(--scriptlogs-text-secondary);
+}
+
+#scriptlogs-timestamp {
+    font-variant-numeric: tabular-nums;
+}
+
+#scriptlogs-settings-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    color: var(--scriptlogs-text-secondary);
+    border-radius: 0.75rem;
+    transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#scriptlogs-settings-icon:hover {
+    color: var(--scriptlogs-accent);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+#scriptlogs-settings-icon:focus-visible {
+    outline: 2px solid var(--scriptlogs-accent);
+    outline-offset: 2px;
+}
+
+#scriptlogs-settings-icon .fa {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.scriptlogs-legacy-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.scriptlogs-legacy-header .section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.scriptlogs-legacy-title {
+    font-weight: 600;
+    color: var(--scriptlogs-text-primary);
+}
+
+.scriptlogs-legacy-subtitle {
+    color: var(--scriptlogs-text-muted);
+    font-size: 0.8125rem;
+}
+
+.scriptlogs-legacy-controls {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+}
+
+.scriptlogs-settings {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.scriptlogs-settings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.scriptlogs-settings-section h3 {
+    margin: 0;
+}
+
+.scriptlogs-settings-section p {
+    margin: 0;
+    color: var(--scriptlogs-text-secondary);
+    font-size: 0.875rem;
+}
+
+.scriptlogs-settings .page-settings {
+    margin: 0;
+}
+
+.scriptlogs-settings .page-settings dd {
+    gap: 0.35rem;
+}
+
+.scriptlogs-settings .page-settings dd > .scriptlogs-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.scriptlogs-settings .page-settings select.form-control,
+.scriptlogs-settings .page-settings input[type="number"] {
+    min-width: 12rem;
+    max-width: 100%;
+}
+
+.scriptlogs-hint {
+    color: var(--scriptlogs-text-muted);
+    font-size: 0.75rem;
+}
+
+.scriptlogs-script-list {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+
+.scriptlogs-script-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--scriptlogs-border);
+    border-radius: 0.75rem;
+    background-color: var(--scriptlogs-tab-bg);
+    color: var(--scriptlogs-text-primary);
+    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+    cursor: pointer;
+}
+
+.scriptlogs-script-item:hover {
+    border-color: var(--scriptlogs-accent);
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.scriptlogs-script-item input {
+    margin: 0;
+    accent-color: var(--scriptlogs-accent);
+}
+
+.scriptlogs-script-item span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .scriptlogs-script-list {
+        grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    }
+}
+
+.scriptlogs-settings .buttons-spaced {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.scriptlogs-settings .buttons-spaced input {
+    min-width: 6rem;
 }
