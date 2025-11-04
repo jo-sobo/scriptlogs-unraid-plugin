@@ -42,8 +42,8 @@
     flex-wrap: wrap;
     align-items: flex-end;
     gap: 0;
-    margin: 0;
-    padding: 0;
+    margin: 0 !important;
+    padding: 0 !important;
     width: 100%;
 }
 
@@ -188,6 +188,7 @@
     border: 1px solid var(--scriptlogs-border);
     border-radius: 0 !important;
     padding: 1rem;
+    margin: 0 !important;
     color: var(--scriptlogs-text-primary);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-size: 1rem;
@@ -245,8 +246,16 @@
     margin-top: 0 !important;
 }
 
+.scriptlogs-tabs:not(:empty) + .scriptlogs-collapsible {
+    display: block;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
 .scriptlogs-collapsible {
     display: block;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 .scriptlogs-footer {
