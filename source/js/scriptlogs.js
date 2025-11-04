@@ -6,9 +6,10 @@ function scriptlogs_status() {
     const enabledScripts = config.enabledScripts || [];
     const tabContainer = $('#script-tabs-container');
     const logContainer = $('#scriptlogs-container');
+    const logViewport = $('#scriptlogs-log-viewport');
     const logDisplay = $('#scriptlogs-logs');
     const timestampDisplay = $('#scriptlogs-timestamp');
-    const logEl = logContainer.get(0);
+    const scrollTarget = logViewport.length ? logViewport.get(0) : logContainer.get(0);
 
     if (!enabledScripts || enabledScripts.length === 0) {
         tabContainer.empty();
@@ -20,8 +21,8 @@ function scriptlogs_status() {
     }
 
     const previouslySelected = tabContainer.find('.selected-script').attr('data-script-name');
-    const wasScrolledToBottom = logEl
-        ? logEl.scrollHeight - Math.ceil(logEl.scrollTop) - logEl.clientHeight <= 1
+    const wasScrolledToBottom = scrollTarget
+        ? scrollTarget.scrollHeight - Math.ceil(scrollTarget.scrollTop) - scrollTarget.clientHeight <= 1
         : false;
 
     $.getJSON('/plugins/scriptlogs/scriptlogs_api.php?action=get_script_states', function(scripts) {
@@ -45,8 +46,8 @@ function scriptlogs_status() {
                         .attr('aria-pressed', 'false');
                     current.addClass('selected-script').attr('aria-pressed', 'true');
                     logDisplay.text(current.data('log-content'));
-                    if (logEl) {
-                        logEl.scrollTop = logEl.scrollHeight;
+                    if (scrollTarget) {
+                        scrollTarget.scrollTop = scrollTarget.scrollHeight;
                     }
                 });
 
@@ -62,6 +63,9 @@ function scriptlogs_status() {
                 const activeScript = scripts.find(s => s.name === previouslySelected);
                 if (activeScript) {
                     logDisplay.text(activeScript.log);
+                    if (scrollTarget) {
+                        scrollTarget.scrollTop = scrollTarget.scrollHeight;
+                    }
                 }
             } else if (tabContainer.children().length > 0) {
                 tabContainer.children().first().trigger('click');
@@ -70,8 +74,8 @@ function scriptlogs_status() {
             logDisplay.text('No scripts selected to display.');
         }
 
-        if (wasScrolledToBottom && logEl) {
-            logEl.scrollTop = logEl.scrollHeight;
+        if (wasScrolledToBottom && scrollTarget) {
+            scrollTarget.scrollTop = scrollTarget.scrollHeight;
         }
 
         if (timestampDisplay.length) {
