@@ -9,11 +9,11 @@
     --scriptlogs-text-primary: var(--text-primary, #e0e0e0);
     --scriptlogs-text-secondary: var(--text-secondary, #c0c0c0);
     --scriptlogs-text-muted: var(--text-tertiary, #888);
-    --scriptlogs-tab-bg: var(--bg-elevation-3, #2a2a2a);
-    --scriptlogs-tab-border: var(--border-secondary, #444);
+    --scriptlogs-tab-bg: #2c2c2c;
+    --scriptlogs-tab-border: #3c3c3c;
     --scriptlogs-tab-active-bg: var(--scriptlogs-bg);
-    --scriptlogs-tab-active-border: var(--scriptlogs-border);
-    --scriptlogs-tab-hover-border: var(--border-primary, #555);
+    --scriptlogs-tab-active-border: #4a4a4a;
+    --scriptlogs-tab-hover-border: #5a5a5a;
     --scriptlogs-tab-focus-ring: var(--focus-ring, #69a0ff);
     --scriptlogs-tab-running-bg: var(--success-bg, #234f1e);
     --scriptlogs-tab-running-border: var(--success-border, #2f6f2a);
@@ -41,12 +41,14 @@
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
-    gap: 0.35rem;
+    gap: 0.4rem;
     margin: 0;
+    padding: 0;
+    width: 100%;
 }
 
 .scriptlogs-body--legacy .scriptlogs-tabs {
-    gap: 0.3rem;
+    gap: 0.4rem;
 }
 
 .scriptlogs-tabs:empty {
@@ -58,14 +60,14 @@
     border: 1px solid var(--scriptlogs-tab-border);
     border-bottom: none;
     background-color: var(--scriptlogs-tab-bg);
-    color: var(--scriptlogs-text-secondary);
-    padding: 0.55rem 1rem;
-    border-radius: 0.6rem 0.6rem 0 0;
-    font-size: 0.8125rem;
+    color: var(--scriptlogs-text-primary);
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.75rem 0.75rem 0 0;
+    font-size: 0.875rem;
     font-weight: 600;
     line-height: 1.1;
     cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -74,16 +76,16 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    min-height: 2.1rem;
+    min-height: 2.6rem;
     margin-bottom: -1px;
     position: relative;
     z-index: 0;
 }
 
 .scriptlogs-body--legacy .script-tab {
-    font-size: 0.75rem;
-    min-height: 1.9rem;
-    padding: 0.45rem 0.85rem;
+    font-size: 0.8125rem;
+    min-height: 2.25rem;
+    padding: 0.65rem 1.05rem;
 }
 
 .scriptlogs-tabs .script-tab.script-tab--running {
@@ -99,8 +101,8 @@
     color: var(--scriptlogs-text-primary);
     border-color: var(--scriptlogs-tab-active-border);
     border-bottom: 1px solid var(--scriptlogs-tab-active-bg);
-    box-shadow: 0 0.15rem 0 0 var(--scriptlogs-tab-active-bg);
-    z-index: 1;
+    box-shadow: 0 0.25rem 0 0 var(--scriptlogs-tab-active-bg);
+    z-index: 2;
 }
 
 .scriptlogs-tabs .script-tab.script-tab--running.selected-script,
@@ -109,12 +111,13 @@
     background-color: var(--scriptlogs-tab-running-bg);
     border-color: var(--scriptlogs-tab-running-border);
     border-bottom: 1px solid var(--scriptlogs-tab-running-bg);
-    box-shadow: 0 0.15rem 0 0 var(--scriptlogs-tab-running-bg);
+    box-shadow: 0 0.25rem 0 0 var(--scriptlogs-tab-running-bg);
 }
 
 .scriptlogs-tabs .script-tab:not(.selected-script):hover,
 .scriptlogs-tabs .script-tab:not([aria-pressed="true"]):hover {
     border-color: var(--scriptlogs-tab-hover-border);
+    background-color: #323232;
     color: var(--scriptlogs-text-primary);
 }
 
@@ -139,27 +142,23 @@
     background-color: var(--scriptlogs-bg);
     border: 1px solid var(--scriptlogs-border);
     border-radius: 0.75rem;
-    padding: 0.75rem;
+    padding: 1rem;
     color: var(--scriptlogs-text-primary);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-size: 0.8125rem;
     line-height: 1.5;
-}
-
-.scriptlogs-log__viewport {
     max-height: min(320px, 45vh);
     overflow-y: auto;
-    padding-right: 0.25rem;
     scrollbar-width: thin;
     scrollbar-color: var(--scriptlogs-tab-border) transparent;
 }
 
-.scriptlogs-body--legacy .scriptlogs-log__viewport {
+.scriptlogs-body--legacy .scriptlogs-log {
     max-height: 240px;
 }
 
 @media (max-width: 480px) {
-    .scriptlogs-log__viewport {
+    .scriptlogs-log {
         max-height: min(360px, 50vh);
     }
 }
@@ -168,20 +167,20 @@
     position: relative;
 }
 
-.scriptlogs-log__viewport::-webkit-scrollbar {
+.scriptlogs-log::-webkit-scrollbar {
     width: 6px;
 }
 
-.scriptlogs-log__viewport::-webkit-scrollbar-track {
+.scriptlogs-log::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.scriptlogs-log__viewport::-webkit-scrollbar-thumb {
+.scriptlogs-log::-webkit-scrollbar-thumb {
     background: var(--scriptlogs-tab-border);
     border-radius: 3px;
 }
 
-.scriptlogs-log__viewport::-webkit-scrollbar-thumb:hover {
+.scriptlogs-log::-webkit-scrollbar-thumb:hover {
     background: var(--scriptlogs-tab-hover-border);
 }
 
@@ -189,6 +188,12 @@
     margin: 0;
     white-space: pre-wrap;
     word-break: break-word;
+}
+
+.scriptlogs-tabs:not(:empty) + .scriptlogs-log {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top-color: var(--scriptlogs-tab-active-border);
 }
 
 .scriptlogs-timestamp-container {
@@ -237,8 +242,8 @@
 
 .scriptlogs-header {
     align-items: center;
-    gap: 0.75rem;
-    min-height: 3.25rem;
+    gap: 1.25rem;
+    min-height: 4.5rem;
 }
 
 .scriptlogs-header__left {
@@ -248,12 +253,12 @@
 }
 
 .scriptlogs-header__icon {
-    font-size: 2rem;
+    font-size: 4rem;
     color: var(--scriptlogs-text-secondary);
 }
 
 .scriptlogs-header__title {
-    font-size: 1.25rem;
+    font-size: 2.5rem;
     font-weight: 600;
     color: var(--scriptlogs-text-primary);
 }
@@ -279,13 +284,13 @@
 }
 
 .scriptlogs-legacy-header__icon {
-    font-size: 1.5rem;
+    font-size: 3rem;
     color: var(--scriptlogs-text-secondary);
 }
 
 .scriptlogs-legacy-title {
     font-weight: 600;
-    font-size: 1.0625rem;
+    font-size: 2.125rem;
     color: var(--scriptlogs-text-primary);
 }
 

@@ -45,16 +45,13 @@ $tile_body = <<<HTML
 <div class="scriptlogs-body">
     <div id="script-tabs-container" class="scriptlogs-tabs" role="tablist" aria-label="{$tabs_aria_label}"></div>
 
-    <div id="scriptlogs-container" class="scriptlogs-log">
-        <div id="scriptlogs-log-viewport" class="scriptlogs-log__viewport" role="log" aria-live="polite">
-            <pre id="scriptlogs-logs">{$log_placeholder}</pre>
-        </div>
+    <div id="scriptlogs-container" class="scriptlogs-log" role="log" aria-live="polite">
+        <pre id="scriptlogs-logs">{$log_placeholder}</pre>
     </div>
 
     <div class="scriptlogs-timestamp-container">
         <span class="scriptlogs-timestamp-label">{$last_update_label}</span>
         <span id="scriptlogs-timestamp"></span>
-    </div>
 </div>
 HTML;
 

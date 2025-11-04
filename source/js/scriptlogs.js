@@ -6,10 +6,9 @@ function scriptlogs_status() {
     const enabledScripts = config.enabledScripts || [];
     const tabContainer = $('#script-tabs-container');
     const logContainer = $('#scriptlogs-container');
-    const logViewport = $('#scriptlogs-log-viewport');
     const logDisplay = $('#scriptlogs-logs');
     const timestampDisplay = $('#scriptlogs-timestamp');
-    const scrollTarget = logViewport.length ? logViewport.get(0) : logContainer.get(0);
+    const scrollTarget = logContainer.length ? logContainer.get(0) : null;
 
     if (!enabledScripts || enabledScripts.length === 0) {
         tabContainer.empty();
