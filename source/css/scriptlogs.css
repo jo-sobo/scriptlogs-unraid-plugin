@@ -56,30 +56,39 @@
 }
 
 .scriptlogs-tabs .script-tab {
-    appearance: none;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
     border: 1px solid var(--scriptlogs-tab-border) !important;
     border-bottom: none !important;
-    background-color: var(--scriptlogs-tab-bg);
+    background-color: var(--scriptlogs-tab-bg) !important;
+    background-image: none !important;
     color: var(--scriptlogs-text-primary) !important;
-    padding: 0.75rem 1.25rem;
-    border-radius: 0;
-    font-size: 0.875rem;
-    font-weight: 600;
-    line-height: 1.1;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
-    max-width: 100%;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    min-height: 2.6rem;
-    margin-bottom: -1px;
-    position: relative;
-    z-index: 0;
+    padding: 0.75rem 1.25rem !important;
+    border-radius: 0 !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    line-height: 1.1 !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.35rem !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    min-height: 2.6rem !important;
+    margin-bottom: -1px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-top: 0 !important;
+    position: relative !important;
+    z-index: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+    text-decoration: none !important;
 }
 
 .scriptlogs-body--legacy .script-tab {
@@ -145,7 +154,7 @@
     padding: 1rem;
     color: var(--scriptlogs-text-primary);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    font-size: 0.8125rem;
+    font-size: 1rem;
     line-height: 1.5;
     max-height: min(320px, 45vh);
     overflow-y: auto;

@@ -73,11 +73,11 @@ $enabled_scripts_array = isset($cfg['ENABLED_SCRIPTS']) ? explode(',', $cfg['ENA
   _(Log Font Size)_:
   : <span class="scriptlogs-control">
       <select name="LOG_FONT_SIZE" class="form-control">
-        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '0.8125rem', "0.625rem", _("Extra Small"));?>
-        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '0.8125rem', "0.75rem", _("Small"));?>
-        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '0.8125rem', "0.8125rem", _("Medium (Default)"));?>
-        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '0.8125rem', "0.875rem", _("Large"));?>
-        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '0.8125rem', "1rem", _("Extra Large"));?>
+        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', "0.75rem", _("Extra Small"));?>
+        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', "0.875rem", _("Small"));?>
+        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', "1rem", _("Medium (Default)"));?>
+        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', "1.125rem", _("Large"));?>
+        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', "1.25rem", _("Extra Large"));?>
       </select>
     </span>
   </dl>

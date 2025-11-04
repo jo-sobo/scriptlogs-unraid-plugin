@@ -14,7 +14,7 @@ $tile_config = [
     'enabledScripts' => $enabled_scripts,
     'refreshEnabled' => ($cfg['REFRESH_ENABLED'] ?? '0') === '1',
     'refreshInterval' => intval($cfg['REFRESH_INTERVAL'] ?? 0) * 1000,
-    'fontSize' => $cfg['LOG_FONT_SIZE'] ?? '0.8125rem',
+    'fontSize' => $cfg['LOG_FONT_SIZE'] ?? '1rem',
 ];
 
 $version_data = @parse_ini_file('/etc/unraid-version');
@@ -133,9 +133,35 @@ $legacy_tile_markup = <<<HTML
             </div>
         </td>
     </tr>
+    <tr>
+        <td colspan="3">
+            <div class="scriptlogs-body">
+                <div id="script-tabs-container" class="scriptlogs-tabs" role="tablist" aria-label="{$tabs_aria_label}"></div>
+            </div>
+        </td>
+    </tr>
     <tr class="dash_scriptlogs_toggle scriptlogs-content">
         <td colspan="3">
-            {$tile_body}
+            <div class="scriptlogs-body">
+                <div class="scriptlogs-collapsible">
+                    <div id="scriptlogs-container" class="scriptlogs-log" role="log" aria-live="polite">
+                        <pre id="scriptlogs-logs">{$log_placeholder}</pre>
+                    </div>
+
+                    <div class="scriptlogs-footer">
+                        <div class="scriptlogs-autoscroll-container">
+                            <label class="scriptlogs-autoscroll-label">
+                                <input type="checkbox" id="scriptlogs-autoscroll" class="scriptlogs-autoscroll-checkbox" checked>
+                                <span class="scriptlogs-autoscroll-text">Autoscroll</span>
+                            </label>
+                        </div>
+                        <div class="scriptlogs-timestamp-container">
+                            <span class="scriptlogs-timestamp-label">{$last_update_label}</span>
+                            <span id="scriptlogs-timestamp"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </td>
     </tr>
 </tbody>
