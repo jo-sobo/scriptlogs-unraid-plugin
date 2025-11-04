@@ -46,5 +46,23 @@ $tile['content'] = <<<EOT
 </script>
 EOT;
 
-echo create_tile($tile);
+if (!function_exists('create_tile')) {
+    error_log('[scriptlogs] create_tile() is not available; dashboard tile cannot be registered.');
+    return;
+}
+
+error_log('[scriptlogs] attempting to register tile: ' . json_encode([
+    'name'   => $tile['name'] ?? null,
+    'title'  => $tile['title'] ?? null,
+    'script' => $tile['script'] ?? null,
+    'style'  => $tile['style'] ?? null,
+]));
+
+$tile_markup = create_tile($tile);
+
+if (empty($tile_markup)) {
+    error_log('[scriptlogs] create_tile() returned empty markup; tile will not appear on dashboard.');
+}
+
+echo $tile_markup;
 ?>
