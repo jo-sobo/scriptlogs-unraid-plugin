@@ -8,7 +8,9 @@ function scriptlogs_status() {
     const logContainer = $('#scriptlogs-container');
     const logDisplay = $('#scriptlogs-logs');
     const timestampDisplay = $('#scriptlogs-timestamp');
+    const autoscrollCheckbox = $('#scriptlogs-autoscroll');
     const scrollTarget = logContainer.length ? logContainer.get(0) : null;
+    const autoscrollEnabled = autoscrollCheckbox.length ? autoscrollCheckbox.prop('checked') : true;
 
     if (!enabledScripts || enabledScripts.length === 0) {
         tabContainer.empty();
@@ -20,7 +22,7 @@ function scriptlogs_status() {
     }
 
     const previouslySelected = tabContainer.find('.selected-script').attr('data-script-name');
-    const wasScrolledToBottom = scrollTarget
+    const wasScrolledToBottom = autoscrollEnabled && scrollTarget
         ? scrollTarget.scrollHeight - Math.ceil(scrollTarget.scrollTop) - scrollTarget.clientHeight <= 1
         : false;
 
@@ -45,7 +47,7 @@ function scriptlogs_status() {
                         .attr('aria-pressed', 'false');
                     current.addClass('selected-script').attr('aria-pressed', 'true');
                     logDisplay.text(current.data('log-content'));
-                    if (scrollTarget) {
+                    if (autoscrollEnabled && scrollTarget) {
                         scrollTarget.scrollTop = scrollTarget.scrollHeight;
                     }
                 });
@@ -62,7 +64,7 @@ function scriptlogs_status() {
                 const activeScript = scripts.find(s => s.name === previouslySelected);
                 if (activeScript) {
                     logDisplay.text(activeScript.log);
-                    if (scrollTarget) {
+                    if (autoscrollEnabled && scrollTarget) {
                         scrollTarget.scrollTop = scrollTarget.scrollHeight;
                     }
                 }
@@ -73,7 +75,7 @@ function scriptlogs_status() {
             logDisplay.text('No scripts selected to display.');
         }
 
-        if (wasScrolledToBottom && scrollTarget) {
+        if (autoscrollEnabled && wasScrolledToBottom && scrollTarget) {
             scrollTarget.scrollTop = scrollTarget.scrollHeight;
         }
 
@@ -97,6 +99,14 @@ $(function() {
     if (widgetRoot.length) {
         widgetRoot.toggleClass('scriptlogs-body--responsive', !!config.isResponsive);
         widgetRoot.toggleClass('scriptlogs-body--legacy', !config.isResponsive);
+    }
+
+    // Apply font size setting
+    if (config.fontSize) {
+        const logContainer = $('#scriptlogs-container');
+        if (logContainer.length) {
+            logContainer.css('font-size', config.fontSize);
+        }
     }
 
     scriptlogs_status();

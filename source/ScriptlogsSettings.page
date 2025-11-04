@@ -14,7 +14,8 @@ if (isset($_POST['#apply'])) {
     'REFRESH_ENABLED' => $_POST['REFRESH_ENABLED'],
     'REFRESH_INTERVAL' => $_POST['REFRESH_INTERVAL'],
     'ENABLED_SCRIPTS' => isset($_POST['ENABLED_SCRIPTS']) ? implode(',', $_POST['ENABLED_SCRIPTS']) : '',
-    'SHOW_IDLE_LOGS' => isset($_POST['SHOW_IDLE_LOGS']) ? '1' : '0'
+    'SHOW_IDLE_LOGS' => isset($_POST['SHOW_IDLE_LOGS']) ? '1' : '0',
+    'LOG_FONT_SIZE' => $_POST['LOG_FONT_SIZE']
   ];
 
   $ini = '';
@@ -67,6 +68,17 @@ $enabled_scripts_array = isset($cfg['ENABLED_SCRIPTS']) ? explode(',', $cfg['ENA
         <input type="checkbox" name="SHOW_IDLE_LOGS" value="1" <?php echo (($cfg['SHOW_IDLE_LOGS'] ?? '0') === '1' ? 'checked' : ''); ?>>
         <span class="scriptlogs-hint"><?php echo _('Shows the last available log for scripts that ran in the background.'); ?></span>
       </label>
+    </span>
+
+  _(Log Font Size)_:
+  : <span class="scriptlogs-control">
+      <select name="LOG_FONT_SIZE" class="form-control">
+        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '0.8125rem', "0.625rem", _("Extra Small"));?>
+        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '0.8125rem', "0.75rem", _("Small"));?>
+        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '0.8125rem', "0.8125rem", _("Medium (Default)"));?>
+        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '0.8125rem', "0.875rem", _("Large"));?>
+        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '0.8125rem', "1rem", _("Extra Large"));?>
+      </select>
     </span>
   </dl>
 
