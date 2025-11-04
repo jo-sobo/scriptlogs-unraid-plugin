@@ -101,11 +101,15 @@ $(function() {
         widgetRoot.toggleClass('scriptlogs-body--legacy', !config.isResponsive);
     }
 
-    // Apply font size setting
+    // Apply font size setting to the log container and pre element
     if (config.fontSize) {
         const logContainer = $('#scriptlogs-container');
+        const logPre = $('#scriptlogs-logs');
         if (logContainer.length) {
             logContainer.css('font-size', config.fontSize);
+        }
+        if (logPre.length) {
+            logPre.css('font-size', config.fontSize);
         }
     }
 

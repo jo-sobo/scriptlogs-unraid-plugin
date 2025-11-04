@@ -2,7 +2,7 @@
 .scriptlogs-body {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.25rem;
     isolation: isolate;
     --scriptlogs-bg: var(--bg-elevation-2, var(--bg-elevation-1, #1a1a1a));
     --scriptlogs-border: var(--border-secondary, #444);
@@ -24,16 +24,16 @@
 }
 
 .scriptlogs-body--responsive {
-    gap: 0.5rem;
+    gap: 0.25rem;
 }
 
 .scriptlogs-body--legacy {
-    gap: 0.4rem;
+    gap: 0.2rem;
 }
 
 @media (max-width: 480px) {
     .scriptlogs-body {
-        gap: 0.4rem;
+        gap: 0.2rem;
     }
 }
 
@@ -41,14 +41,14 @@
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
-    gap: 0.15rem;
+    gap: 0;
     margin: 0;
     padding: 0;
     width: 100%;
 }
 
 .scriptlogs-body--legacy .scriptlogs-tabs {
-    gap: 0.15rem;
+    gap: 0;
 }
 
 .scriptlogs-tabs:empty {
@@ -100,7 +100,7 @@
     background-color: var(--scriptlogs-tab-active-bg);
     color: var(--scriptlogs-text-primary) !important;
     border-color: var(--scriptlogs-tab-active-border) !important;
-    border-bottom: 1px solid var(--scriptlogs-tab-active-bg) !important;
+    border-bottom: none !important;
     box-shadow: none;
     z-index: 2;
 }
@@ -110,7 +110,7 @@
 .scriptlogs-tabs .script-tab.script-tab--running[aria-selected="true"] {
     background-color: var(--scriptlogs-tab-running-bg);
     border-color: var(--scriptlogs-tab-running-border) !important;
-    border-bottom: 1px solid var(--scriptlogs-tab-running-bg) !important;
+    border-bottom: none !important;
     box-shadow: none;
 }
 
@@ -191,6 +191,8 @@
     background: transparent;
     white-space: pre-wrap;
     word-break: break-word;
+    overflow: visible;
+    max-height: none;
 }
 
 .scriptlogs-tabs:not(:empty) + .scriptlogs-log {
@@ -222,7 +224,7 @@
     align-items: center;
     gap: 0.5rem;
     cursor: pointer;
-    font-size: 0.75rem;
+    font-size: 0.9375rem;
     color: var(--scriptlogs-text-secondary);
     margin: 0;
 }
@@ -231,6 +233,7 @@
     cursor: pointer;
     margin: 0;
     accent-color: var(--scriptlogs-accent);
+    transform: scale(0.75);
 }
 
 .scriptlogs-autoscroll-text {
@@ -243,7 +246,7 @@
     justify-content: flex-end;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.75rem;
+    font-size: 0.9375rem;
     color: var(--scriptlogs-text-muted);
 }
 
