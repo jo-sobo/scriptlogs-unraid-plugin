@@ -6,7 +6,17 @@ require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
 
 $cfg = parse_plugin_cfg('scriptlogs', true);
 $enabled_scripts_str = $cfg['ENABLED_SCRIPTS'] ?? '';
-$enabled_scripts_js = !empty($enabled_scripts_str) ? json_encode(explode(',', $enabled_scripts_str)) : '[]';
+$enabled_scripts = !empty($enabled_scripts_str)
+    ? array_values(array_filter(array_map('trim', explode(',', $enabled_scripts_str))))
+    : [];
+
+$tile_config = [
+    'enabledScripts' => $enabled_scripts,
+    'refreshEnabled' => ($cfg['REFRESH_ENABLED'] ?? '0') === '1',
+    'refreshInterval' => intval($cfg['REFRESH_INTERVAL'] ?? 0) * 1000,
+];
+
+$tile_config_json = json_encode($tile_config, JSON_UNESCAPED_SLASHES);
 
 $tile = [
     'name'   => 'scriptlogs',
@@ -38,11 +48,7 @@ $tile['content'] = <<<EOT
 </div>
 
 <script>
-    window.scriptlogsConfig = {
-        enabledScripts: <?=$enabled_scripts_js?>,
-        refreshEnabled: <?=json_encode($cfg['REFRESH_ENABLED'] === '1')?>,
-        refreshInterval: <?=json_encode(intval($cfg['REFRESH_INTERVAL']) * 1000)?>
-    };
+    window.scriptlogsConfig = <?=$tile_config_json?>;
 </script>
 EOT;
 
