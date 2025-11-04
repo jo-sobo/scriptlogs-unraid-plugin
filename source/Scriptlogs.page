@@ -8,127 +8,43 @@ $cfg = parse_plugin_cfg('scriptlogs', true);
 $enabled_scripts_str = $cfg['ENABLED_SCRIPTS'] ?? '';
 $enabled_scripts_js = !empty($enabled_scripts_str) ? json_encode(explode(',', $enabled_scripts_str)) : '[]';
 
+$tile = [
+    'name'   => 'scriptlogs',
+    'title'  => 'Script Logs',
+    'icon'   => 'fa-terminal',
+    'content'=> '',
+    'small'  => 1,
+    'medium' => 1,
+    'large'  => 2,
+    'script' => '/plugins/scriptlogs/js/scriptlogs.js',
+    'style'  => '/plugins/scriptlogs/css/scriptlogs.css',
+];
 
-$pluginname = "scriptlogs";
+$tile['content'] = <<<EOT
+<div class="tile-header">
+    <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings">
+        <i class="fa fa-fw fa-cog control"></i>
+    </a>
+</div>
 
-$mytiles[$pluginname]['column1'] = <<<EOT
-<tbody id="db-scriptlogs" title="Script Logs">
-    <tr>
-        <td class="next" colspan="3">
+<div id="script-tabs-container"></div>
 
-            <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings"><i class="fa fa-fw fa-cog control"></i></a>
-            
-            <i class="fa fa-terminal fa-lg"></i>
-            <div class="section">
-                Script Logs
-            </div>
-            
-            <div id="script-tabs-container" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px;">
-                </div>
+<div id="scriptlogs-container">
+    <pre id="scriptlogs-logs">Select a script to see its log.</pre>
+</div>
 
-        </td>
-    </tr>
-    <tr class="dash_scriptlogs_toggle scriptlogs-content">
-        <td colspan="3">
-            <div id="scriptlogs-container" style="height:200px; overflow-y:auto; font-family: monospace; font-size: 11px; background-color: #1a1a1a; color: #e0e0e0; padding: 8px; border: 1px solid #444; border-radius: 3px;">
-                <pre id="scriptlogs-logs" style="margin: 0; white-space: pre-wrap; word-wrap: break-word;">Select a script to see its log.</pre>
-            </div>
-            <div style="margin-top: 5px; font-size: 10px; color: #888; text-align: right;">
-                Last Update: <span id="scriptlogs-timestamp"></span>
-            </div>
-        </td>
-    </tr>
-</tbody>
-EOT;
-?>
+<div class="scriptlogs-timestamp-container">
+    Last Update: <span id="scriptlogs-timestamp"></span>
+</div>
 
-<script type="text/javascript">
-    /* global $ */
-    var enabledScripts = <?=$enabled_scripts_js?>;
-    
-    function scriptlogs_status() {
-        if (!enabledScripts || enabledScripts.length === 0) {
-            $('#scriptlogs-logs').text('No scripts selected. Please check your Scriptlogs settings.');
-            $('#script-tabs-container').empty();
-            return;
-        }
-
-        $.getJSON('/plugins/scriptlogs/scriptlogs_api.php?action=get_script_states', function(scripts) {
-            const tabContainer = $('#script-tabs-container');
-            const logContainer = $('#scriptlogs-container');
-            const logDisplay = $('#scriptlogs-logs');
-            const timestampDisplay = $('#scriptlogs-timestamp');
-            const logEl = logContainer[0]; // Pure DOM element for precise calculations
-
-            const previouslySelected = tabContainer.find('.selected-script').data('script-name');
-
-            // Smart Scrolling Logic - Part 1: Check position BEFORE updating content
-            const isScrolledToBottom = logEl.scrollHeight - Math.ceil(logEl.scrollTop) - logEl.clientHeight <= 1;
-            
-            tabContainer.empty();
-
-            if (scripts && Array.isArray(scripts) && scripts.length > 0) {
-                scripts.forEach(script => {
-                    let bgColor = '#555'; // idle
-                    if (script.status === 'running') bgColor = '#4CAF50'; // running
-
-                    const tab = $('<div>')
-                        .addClass('script-tab')
-                        .text(script.name)
-                        .css({ 'background-color': bgColor, 'color': 'white', 'padding': '4px 8px', 'border-radius': '3px', 'cursor': 'pointer', 'font-size': '10px' })
-                        .data('script-name', script.name)
-                        .data('log-content', script.log);
-
-                    tab.on('click', function() {
-                        tabContainer.find('.script-tab').removeClass('selected-script').css('border', '1px solid transparent');
-                        $(this).addClass('selected-script').css('border', '1px solid #FFF');
-                        logDisplay.text($(this).data('log-content'));
-                        logEl.scrollTop = logEl.scrollHeight; // Always scroll to bottom on manual click
-                    });
-
-                    tabContainer.append(tab);
-                });
-                
-                let selectedTab = tabContainer.find('.script-tab').filter(function() {
-                    return $(this).data('script-name') === previouslySelected;
-                });
-
-                if (selectedTab.length > 0) {
-                    selectedTab.addClass('selected-script').css('border', '1px solid #FFF');
-                    // Update the log content for the currently selected tab
-                    const activeScript = scripts.find(s => s.name === previouslySelected);
-                    if (activeScript) {
-                        logDisplay.text(activeScript.log);
-                    }
-                } else if (tabContainer.children().length > 0) {
-                    tabContainer.children().first().trigger('click');
-                    return; // Exit, as the click handler manages the scroll
-                }
-            } else {
-                logDisplay.text('No scripts selected to display.');
-            }
-
-            // Smart Scrolling Logic - Part 2: Only scroll if we were at the bottom before
-            if (isScrolledToBottom) {
-                logEl.scrollTop = logEl.scrollHeight;
-            }
-
-            timestampDisplay.text(new Date().toLocaleTimeString());
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.error("Scriptlogs AJAX Error:", textStatus, errorThrown);
-            $('#scriptlogs-logs').text('Error loading script states. Check browser console (F12) for details.');
-        });
-    }
-
-    $(function() {
-        var refreshEnabled = <?=json_encode($cfg['REFRESH_ENABLED'] === '1')?>;
-        var refreshInterval = <?=json_encode(intval($cfg['REFRESH_INTERVAL']) * 1000)?>;
-        
-        if (refreshEnabled && refreshInterval > 0) {
-            scriptlogs_status();
-            setInterval(scriptlogs_status, refreshInterval);
-        } else {
-            scriptlogs_status();
-        }
-    });
+<script>
+    window.scriptlogsConfig = {
+        enabledScripts: <?=$enabled_scripts_js?>,
+        refreshEnabled: <?=json_encode($cfg['REFRESH_ENABLED'] === '1')?>,
+        refreshInterval: <?=json_encode(intval($cfg['REFRESH_INTERVAL']) * 1000)?>
+    };
 </script>
+EOT;
+
+echo create_tile($tile);
+?>
