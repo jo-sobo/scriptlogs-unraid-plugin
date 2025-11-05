@@ -477,12 +477,11 @@
 .scriptlogs-compact-indicators {
     display: flex;
     flex-wrap: wrap;
+    align-items: stretch;
     gap: 0.3rem;
     padding: 0;
     width: 100%;
-    order: 1;
 }
-
 
 .scriptlogs-compact-indicator {
     display: inline-flex;
@@ -498,9 +497,9 @@
     color: var(--scriptlogs-text-secondary);
     pointer-events: none;
     user-select: none;
-    flex: 1 1 clamp(10rem, 25vw, 18rem);
-    min-width: 8rem;
-    max-width: 100%;
+    flex: 0 1 auto;
+    min-width: 7rem;
+    max-width: min(20rem, 100%);
     white-space: normal;
     word-break: break-word;
     overflow-wrap: anywhere;
