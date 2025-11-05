@@ -7,6 +7,8 @@ function scriptlogs_updateCompactIndicators(scripts) {
     
     compactContainer.empty();
     
+    let runningCount = 0;
+
     if (Array.isArray(scripts) && scripts.length > 0) {
         scripts.forEach(script => {
             const indicator = $('<span>')
@@ -14,7 +16,20 @@ function scriptlogs_updateCompactIndicators(scripts) {
                 .toggleClass('scriptlogs-compact-indicator--running', script.status === 'running')
                 .text(script.name);
             compactContainer.append(indicator);
+
+            if (script.status === 'running') {
+                runningCount += 1;
+            }
         });
+    }
+
+    const headSummary = $('.scriptlogs-head-summary');
+    if (headSummary.length) {
+        headSummary.find('span:last').text(
+            runningCount > 0
+                ? `${runningCount} running`
+                : 'No scripts running'
+        );
     }
 }
 

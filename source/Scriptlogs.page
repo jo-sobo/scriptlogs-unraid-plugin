@@ -78,8 +78,24 @@ $tile_body = <<<HTML
 HTML;
 
 $compact_indicators = <<<HTML
-<span class="switch" style="display: none;">
-    <span id="scriptlogs-compact-indicators" class="scriptlogs-compact-indicators"></span>
+<span class="flex flex-row flex-wrap items-center gap-4 scriptlogs-header-row">
+    <span class="head_info scriptlogs-head-info">
+        <span>
+            <i class="fa fa-list" aria-hidden="true"></i>
+            <span id="scriptlogs-headline">Scripts</span>
+        </span>
+    </span>
+    <span class="switch scriptlogs-compact-switch" style="display: none;">
+        <span class="head_info scriptlogs-head-summary">
+            <span>
+                <i class="fa fa-play-circle" aria-hidden="true"></i>
+                <span>Active scripts</span>
+            </span>
+        </span>
+        <span class="head_bar scriptlogs-head-bar">
+            <span id="scriptlogs-compact-indicators" class="scriptlogs-compact-indicators"></span>
+        </span>
+    </span>
 </span>
 HTML;
 
