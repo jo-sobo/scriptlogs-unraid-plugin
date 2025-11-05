@@ -150,6 +150,32 @@ $(function() {
         }
     }
 
+    // Setup custom toggle for compact indicators (show when collapsed, hide when expanded)
+    const compactWrapper = $('#scriptlogs-compact-wrapper');
+    const collapsibleContent = $('.scriptlogs-collapsible');
+    
+    if (compactWrapper.length && collapsibleContent.length) {
+        // Create MutationObserver to watch for style changes on collapsible content
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.attributeName === 'style') {
+                    const isHidden = collapsibleContent.css('display') === 'none';
+                    // Show compact when content is hidden, hide when content is shown
+                    compactWrapper.css('display', isHidden ? 'flex' : 'none');
+                }
+            });
+        });
+        
+        observer.observe(collapsibleContent[0], {
+            attributes: true,
+            attributeFilter: ['style']
+        });
+        
+        // Set initial state
+        const isHidden = collapsibleContent.css('display') === 'none';
+        compactWrapper.css('display', isHidden ? 'flex' : 'none');
+    }
+
     scriptlogs_status();
 
     if (config.refreshEnabled && config.refreshInterval > 0) {
