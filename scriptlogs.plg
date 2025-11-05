@@ -2,18 +2,18 @@
 <!DOCTYPE PLUGIN [
  <!ENTITY name "scriptlogs">
  <!ENTITY author "jo-sobo">
- <!ENTITY version "2025.11.05m-unraid720">
- <!ENTITY branch "unraid720">
+ <!ENTITY version "2025.11.05main">
+ <!ENTITY branch "main">
  <!ENTITY gitURL "https://github.com/jo-sobo/scriptlogs-unraid-plugin">
- <!ENTITY pluginURL "&gitURL;/raw/&branch;/packages/&name;-&version;.txz">
+ <!ENTITY pluginURL "&gitURL;/releases/download/&version;/&name;-&version;.txz">
  <!ENTITY selfURL "&gitURL;/raw/&branch;/&name;.plg">
 ]>
 
 <PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&selfURL;" min="6.9.0" support="&gitURL;/issues">
 
 <CHANGES>
-### 2025.11.05m-unraid720
-- Test build from the 'unraid720' branch targeting the Unraid 7.20 webGUI.
+### 2025.11.05main
+- Automated main build release.
 </CHANGES>
 
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.txz" Run="upgradepkg --install-new">
