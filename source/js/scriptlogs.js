@@ -114,22 +114,6 @@ function scriptlogs_status() {
     });
 }
 
-function scriptlogs_toggleCompactIndicators() {
-    const compactContainer = $('#scriptlogs-compact-indicators');
-    const scriptlogsBody = $('.scriptlogs-body');
-    
-    if (!compactContainer.length || !scriptlogsBody.length) return;
-    
-    // Check if tile is collapsed by looking at scriptlogs-body visibility
-    const isCollapsed = scriptlogsBody.css('display') === 'none' || !scriptlogsBody.is(':visible');
-    
-    if (isCollapsed) {
-        compactContainer.css('display', 'flex');
-    } else {
-        compactContainer.css('display', 'none');
-    }
-}
-
 $(function() {
     const config = window.scriptlogsConfig || {};
     const widgetRoot = $('.scriptlogs-body');
@@ -138,18 +122,6 @@ $(function() {
         widgetRoot.toggleClass('scriptlogs-body--responsive', !!config.isResponsive);
         widgetRoot.toggleClass('scriptlogs-body--legacy', !config.isResponsive);
     }
-    
-    // Monitor for tile collapse/expand events
-    const opencloseButton = $('.openclose');
-    if (opencloseButton.length) {
-        opencloseButton.on('click', function() {
-            // Delay to allow the animation to complete
-            setTimeout(scriptlogs_toggleCompactIndicators, 100);
-        });
-    }
-    
-    // Initial state check
-    scriptlogs_toggleCompactIndicators();
 
     // Apply font size setting to the log container and pre element
     if (config.fontSize) {

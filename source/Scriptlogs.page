@@ -78,7 +78,9 @@ $tile_body = <<<HTML
 HTML;
 
 $compact_indicators = <<<HTML
-<div id="scriptlogs-compact-indicators" class="scriptlogs-compact-indicators" style="display: none;"></div>
+<span class="switch" style="display: none;">
+    <span id="scriptlogs-compact-indicators" class="scriptlogs-compact-indicators"></span>
+</span>
 HTML;
 
 $config_script = <<<HTML
@@ -94,7 +96,9 @@ if ($isResponsiveWebgui) {
         <i class="fa fa-terminal scriptlogs-header__icon" aria-hidden="true"></i>
         <div class="section">
             <h3 class="tile-header-main scriptlogs-header__title">{$tile_title}</h3>
-            {$compact_indicators}
+            <span class="flex flex-row flex-wrap items-center gap-4">
+                {$compact_indicators}
+            </span>
         </div>
     </span>
     <span class="tile-header-right scriptlogs-header__right">
@@ -116,6 +120,7 @@ HTML;
     <span class="scriptlogs-legacy-header__left">
         <i class="fa fa-terminal scriptlogs-legacy-header__icon" aria-hidden="true"></i>
         <span class="scriptlogs-legacy-title">{$tile_title}</span>
+        {$compact_indicators}
     </span>
     <span class="scriptlogs-legacy-controls">
         <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings" aria-label="Scriptlogs Settings">
@@ -124,7 +129,6 @@ HTML;
         <i class="fa fa-fw fa-chevron-up control openclose" onclick="openClose($(this))" title="Show/Hide Content"></i>
     </span>
 </div>
-{$compact_indicators}
 {$tile_body}
 {$config_script}
 HTML;
