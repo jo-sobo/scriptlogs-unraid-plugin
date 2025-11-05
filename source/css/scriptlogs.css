@@ -380,7 +380,7 @@
 }
 
 .scriptlogs-header__title {
-    font-size: 1.25rem;
+    font-size: 1.5625rem;
     font-weight: 600;
     color: var(--scriptlogs-text-primary);
     margin: 0;
@@ -421,7 +421,7 @@
 
 .scriptlogs-legacy-title {
     font-weight: 600;
-    font-size: 1.25rem;
+    font-size: 1.5625rem;
     color: var(--scriptlogs-text-primary);
     margin: 0;
 }
@@ -474,19 +474,26 @@
     box-sizing: border-box;
 }
 
-.scriptlogs-head-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    width: 100%;
-}
-
 .scriptlogs-compact-indicators {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
     padding: 0;
     width: 100%;
+    order: 1;
+}
+
+.scriptlogs-compact .scriptlogs-head-summary {
+    order: 2;
+    margin-left: auto;
+    align-self: flex-end;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-weight: 600;
+    color: var(--scriptlogs-text-muted);
+    margin-top: 0.25rem;
+    text-align: right;
 }
 
 .scriptlogs-compact-indicator {
