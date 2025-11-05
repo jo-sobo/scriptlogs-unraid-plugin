@@ -121,12 +121,23 @@
     border-top: 1px solid var(--scriptlogs-tab-border) !important;
     border-left: 1px solid var(--scriptlogs-tab-border) !important;
     border-right: 1px solid var(--scriptlogs-tab-border) !important;
-    border-bottom: 3px solid transparent !important;
-    border-image: linear-gradient(to right, rgb(229, 48, 41), rgb(254, 136, 48)) 1 !important;
-    border-image-slice: 0 0 1 0 !important;
+    border-bottom: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
     z-index: 1 !important;
+    position: relative !important;
+}
+
+.scriptlogs-tabs .script-tab.selected-script::after,
+.scriptlogs-tabs .script-tab[aria-pressed="true"]::after,
+.scriptlogs-tabs .script-tab[aria-selected="true"]::after {
+    content: '' !important;
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 3px !important;
+    background: linear-gradient(to right, rgb(229, 48, 41), rgb(254, 136, 48)) !important;
 }
 
 .scriptlogs-tabs .script-tab.script-tab--running.selected-script,
@@ -137,14 +148,13 @@
     border-top: 3px solid var(--success-border, #2f6f2a) !important;
     border-left: 1px solid var(--scriptlogs-tab-border) !important;
     border-right: 1px solid var(--scriptlogs-tab-border) !important;
-    border-bottom: 3px solid transparent !important;
-    border-image: linear-gradient(to right, rgb(229, 48, 41), rgb(254, 136, 48)) 1 !important;
-    border-image-slice: 0 0 1 0 !important;
+    border-bottom: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
     z-index: 1 !important;
     padding-top: calc(0.75rem - 2px) !important;
     padding-bottom: calc(0.75rem - 2px) !important;
+    position: relative !important;
 }
 
 .scriptlogs-body--legacy .script-tab.script-tab--running.selected-script,
@@ -258,10 +268,18 @@
     padding: 0 !important;
 }
 
+.scriptlogs-tabs.scriptlogs-body {
+    margin-bottom: 0 !important;
+}
+
 .scriptlogs-collapsible {
     display: block;
     margin: 0 !important;
     padding: 0 !important;
+}
+
+.scriptlogs-collapsible.scriptlogs-body {
+    gap: 0 !important;
 }
 
 .scriptlogs-footer {

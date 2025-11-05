@@ -2,7 +2,7 @@
 <!DOCTYPE PLUGIN [
  <!ENTITY name "scriptlogs">
  <!ENTITY author "jo-sobo">
- <!ENTITY version "2025.11.05s-unraid720">
+ <!ENTITY version "2025.11.05t-unraid720">
  <!ENTITY branch "unraid720">
  <!ENTITY gitURL "https://github.com/jo-sobo/scriptlogs-unraid-plugin">
  <!ENTITY pluginURL "&gitURL;/raw/&branch;/packages/&name;-&version;.txz">
@@ -12,7 +12,7 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&selfURL;" min="6.9.0" support="&gitURL;/issues">
 
 <CHANGES>
-### 2025.11.05s-unraid720
+### 2025.11.05t-unraid720
 - Test build from the 'unraid720' branch targeting the Unraid 7.20 webGUI.
 </CHANGES>
 
