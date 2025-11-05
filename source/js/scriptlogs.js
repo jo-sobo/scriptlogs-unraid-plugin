@@ -152,28 +152,41 @@ $(function() {
 
     // Setup custom toggle for compact indicators (show when collapsed, hide when expanded)
     const compactWrapper = $('#scriptlogs-compact-wrapper');
-    const collapsibleContent = $('.scriptlogs-collapsible');
+    
+    // Find the collapsible element - could be different based on structure
+    let collapsibleContent = $('.scriptlogs-collapsible');
+    if (!collapsibleContent.length) {
+        // Try fallback row structure
+        collapsibleContent = $('.dash_scriptlogs_toggle');
+    }
     
     if (compactWrapper.length && collapsibleContent.length) {
-        // Create MutationObserver to watch for style changes on collapsible content
+        // Function to update compact indicator visibility
+        function updateCompactVisibility() {
+            const isHidden = collapsibleContent.css('display') === 'none';
+            // Show compact when content is hidden, hide when content is shown
+            compactWrapper.css('display', isHidden ? 'flex' : 'none');
+        }
+        
+        // Create MutationObserver to watch for style/class changes
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
-                if (mutation.attributeName === 'style') {
-                    const isHidden = collapsibleContent.css('display') === 'none';
-                    // Show compact when content is hidden, hide when content is shown
-                    compactWrapper.css('display', isHidden ? 'flex' : 'none');
+                if (mutation.attributeName === 'style' || mutation.attributeName === 'class') {
+                    updateCompactVisibility();
                 }
             });
         });
         
         observer.observe(collapsibleContent[0], {
             attributes: true,
-            attributeFilter: ['style']
+            attributeFilter: ['style', 'class']
         });
         
         // Set initial state
-        const isHidden = collapsibleContent.css('display') === 'none';
-        compactWrapper.css('display', isHidden ? 'flex' : 'none');
+        updateCompactVisibility();
+        
+        // Also check periodically in case toggle happens without mutation
+        setInterval(updateCompactVisibility, 500);
     }
 
     scriptlogs_status();

@@ -109,12 +109,9 @@ if ($isResponsiveWebgui) {
     </span>
     <span class="tile-header-right scriptlogs-header__right">
         <span class="tile-ctrl"></span>
-        <span class="tile-header-right-controls">
-            <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings" aria-label="Scriptlogs Settings">
-                <i class="fa fa-fw fa-cog control" aria-hidden="true"></i>
-            </a>
-            <i class="fa fa-fw fa-chevron-up control openclose" onclick="openClose($(this))" title="Show/Hide Content"></i>
-        </span>
+        <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings" aria-label="Scriptlogs Settings">
+            <i class="fa fa-fw fa-cog control" aria-hidden="true"></i>
+        </a>
     </span>
 </span>
 {$tile_body}
@@ -132,7 +129,6 @@ HTML;
         <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings" aria-label="Scriptlogs Settings">
             <i class="fa fa-fw fa-cog control" aria-hidden="true"></i>
         </a>
-        <i class="fa fa-fw fa-chevron-up control openclose" onclick="openClose($(this))" title="Show/Hide Content"></i>
     </span>
 </div>
 {$tile_body}
@@ -158,12 +154,9 @@ if ($isResponsiveWebgui) {
                 </span>
                 <span class="tile-header-right scriptlogs-header__right">
                     <span class="tile-ctrl"></span>
-                    <span class="tile-header-right-controls">
-                        <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings" aria-label="Scriptlogs Settings">
-                            <i class="fa fa-fw fa-cog control" aria-hidden="true"></i>
-                        </a>
-                        <i class="fa fa-fw fa-chevron-up control openclose" onclick="openClose($(this))" title="Show/Hide Content"></i>
-                    </span>
+                    <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings" aria-label="Scriptlogs Settings">
+                        <i class="fa fa-fw fa-cog control" aria-hidden="true"></i>
+                    </a>
                 </span>
             </span>
         </td>
@@ -194,7 +187,6 @@ HTML;
                     <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings" aria-label="Scriptlogs Settings">
                         <i class="fa fa-fw fa-cog control" aria-hidden="true"></i>
                     </a>
-                    <i class="fa fa-fw fa-chevron-up control openclose" onclick="openClose($(this))" title="Show/Hide Content"></i>
                 </span>
             </div>
         </td>
