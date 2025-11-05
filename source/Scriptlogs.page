@@ -81,7 +81,7 @@ $tile_collapsible = <<<HTML
 HTML;
 
 $compact_indicators = <<<HTML
-<span class="scriptlogs-compact" id="scriptlogs-compact-wrapper" style="display: none;">
+<div class="scriptlogs-compact" id="scriptlogs-compact-wrapper" style="display: none;">
     <span class="head_info scriptlogs-head-summary">
         <span>
             <i class="fa fa-play-circle" aria-hidden="true"></i>
@@ -91,7 +91,7 @@ $compact_indicators = <<<HTML
     <span class="head_bar scriptlogs-head-bar">
         <span id="scriptlogs-compact-indicators" class="scriptlogs-compact-indicators"></span>
     </span>
-</span>
+</div>
 HTML;
 
 $config_script = <<<HTML
@@ -104,11 +104,11 @@ if ($isResponsiveWebgui) {
     $tile['content'] = <<<HTML
 <span class="tile-header scriptlogs-header">
     <span class="tile-header-left scriptlogs-header__left">
-        <i class="fa fa-terminal f32 scriptlogs-header__icon" aria-hidden="true"></i>
-        <div class="section">
+        <div class="scriptlogs-header__top">
+            <i class="fa fa-terminal f32 scriptlogs-header__icon" aria-hidden="true"></i>
             <h3 class="tile-header-main scriptlogs-header__title">{$tile_title}</h3>
-            {$compact_indicators}
         </div>
+        {$compact_indicators}
     </span>
     <span class="tile-header-right scriptlogs-header__right">
         <span class="tile-header-right-controls">
@@ -125,11 +125,13 @@ HTML;
 } else {
     $tile['content'] = <<<HTML
 <div class="scriptlogs-legacy-header">
-    <span class="scriptlogs-legacy-header__left">
-        <i class="fa fa-terminal f32 scriptlogs-legacy-header__icon" aria-hidden="true"></i>
-        <span class="scriptlogs-legacy-title">{$tile_title}</span>
+    <div class="scriptlogs-legacy-header__left">
+        <div class="scriptlogs-legacy-header__top">
+            <i class="fa fa-terminal f32 scriptlogs-legacy-header__icon" aria-hidden="true"></i>
+            <span class="scriptlogs-legacy-title">{$tile_title}</span>
+        </div>
         {$compact_indicators}
-    </span>
+    </div>
     <span class="scriptlogs-legacy-controls">
         <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings" aria-label="Scriptlogs Settings">
             <i class="fa fa-fw fa-cog control" aria-hidden="true"></i>
@@ -152,11 +154,11 @@ if ($isResponsiveWebgui) {
         <td class="next" colspan="3">
             <span class="tile-header scriptlogs-header">
                 <span class="tile-header-left scriptlogs-header__left">
-                    <i class="fa fa-terminal f32 scriptlogs-header__icon" aria-hidden="true"></i>
-                    <div class="section">
+                    <div class="scriptlogs-header__top">
+                        <i class="fa fa-terminal f32 scriptlogs-header__icon" aria-hidden="true"></i>
                         <h3 class="tile-header-main scriptlogs-header__title">{$tile_title}</h3>
-                        {$compact_indicators}
                     </div>
+                    {$compact_indicators}
                 </span>
                 <span class="tile-header-right scriptlogs-header__right">
                     <span class="tile-header-right-controls">
@@ -190,11 +192,13 @@ HTML;
     <tr>
         <td class="next" colspan="3">
             <div class="scriptlogs-legacy-header">
-                <span class="scriptlogs-legacy-header__left">
-                    <i class="fa fa-terminal f32 scriptlogs-legacy-header__icon" aria-hidden="true"></i>
-                    <span class="scriptlogs-legacy-title">{$tile_title}</span>
+                <div class="scriptlogs-legacy-header__left">
+                    <div class="scriptlogs-legacy-header__top">
+                        <i class="fa fa-terminal f32 scriptlogs-legacy-header__icon" aria-hidden="true"></i>
+                        <span class="scriptlogs-legacy-title">{$tile_title}</span>
+                    </div>
                     {$compact_indicators}
-                </span>
+                </div>
                 <span class="scriptlogs-legacy-controls">
                     <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings" aria-label="Scriptlogs Settings">
                         <i class="fa fa-fw fa-cog control" aria-hidden="true"></i>
