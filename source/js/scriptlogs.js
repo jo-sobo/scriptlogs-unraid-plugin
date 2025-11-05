@@ -23,9 +23,9 @@ function scriptlogs_updateCompactIndicators(scripts) {
         });
     }
 
-    const headSummary = $('.scriptlogs-head-summary');
-    if (headSummary.length) {
-        headSummary.find('span:last').text(
+    const summaryText = $('#scriptlogs-head-summary-text');
+    if (summaryText.length) {
+        summaryText.text(
             runningCount > 0
                 ? `${runningCount} running`
                 : 'No scripts running'

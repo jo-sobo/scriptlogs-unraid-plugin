@@ -446,6 +446,13 @@
     color: var(--scriptlogs-accent);
 }
 
+.scriptlogs-compact-wrapper {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
 .scriptlogs-head-bar {
     display: inline-flex;
     align-items: center;
