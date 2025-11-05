@@ -202,14 +202,17 @@ $legacy_tile_markup = <<<HTML
 HTML;
 
 if (function_exists('register_dashboard_tile')) {
+    error_log('[scriptlogs] register_dashboard_tile() is available. Attempting to register responsive tile.');
     $registration_result = @register_dashboard_tile($tile);
 
     if (is_string($registration_result) && trim($registration_result) !== '') {
+        error_log('[scriptlogs] register_dashboard_tile() returned string response: ' . trim($registration_result));
         echo $registration_result;
         return;
     }
 
     if ($registration_result) {
+        error_log('[scriptlogs] register_dashboard_tile() succeeded with truthy result.');
         return;
     }
 
