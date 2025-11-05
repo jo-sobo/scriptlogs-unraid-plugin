@@ -153,22 +153,18 @@ $(function() {
     // Setup custom toggle for compact indicators (show when collapsed, hide when expanded)
     const compactWrapper = $('#scriptlogs-compact-wrapper');
     
-    // Find the collapsible element - could be different based on structure
-    let collapsibleContent = $('.scriptlogs-collapsible');
-    if (!collapsibleContent.length) {
-        // Try fallback row structure
-        collapsibleContent = $('.dash_scriptlogs_toggle');
-    }
+    // Watch the collapsible row which gets toggled by Unraid's openClose() function
+    const collapsibleRow = $('.dash_scriptlogs_toggle');
     
-    if (compactWrapper.length && collapsibleContent.length) {
+    if (compactWrapper.length && collapsibleRow.length) {
         // Function to update compact indicator visibility
         function updateCompactVisibility() {
-            const isHidden = collapsibleContent.css('display') === 'none';
+            const isHidden = collapsibleRow.css('display') === 'none';
             // Show compact when content is hidden, hide when content is shown
             compactWrapper.css('display', isHidden ? 'flex' : 'none');
         }
         
-        // Create MutationObserver to watch for style/class changes
+        // Create MutationObserver to watch for style/class changes on the row
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.attributeName === 'style' || mutation.attributeName === 'class') {
@@ -177,7 +173,7 @@ $(function() {
             });
         });
         
-        observer.observe(collapsibleContent[0], {
+        observer.observe(collapsibleRow[0], {
             attributes: true,
             attributeFilter: ['style', 'class']
         });

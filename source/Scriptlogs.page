@@ -52,26 +52,29 @@ $tabs_aria_label = htmlspecialchars(_('Script logs tabs'), ENT_QUOTES, 'UTF-8');
 $log_placeholder = htmlspecialchars(_('Select a script to see its log.'), ENT_QUOTES, 'UTF-8');
 $last_update_label = htmlspecialchars(_('Last Update:'), ENT_QUOTES, 'UTF-8');
 
-$tile_body = <<<HTML
+// Split tile body into tabs and collapsible sections
+$tile_tabs = <<<HTML
 <div class="scriptlogs-body">
     <div id="script-tabs-container" class="scriptlogs-tabs" role="tablist" aria-label="{$tabs_aria_label}"></div>
-    
-    <div class="scriptlogs-collapsible">
-        <div id="scriptlogs-container" class="scriptlogs-log" role="log" aria-live="polite">
-            <pre id="scriptlogs-logs">{$log_placeholder}</pre>
-        </div>
+</div>
+HTML;
 
-        <div class="scriptlogs-footer">
-            <div class="scriptlogs-autoscroll-container">
-                <label class="scriptlogs-autoscroll-label">
-                    <input type="checkbox" id="scriptlogs-autoscroll" class="scriptlogs-autoscroll-checkbox" checked>
-                    <span class="scriptlogs-autoscroll-text">Autoscroll</span>
-                </label>
-            </div>
-            <div class="scriptlogs-timestamp-container">
-                <span class="scriptlogs-timestamp-label">{$last_update_label}</span>
-                <span id="scriptlogs-timestamp"></span>
-            </div>
+$tile_collapsible = <<<HTML
+<div class="scriptlogs-body scriptlogs-collapsible">
+    <div id="scriptlogs-container" class="scriptlogs-log" role="log" aria-live="polite">
+        <pre id="scriptlogs-logs">{$log_placeholder}</pre>
+    </div>
+
+    <div class="scriptlogs-footer">
+        <div class="scriptlogs-autoscroll-container">
+            <label class="scriptlogs-autoscroll-label">
+                <input type="checkbox" id="scriptlogs-autoscroll" class="scriptlogs-autoscroll-checkbox" checked>
+                <span class="scriptlogs-autoscroll-text">Autoscroll</span>
+            </label>
+        </div>
+        <div class="scriptlogs-timestamp-container">
+            <span class="scriptlogs-timestamp-label">{$last_update_label}</span>
+            <span id="scriptlogs-timestamp"></span>
         </div>
     </div>
 </div>
@@ -101,27 +104,29 @@ if ($isResponsiveWebgui) {
     $tile['content'] = <<<HTML
 <span class="tile-header scriptlogs-header">
     <span class="tile-header-left scriptlogs-header__left">
-        <i class="fa fa-terminal scriptlogs-header__icon" aria-hidden="true"></i>
+        <i class="fa fa-terminal f32 scriptlogs-header__icon" aria-hidden="true"></i>
         <div class="section">
             <h3 class="tile-header-main scriptlogs-header__title">{$tile_title}</h3>
             {$compact_indicators}
         </div>
     </span>
     <span class="tile-header-right scriptlogs-header__right">
-        <span class="tile-ctrl"></span>
-        <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings" aria-label="Scriptlogs Settings">
-            <i class="fa fa-fw fa-cog control" aria-hidden="true"></i>
-        </a>
+        <span class="tile-header-right-controls">
+            <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings" aria-label="Scriptlogs Settings">
+                <i class="fa fa-fw fa-cog control" aria-hidden="true"></i>
+            </a>
+        </span>
     </span>
 </span>
-{$tile_body}
+{$tile_tabs}
+{$tile_collapsible}
 {$config_script}
 HTML;
 } else {
     $tile['content'] = <<<HTML
 <div class="scriptlogs-legacy-header">
     <span class="scriptlogs-legacy-header__left">
-        <i class="fa fa-terminal scriptlogs-legacy-header__icon" aria-hidden="true"></i>
+        <i class="fa fa-terminal f32 scriptlogs-legacy-header__icon" aria-hidden="true"></i>
         <span class="scriptlogs-legacy-title">{$tile_title}</span>
         {$compact_indicators}
     </span>
@@ -131,7 +136,8 @@ HTML;
         </a>
     </span>
 </div>
-{$tile_body}
+{$tile_tabs}
+{$tile_collapsible}
 {$config_script}
 HTML;
 }
@@ -146,24 +152,30 @@ if ($isResponsiveWebgui) {
         <td class="next" colspan="3">
             <span class="tile-header scriptlogs-header">
                 <span class="tile-header-left scriptlogs-header__left">
-                    <i class="fa fa-terminal scriptlogs-header__icon" aria-hidden="true"></i>
+                    <i class="fa fa-terminal f32 scriptlogs-header__icon" aria-hidden="true"></i>
                     <div class="section">
                         <h3 class="tile-header-main scriptlogs-header__title">{$tile_title}</h3>
                         {$compact_indicators}
                     </div>
                 </span>
                 <span class="tile-header-right scriptlogs-header__right">
-                    <span class="tile-ctrl"></span>
-                    <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings" aria-label="Scriptlogs Settings">
-                        <i class="fa fa-fw fa-cog control" aria-hidden="true"></i>
-                    </a>
+                    <span class="tile-header-right-controls">
+                        <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings" aria-label="Scriptlogs Settings">
+                            <i class="fa fa-fw fa-cog control" aria-hidden="true"></i>
+                        </a>
+                    </span>
                 </span>
             </span>
         </td>
     </tr>
+    <tr>
+        <td colspan="3">
+            {$tile_tabs}
+        </td>
+    </tr>
     <tr class="dash_scriptlogs_toggle scriptlogs-content">
         <td colspan="3">
-            {$tile_body}
+            {$tile_collapsible}
         </td>
     </tr>
 </tbody>
@@ -179,7 +191,7 @@ HTML;
         <td class="next" colspan="3">
             <div class="scriptlogs-legacy-header">
                 <span class="scriptlogs-legacy-header__left">
-                    <i class="fa fa-terminal scriptlogs-legacy-header__icon" aria-hidden="true"></i>
+                    <i class="fa fa-terminal f32 scriptlogs-legacy-header__icon" aria-hidden="true"></i>
                     <span class="scriptlogs-legacy-title">{$tile_title}</span>
                     {$compact_indicators}
                 </span>
@@ -193,33 +205,12 @@ HTML;
     </tr>
     <tr>
         <td colspan="3">
-            <div class="scriptlogs-body">
-                <div id="script-tabs-container" class="scriptlogs-tabs" role="tablist" aria-label="{$tabs_aria_label}"></div>
-            </div>
+            {$tile_tabs}
         </td>
     </tr>
     <tr class="dash_scriptlogs_toggle scriptlogs-content">
         <td colspan="3">
-            <div class="scriptlogs-body">
-                <div class="scriptlogs-collapsible">
-                    <div id="scriptlogs-container" class="scriptlogs-log" role="log" aria-live="polite">
-                        <pre id="scriptlogs-logs">{$log_placeholder}</pre>
-                    </div>
-
-                    <div class="scriptlogs-footer">
-                        <div class="scriptlogs-autoscroll-container">
-                            <label class="scriptlogs-autoscroll-label">
-                                <input type="checkbox" id="scriptlogs-autoscroll" class="scriptlogs-autoscroll-checkbox" checked>
-                                <span class="scriptlogs-autoscroll-text">Autoscroll</span>
-                            </label>
-                        </div>
-                        <div class="scriptlogs-timestamp-container">
-                            <span class="scriptlogs-timestamp-label">{$last_update_label}</span>
-                            <span id="scriptlogs-timestamp"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {$tile_collapsible}
         </td>
     </tr>
 </tbody>
