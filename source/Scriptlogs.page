@@ -52,29 +52,33 @@ $tabs_aria_label = htmlspecialchars(_('Script logs tabs'), ENT_QUOTES, 'UTF-8');
 $log_placeholder = htmlspecialchars(_('Select a script to see its log.'), ENT_QUOTES, 'UTF-8');
 $last_update_label = htmlspecialchars(_('Last Update:'), ENT_QUOTES, 'UTF-8');
 
-$tile_body_tabs = <<<HTML
-<div id="script-tabs-container" class="scriptlogs-tabs scriptlogs-body" role="tablist" aria-label="{$tabs_aria_label}"></div>
-HTML;
-
-$tile_body_collapsible = <<<HTML
-<div class="scriptlogs-collapsible scriptlogs-body">
-    <div id="scriptlogs-container" class="scriptlogs-log" role="log" aria-live="polite">
-        <pre id="scriptlogs-logs">{$log_placeholder}</pre>
-    </div>
-
-    <div class="scriptlogs-footer">
-        <div class="scriptlogs-autoscroll-container">
-            <label class="scriptlogs-autoscroll-label">
-                <input type="checkbox" id="scriptlogs-autoscroll" class="scriptlogs-autoscroll-checkbox" checked>
-                <span class="scriptlogs-autoscroll-text">Autoscroll</span>
-            </label>
+$tile_body = <<<HTML
+<div class="scriptlogs-body">
+    <div id="script-tabs-container" class="scriptlogs-tabs" role="tablist" aria-label="{$tabs_aria_label}"></div>
+    
+    <div class="scriptlogs-collapsible">
+        <div id="scriptlogs-container" class="scriptlogs-log" role="log" aria-live="polite">
+            <pre id="scriptlogs-logs">{$log_placeholder}</pre>
         </div>
-        <div class="scriptlogs-timestamp-container">
-            <span class="scriptlogs-timestamp-label">{$last_update_label}</span>
-            <span id="scriptlogs-timestamp"></span>
+
+        <div class="scriptlogs-footer">
+            <div class="scriptlogs-autoscroll-container">
+                <label class="scriptlogs-autoscroll-label">
+                    <input type="checkbox" id="scriptlogs-autoscroll" class="scriptlogs-autoscroll-checkbox" checked>
+                    <span class="scriptlogs-autoscroll-text">Autoscroll</span>
+                </label>
+            </div>
+            <div class="scriptlogs-timestamp-container">
+                <span class="scriptlogs-timestamp-label">{$last_update_label}</span>
+                <span id="scriptlogs-timestamp"></span>
+            </div>
         </div>
     </div>
 </div>
+HTML;
+
+$compact_indicators = <<<HTML
+<div id="scriptlogs-compact-indicators" class="scriptlogs-compact-indicators" style="display: none;"></div>
 HTML;
 
 $config_script = <<<HTML
@@ -90,6 +94,7 @@ if ($isResponsiveWebgui) {
         <i class="fa fa-terminal scriptlogs-header__icon" aria-hidden="true"></i>
         <div class="section">
             <h3 class="tile-header-main scriptlogs-header__title">{$tile_title}</h3>
+            {$compact_indicators}
         </div>
     </span>
     <span class="tile-header-right scriptlogs-header__right">
@@ -102,8 +107,7 @@ if ($isResponsiveWebgui) {
         </span>
     </span>
 </span>
-{$tile_body_tabs}
-{$tile_body_collapsible}
+{$tile_body}
 {$config_script}
 HTML;
 } else {
@@ -120,8 +124,8 @@ HTML;
         <i class="fa fa-fw fa-chevron-up control openclose" onclick="openClose($(this))" title="Show/Hide Content"></i>
     </span>
 </div>
-{$tile_body_tabs}
-{$tile_body_collapsible}
+{$compact_indicators}
+{$tile_body}
 {$config_script}
 HTML;
 }

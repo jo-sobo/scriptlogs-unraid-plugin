@@ -1,6 +1,23 @@
 /* global $ */
 
 // Configuration is provided via window.scriptlogsConfig from Scriptlogs.page
+function scriptlogs_updateCompactIndicators(scripts) {
+    const compactContainer = $('#scriptlogs-compact-indicators');
+    if (!compactContainer.length) return;
+    
+    compactContainer.empty();
+    
+    if (Array.isArray(scripts) && scripts.length > 0) {
+        scripts.forEach(script => {
+            const indicator = $('<span>')
+                .addClass('scriptlogs-compact-indicator')
+                .toggleClass('scriptlogs-compact-indicator--running', script.status === 'running')
+                .text(script.name);
+            compactContainer.append(indicator);
+        });
+    }
+}
+
 function scriptlogs_status() {
     const config = window.scriptlogsConfig || {};
     const enabledScripts = config.enabledScripts || [];
@@ -15,6 +32,7 @@ function scriptlogs_status() {
     if (!enabledScripts || enabledScripts.length === 0) {
         tabContainer.empty();
         logDisplay.text('No scripts selected. Please check your Scriptlogs settings.');
+        scriptlogs_updateCompactIndicators([]);
         if (timestampDisplay.length) {
             timestampDisplay.text(new Date().toLocaleTimeString());
         }
@@ -28,6 +46,9 @@ function scriptlogs_status() {
 
     $.getJSON('/plugins/scriptlogs/scriptlogs_api.php?action=get_script_states', function(scripts) {
         tabContainer.empty();
+        
+        // Update compact indicators
+        scriptlogs_updateCompactIndicators(scripts);
 
         if (Array.isArray(scripts) && scripts.length > 0) {
             scripts.forEach(script => {
@@ -85,11 +106,28 @@ function scriptlogs_status() {
     }).fail(function(jqXHR, textStatus, errorThrown) {
         console.error('Scriptlogs AJAX Error:', textStatus, errorThrown);
         tabContainer.empty();
+        scriptlogs_updateCompactIndicators([]);
         logDisplay.text('Error loading script states. Check browser console (F12) for details.');
         if (timestampDisplay.length) {
             timestampDisplay.text(new Date().toLocaleTimeString());
         }
     });
+}
+
+function scriptlogs_toggleCompactIndicators() {
+    const compactContainer = $('#scriptlogs-compact-indicators');
+    const scriptlogsBody = $('.scriptlogs-body');
+    
+    if (!compactContainer.length || !scriptlogsBody.length) return;
+    
+    // Check if tile is collapsed by looking at scriptlogs-body visibility
+    const isCollapsed = scriptlogsBody.css('display') === 'none' || !scriptlogsBody.is(':visible');
+    
+    if (isCollapsed) {
+        compactContainer.css('display', 'flex');
+    } else {
+        compactContainer.css('display', 'none');
+    }
 }
 
 $(function() {
@@ -100,6 +138,18 @@ $(function() {
         widgetRoot.toggleClass('scriptlogs-body--responsive', !!config.isResponsive);
         widgetRoot.toggleClass('scriptlogs-body--legacy', !config.isResponsive);
     }
+    
+    // Monitor for tile collapse/expand events
+    const opencloseButton = $('.openclose');
+    if (opencloseButton.length) {
+        opencloseButton.on('click', function() {
+            // Delay to allow the animation to complete
+            setTimeout(scriptlogs_toggleCompactIndicators, 100);
+        });
+    }
+    
+    // Initial state check
+    scriptlogs_toggleCompactIndicators();
 
     // Apply font size setting to the log container and pre element
     if (config.fontSize) {
