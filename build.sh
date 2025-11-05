@@ -24,16 +24,11 @@ if [[ "$STAGE_INPUT" == "dev" ]]; then
   BRANCH="dev"
   PLUGIN_URL_STRUCTURE="&gitURL;/raw/&branch;/packages/&name;-&version;.txz"
   CHANGES_TEXT="- Development build from the 'dev' branch. For testing purposes only."
-elif [[ "$STAGE_INPUT" == "unraid720" ]]; then
-  # Settings for the Unraid 7.20 migration test branch
-  BRANCH="unraid720"
-  PLUGIN_URL_STRUCTURE="&gitURL;/raw/&branch;/packages/&name;-&version;.txz"
-  CHANGES_TEXT="- Test build from the 'unraid720' branch targeting the Unraid 7.20 webGUI."
 else
   # Settings for a 'release' build
   BRANCH="main"
   PLUGIN_URL_STRUCTURE="&gitURL;/releases/download/&version;/&name;-&version;.txz"
-  CHANGES_TEXT="- Automated build release."
+  CHANGES_TEXT="- Automated main build release."
 fi
 
 # --- Build Process ---
