@@ -15,7 +15,8 @@ if (isset($_POST['#apply'])) {
     'REFRESH_INTERVAL' => $_POST['REFRESH_INTERVAL'],
     'ENABLED_SCRIPTS' => isset($_POST['ENABLED_SCRIPTS']) ? implode(',', $_POST['ENABLED_SCRIPTS']) : '',
     'SHOW_IDLE_LOGS' => isset($_POST['SHOW_IDLE_LOGS']) ? '1' : '0',
-    'LOG_FONT_SIZE' => $_POST['LOG_FONT_SIZE']
+    'LOG_FONT_SIZE' => $_POST['LOG_FONT_SIZE'],
+    'VERSION_OVERRIDE' => $_POST['VERSION_OVERRIDE'] ?? 'auto'
   ];
 
   $ini = '';
@@ -39,6 +40,14 @@ if (is_dir($user_scripts_path)) {
       $available_scripts[] = $script_name;
     }
   }
+}
+
+// Check if this is a main branch build
+$branch_meta_file = '/usr/local/emhttp/plugins/scriptlogs/branch.meta';
+$is_main_branch = true; // default to hiding the setting
+if (file_exists($branch_meta_file)) {
+    $branch_meta = parse_ini_file($branch_meta_file);
+    $is_main_branch = ($branch_meta['IS_MAIN_BRANCH'] ?? '1') === '1';
 }
 
 $enabled_scripts_array = isset($cfg['ENABLED_SCRIPTS']) ? explode(',', $cfg['ENABLED_SCRIPTS']) : [];
@@ -80,6 +89,18 @@ $enabled_scripts_array = isset($cfg['ENABLED_SCRIPTS']) ? explode(',', $cfg['ENA
         <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', "1.25rem", _("Extra Large"));?>
       </select>
     </span>
+
+  <?php if (!$is_main_branch): ?>
+  _(Version Override)_:
+  : <span class="scriptlogs-control">
+      <select name="VERSION_OVERRIDE" class="form-control">
+        <?php echo mk_option($cfg['VERSION_OVERRIDE'] ?? 'auto', "auto", _("Auto (Detect Unraid Version)"));?>
+        <?php echo mk_option($cfg['VERSION_OVERRIDE'] ?? 'auto', "legacy", _("Force Legacy Mode"));?>
+        <?php echo mk_option($cfg['VERSION_OVERRIDE'] ?? 'auto', "responsive", _("Force Responsive Mode"));?>
+      </select>
+      <span class="scriptlogs-hint"><?php echo _('Override automatic version detection. Only visible in non-release builds.'); ?></span>
+    </span>
+  <?php endif; ?>
   </dl>
 
   ### _(Script Selection)_

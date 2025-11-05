@@ -121,7 +121,9 @@
     border-top: 1px solid var(--scriptlogs-tab-border) !important;
     border-left: 1px solid var(--scriptlogs-tab-border) !important;
     border-right: 1px solid var(--scriptlogs-tab-border) !important;
-    border-bottom: 3px solid #ff8c00 !important;
+    border-bottom: 3px solid transparent !important;
+    border-image: linear-gradient(to right, rgb(229, 48, 41), rgb(254, 136, 48)) 1 !important;
+    border-image-slice: 0 0 1 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
     z-index: 1 !important;
@@ -135,7 +137,9 @@
     border-top: 3px solid var(--success-border, #2f6f2a) !important;
     border-left: 1px solid var(--scriptlogs-tab-border) !important;
     border-right: 1px solid var(--scriptlogs-tab-border) !important;
-    border-bottom: 3px solid #ff8c00 !important;
+    border-bottom: 3px solid transparent !important;
+    border-image: linear-gradient(to right, rgb(229, 48, 41), rgb(254, 136, 48)) 1 !important;
+    border-image-slice: 0 0 1 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
     z-index: 1 !important;

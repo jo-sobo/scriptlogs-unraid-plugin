@@ -17,9 +17,19 @@ $tile_config = [
     'fontSize' => $cfg['LOG_FONT_SIZE'] ?? '1rem',
 ];
 
-$version_data = @parse_ini_file('/etc/unraid-version');
-$webgui_version = $version_data['version'] ?? '0.0.0';
-$isResponsiveWebgui = version_compare($webgui_version, '7.2.0-beta', '>=');
+// Determine tile version (responsive vs legacy)
+$version_override = $cfg['VERSION_OVERRIDE'] ?? 'auto';
+
+if ($version_override === 'legacy') {
+    $isResponsiveWebgui = false;
+} elseif ($version_override === 'responsive') {
+    $isResponsiveWebgui = true;
+} else {
+    // Auto-detect based on Unraid version
+    $version_data = @parse_ini_file('/etc/unraid-version');
+    $webgui_version = $version_data['version'] ?? '0.0.0';
+    $isResponsiveWebgui = version_compare($webgui_version, '7.2.0-beta', '>=');
+}
 
 $tile_config['isResponsive'] = $isResponsiveWebgui;
 $tile_config_json = json_encode($tile_config, JSON_UNESCAPED_SLASHES);
@@ -42,10 +52,14 @@ $tabs_aria_label = htmlspecialchars(_('Script logs tabs'), ENT_QUOTES, 'UTF-8');
 $log_placeholder = htmlspecialchars(_('Select a script to see its log.'), ENT_QUOTES, 'UTF-8');
 $last_update_label = htmlspecialchars(_('Last Update:'), ENT_QUOTES, 'UTF-8');
 
-$tile_body = <<<HTML
+$tile_body_tabs = <<<HTML
 <div class="scriptlogs-body">
     <div id="script-tabs-container" class="scriptlogs-tabs" role="tablist" aria-label="{$tabs_aria_label}"></div>
-    
+</div>
+HTML;
+
+$tile_body_collapsible = <<<HTML
+<div class="scriptlogs-body">
     <div class="scriptlogs-collapsible">
         <div id="scriptlogs-container" class="scriptlogs-log" role="log" aria-live="polite">
             <pre id="scriptlogs-logs">{$log_placeholder}</pre>
@@ -92,7 +106,8 @@ if ($isResponsiveWebgui) {
         </span>
     </span>
 </span>
-{$tile_body}
+{$tile_body_tabs}
+{$tile_body_collapsible}
 {$config_script}
 HTML;
 } else {
@@ -109,7 +124,8 @@ HTML;
         <i class="fa fa-fw fa-chevron-up control openclose" onclick="openClose($(this))" title="Show/Hide Content"></i>
     </span>
 </div>
-{$tile_body}
+{$tile_body_tabs}
+{$tile_body_collapsible}
 {$config_script}
 HTML;
 }
@@ -143,22 +159,20 @@ $legacy_tile_markup = <<<HTML
     <tr class="dash_scriptlogs_toggle scriptlogs-content">
         <td colspan="3">
             <div class="scriptlogs-body">
-                <div class="scriptlogs-collapsible">
-                    <div id="scriptlogs-container" class="scriptlogs-log" role="log" aria-live="polite">
-                        <pre id="scriptlogs-logs">{$log_placeholder}</pre>
-                    </div>
+                <div id="scriptlogs-container" class="scriptlogs-log" role="log" aria-live="polite">
+                    <pre id="scriptlogs-logs">{$log_placeholder}</pre>
+                </div>
 
-                    <div class="scriptlogs-footer">
-                        <div class="scriptlogs-autoscroll-container">
-                            <label class="scriptlogs-autoscroll-label">
-                                <input type="checkbox" id="scriptlogs-autoscroll" class="scriptlogs-autoscroll-checkbox" checked>
-                                <span class="scriptlogs-autoscroll-text">Autoscroll</span>
-                            </label>
-                        </div>
-                        <div class="scriptlogs-timestamp-container">
-                            <span class="scriptlogs-timestamp-label">{$last_update_label}</span>
-                            <span id="scriptlogs-timestamp"></span>
-                        </div>
+                <div class="scriptlogs-footer">
+                    <div class="scriptlogs-autoscroll-container">
+                        <label class="scriptlogs-autoscroll-label">
+                            <input type="checkbox" id="scriptlogs-autoscroll" class="scriptlogs-autoscroll-checkbox" checked>
+                            <span class="scriptlogs-autoscroll-text">Autoscroll</span>
+                        </label>
+                    </div>
+                    <div class="scriptlogs-timestamp-container">
+                        <span class="scriptlogs-timestamp-label">{$last_update_label}</span>
+                        <span id="scriptlogs-timestamp"></span>
                     </div>
                 </div>
             </div>
