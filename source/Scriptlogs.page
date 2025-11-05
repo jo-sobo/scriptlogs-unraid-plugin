@@ -82,15 +82,11 @@ HTML;
 
 $compact_indicators = <<<HTML
 <div class="scriptlogs-compact" id="scriptlogs-compact-wrapper" style="display: none;">
-    <span class="head_info scriptlogs-head-summary">
-        <span>
-            <i class="fa fa-play-circle" aria-hidden="true"></i>
-            <span id="scriptlogs-head-summary-text">No scripts running</span>
-        </span>
-    </span>
-    <span class="head_bar scriptlogs-head-bar">
-        <span id="scriptlogs-compact-indicators" class="scriptlogs-compact-indicators"></span>
-    </span>
+    <div class="scriptlogs-head-summary">
+        <i class="fa fa-play-circle" aria-hidden="true"></i>
+        <span id="scriptlogs-head-summary-text">No scripts running</span>
+    </div>
+    <div id="scriptlogs-compact-indicators" class="scriptlogs-compact-indicators"></div>
 </div>
 HTML;
 
