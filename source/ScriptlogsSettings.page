@@ -3,32 +3,38 @@ Icon="ScriptLogsLogo.png"
 Title="Scriptlogs Settings"
 ---
 <?php
+// Quick note: handles the settings form and persists plugin preferences.
 require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
 
 $plugin_name = 'scriptlogs';
 $cfg_file = "/boot/config/plugins/{$plugin_name}/{$plugin_name}.cfg";
 
-// Save the new settings when the form is submitted
+// --- Persist new configuration when the form is submitted ---
 if (isset($_POST['#apply'])) {
   $new_cfg = [
     'REFRESH_ENABLED' => $_POST['REFRESH_ENABLED'],
     'REFRESH_INTERVAL' => $_POST['REFRESH_INTERVAL'],
     'ENABLED_SCRIPTS' => isset($_POST['ENABLED_SCRIPTS']) ? implode(',', $_POST['ENABLED_SCRIPTS']) : '',
-    'SHOW_IDLE_LOGS' => isset($_POST['SHOW_IDLE_LOGS']) ? '1' : '0'
+    'SHOW_IDLE_LOGS' => isset($_POST['SHOW_IDLE_LOGS']) ? '1' : '0',
+    'LOG_FONT_SIZE' => $_POST['LOG_FONT_SIZE'],
+    'VERSION_OVERRIDE' => $_POST['VERSION_OVERRIDE'] ?? 'auto'
   ];
 
-  $ini = '';
+ // --- Serialize the configuration to the plugin .cfg file ---
+ $ini = '';
   foreach ($new_cfg as $key => $value) {
     $ini .= "{$key}=\"{$value}\"\n";
   }
   file_put_contents($cfg_file, $ini);
   
   $cfg = $new_cfg;
+  // --- Continue using the freshly saved values below ---
 } else {
+  // --- Bootstrap existing configuration for initial render ---
   $cfg = parse_plugin_cfg($plugin_name, true);
 }
 
-// Find all available user scripts
+// --- Discover user scripts to populate the selection list ---
 $user_scripts_path = '/boot/config/plugins/user.scripts/scripts';
 $available_scripts = [];
 if (is_dir($user_scripts_path)) {
@@ -40,53 +46,87 @@ if (is_dir($user_scripts_path)) {
   }
 }
 
+// --- Hide developer-only controls in main release builds ---
+$branch_meta_file = '/usr/local/emhttp/plugins/scriptlogs/branch.meta';
+$is_main_branch = true; // default to hiding the setting
+if (file_exists($branch_meta_file)) {
+    $branch_meta = parse_ini_file($branch_meta_file);
+    $is_main_branch = ($branch_meta['IS_MAIN_BRANCH'] ?? '1') === '1';
+}
+
+// --- Determine which scripts are currently enabled ---
 $enabled_scripts_array = isset($cfg['ENABLED_SCRIPTS']) ? explode(',', $cfg['ENABLED_SCRIPTS']) : [];
 ?>
 
-<form name="scriptlogs_settings" method="post">
-  <div class="content">
-    <div class="settings">
-      <h3>General Settings</h3>
-      <dl>
-        <dt>Automatic Refresh:</dt>
-        <dd>
-          <select name="REFRESH_ENABLED" class="form-control">
-            <?php echo mk_option($cfg['REFRESH_ENABLED'] ?? '1', "1", "Enabled");?>
-            <?php echo mk_option($cfg['REFRESH_ENABLED'] ?? '1', "0", "Disabled");?>
-          </select>
-        </dd>
-        
-        <dt>Refresh Interval (in seconds):</dt>
-        <dd>
-          <input type="number" name="REFRESH_INTERVAL" class="form-control" min="1" value="<?php echo htmlspecialchars($cfg['REFRESH_INTERVAL'] ?? '10'); ?>">
-        </dd>
+<form name="scriptlogs_settings" method="post" class="scriptlogs-settings">
+  <div class="content scriptlogs-settings-section" markdown="1">
+  ### _(General Settings)_
 
-        <dt>Show Last Log for Idle Scripts:</dt>
-        <dd>
-          <input type="checkbox" name="SHOW_IDLE_LOGS" value="1" <?php echo (($cfg['SHOW_IDLE_LOGS'] ?? '0') === '1' ? 'checked' : ''); ?>>
-          <span>(Shows the last available log. Note: Only runs in the background produce a log file that can be displayed here.)</span>
-        </dd>
-      </dl>
+  <dl class="page-settings">
+  _(Automatic Refresh)_:
+  : <span class="scriptlogs-control">
+      <select name="REFRESH_ENABLED" class="form-control">
+        <?php echo mk_option($cfg['REFRESH_ENABLED'] ?? '1', "1", _("Enabled"));?>
+        <?php echo mk_option($cfg['REFRESH_ENABLED'] ?? '1', "0", _("Disabled"));?>
+      </select>
+    </span>
 
-      <h3>Script Selection</h3>
-      <p>Select which scripts should be displayed in the dashboard widget.</p>
-      <div class="script-list">
-        <?php if (empty($available_scripts)): ?>
-          <p>No user scripts found. Please create scripts in the "User Scripts" plugin first.</p>
-        <?php else: ?>
-          <?php foreach ($available_scripts as $script): ?>
-            <div class="script-item">
-              <input type="checkbox" name="ENABLED_SCRIPTS[]" value="<?php echo htmlspecialchars($script); ?>" <?php echo (in_array($script, $enabled_scripts_array) ? 'checked' : ''); ?>>
-              <label><?php echo htmlspecialchars($script); ?></label>
-            </div>
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </div>
-      
-      <div class="buttons">
-        <input type="submit" name="#apply" value="Apply">
-        <input type="button" value="Done" onclick="done()">
-      </div>
-    </div>
+  _(Refresh Interval (seconds))_:
+  : <span class="scriptlogs-control">
+      <input type="number" name="REFRESH_INTERVAL" class="form-control" min="1" value="<?php echo htmlspecialchars($cfg['REFRESH_INTERVAL'] ?? '10'); ?>">
+    </span>
+
+  _(Show Last Log for Idle Scripts)_:
+  : <span class="scriptlogs-control">
+      <label>
+        <input type="checkbox" name="SHOW_IDLE_LOGS" value="1" <?php echo (($cfg['SHOW_IDLE_LOGS'] ?? '0') === '1' ? 'checked' : ''); ?>>
+        <span class="scriptlogs-hint"><?php echo _('Shows the last available log for scripts that ran in the background.'); ?></span>
+      </label>
+    </span>
+
+  _(Log Font Size)_:
+  : <span class="scriptlogs-control">
+      <select name="LOG_FONT_SIZE" class="form-control">
+        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', "0.75rem", _("Extra Small"));?>
+        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', "0.875rem", _("Small"));?>
+        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', "1rem", _("Medium (Default)"));?>
+        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', "1.125rem", _("Large"));?>
+        <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', "1.25rem", _("Extra Large"));?>
+      </select>
+    </span>
+
+  <?php if (!$is_main_branch): ?>
+  _(Version Override)_:
+  : <span class="scriptlogs-control">
+      <select name="VERSION_OVERRIDE" class="form-control">
+        <?php echo mk_option($cfg['VERSION_OVERRIDE'] ?? 'auto', "auto", _("Auto (Detect Unraid Version)"));?>
+        <?php echo mk_option($cfg['VERSION_OVERRIDE'] ?? 'auto', "legacy", _("Force Legacy Mode"));?>
+        <?php echo mk_option($cfg['VERSION_OVERRIDE'] ?? 'auto', "responsive", _("Force Responsive Mode"));?>
+      </select>
+      <span class="scriptlogs-hint"><?php echo _('Override automatic version detection. Only visible in non-release builds.'); ?></span>
+    </span>
+  <?php endif; ?>
+  </dl>
+
+  ### _(Script Selection)_
+  <?php if (empty($available_scripts)): ?>
+  <p><?php echo _('No user scripts found. Please create scripts in the "User Scripts" plugin first.'); ?></p>
+  <?php else: ?>
+  <p><?php echo _('Select which scripts should appear in the Scriptlogs dashboard widget.'); ?></p>
+  <div class="scriptlogs-script-list">
+    <?php foreach ($available_scripts as $script): ?>
+      <?php $safe_script = htmlspecialchars($script); ?>
+      <label class="scriptlogs-script-item">
+        <input type="checkbox" name="ENABLED_SCRIPTS[]" value="<?php echo $safe_script; ?>" <?php echo (in_array($script, $enabled_scripts_array) ? 'checked' : ''); ?>>
+        <span><?php echo $safe_script; ?></span>
+      </label>
+    <?php endforeach; ?>
+  </div>
+  <?php endif; ?>
+
+  <div class="buttons-spaced">
+    <input type="submit" name="#apply" value="<?php echo _('Apply'); ?>">
+    <input type="button" value="<?php echo _('Done'); ?>" onclick="done()">
+  </div>
   </div>
 </form>

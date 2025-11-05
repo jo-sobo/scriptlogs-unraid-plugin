@@ -4,23 +4,33 @@
 
 This plugin adds a configurable widget to the Unraid Dashboard, allowing you to see the status and log output of your favorite scripts without needing to keep the User Scripts page open.
 
+![Scriptlogs Widget Screenshot slim script](https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs_screenshot_slim.png)
 ![Scriptlogs Widget Screenshot running script](https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs_screenshot_running.png)
 ![Scriptlogs Widget Screenshot idle script](https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs_screenshot_idle.png)
 
 ## ✨ Features
 
+**Fully configurable via a dedicated settings page**
+
 * Displays a compact, movable widget on your Unraid Dashboard.
+* Compact status overview when collapsed
 * Shows the real-time status of selected User Scripts with color-coded tabs (**Green** for running, **Gray** for idle).
 * Differentiates between **foreground scripts** (showing a notice to check the User Scripts window) and **background scripts** (showing a live log).
 * Optionally displays the last known log for idle scripts (from their last background run).
-* **"Smart scrolling"** feature: The log view preserves your scroll position when you scroll up and resumes auto-scrolling when you scroll back to the bottom.
-* Fully configurable via a dedicated settings page.
+* Auto-scrolling that can be switched on/off
+* Selectable log text size
+
 
 ## Prerequisites
 
 This plugin **requires** the **[User Scripts](https://forums.unraid.net/topic/48286-plugin-user-scripts/)** plugin by Andrew Zawadzki to be installed and functional.
 
 ## 💾 Installation
+
+**Availiable in the UNRAID Community Apps Store**
+
+
+or via manual install:
 
 1.  In the Unraid web interface, go to the **Plugins** tab.
 2.  Click on **Install Plugin**.
@@ -40,6 +50,7 @@ After installation, you can configure the widget to your needs.
     * **Automatic Refresh:** Turn the live update feature on or off.
     * **Refresh Interval:** Define how often the widget should update (in seconds).
     * **Show Last Log for Idle Scripts:** If enabled, the widget will display the last saved log for any idle script that was previously run **in the background**.
+    * **Log Font Size** Change the text size inside the log view of the dashboard tile
     * **Script Selection:** Use the checkboxes to choose which scripts you want to monitor on your dashboard.
 4.  Click **Apply** to save your changes. The widget on the dashboard will update accordingly.
 

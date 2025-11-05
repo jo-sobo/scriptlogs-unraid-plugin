@@ -28,7 +28,7 @@ else
   # Settings for a 'release' build
   BRANCH="main"
   PLUGIN_URL_STRUCTURE="&gitURL;/releases/download/&version;/&name;-&version;.txz"
-  CHANGES_TEXT="- Automated build release."
+  CHANGES_TEXT="- Automated main build release."
 fi
 
 # --- Build Process ---
@@ -44,6 +44,12 @@ mkdir -p ${PACKAGE_DIR_FINAL}
 PLUGIN_DEST_PATH="${PACKAGE_DIR_TEMP}/usr/local/emhttp/plugins/${PLUGIN_NAME}"
 mkdir -p "${PLUGIN_DEST_PATH}"
 cp -R source/* "${PLUGIN_DEST_PATH}/"
+
+# Create branch metadata file
+cat > "${PLUGIN_DEST_PATH}/branch.meta" << METAEOF
+BRANCH="${BRANCH}"
+IS_MAIN_BRANCH=$([[ "$BRANCH" == "main" ]] && echo "1" || echo "0")
+METAEOF
 
 # Set correct permissions before packaging
 find "${PLUGIN_DEST_PATH}" -type d -exec chmod 755 {} \;
@@ -96,6 +102,7 @@ ${CHANGES_TEXT}
     REFRESH_INTERVAL="10"
     ENABLED_SCRIPTS=""
     SHOW_IDLE_LOGS="0"
+    VERSION_OVERRIDE="auto"
   </INLINE>
 </FILE>
 
