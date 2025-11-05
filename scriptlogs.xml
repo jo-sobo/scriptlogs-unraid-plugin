@@ -3,7 +3,7 @@
     <Plugin>True</Plugin>
     <PluginURL>https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs.plg</PluginURL>
     <PluginAuthor>jo-sobo</PluginAuthor>
-    <Beta>true</Beta>
+    <Beta>false</Beta>
     <Category>Tools:Utilities</Category>
     <Name>Scriptlogs</Name>
     <Description>
