@@ -23,6 +23,23 @@ function scriptlogs_updateCompactIndicators(scripts) {
         });
     }
 
+    const wrapper = $('#scriptlogs-compact-wrapper');
+    const headBar = $('.scriptlogs-head-bar');
+    const indicatorsEl = compactContainer.get(0);
+    if (indicatorsEl) {
+        const layoutDebug = {
+            compactWrapperDisplay: wrapper.length ? wrapper.css('display') : '(missing)',
+            compactWrapperWidth: wrapper.length ? wrapper.outerWidth() : 0,
+            headBarDisplay: headBar.length ? headBar.css('display') : '(missing)',
+            headBarWidth: headBar.length ? headBar.outerWidth() : 0,
+            indicatorsWidth: $(indicatorsEl).outerWidth(),
+            indicatorCount: compactContainer.children().length,
+            gridTemplateColumns: window.getComputedStyle(indicatorsEl).gridTemplateColumns,
+            gridAutoColumns: window.getComputedStyle(indicatorsEl).gridAutoColumns
+        };
+        console.log('[scriptlogs][compact] layout debug', layoutDebug);
+    }
+
     const summaryText = $('#scriptlogs-head-summary-text');
     if (summaryText.length) {
         summaryText.text(
