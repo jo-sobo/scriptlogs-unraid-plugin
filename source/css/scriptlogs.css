@@ -479,12 +479,11 @@
 }
 
 .scriptlogs-compact-indicators {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
     gap: 0.5rem;
     padding: 0;
-    align-items: flex-start;
+    width: 100%;
 }
 
 .scriptlogs-compact-indicator {
@@ -508,7 +507,7 @@
     width: 0.5rem;
     height: 0.5rem;
     border-radius: 50%;
-    background-color: #888888;
+    background-color: #b5b5b5;
 }
 
 .scriptlogs-compact-indicator--running {
