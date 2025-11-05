@@ -1,7 +1,8 @@
 <?php
+// Quick note: this endpoint feeds the dashboard widget with live script status.
 require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
 
-// Security: ensure the request originates from the WebGUI via AJAX
+// --- Block direct hits: only allow AJAX calls from the WebGUI ---
 $headers = function_exists('getallheaders') ? getallheaders() : [];
 $requestedWith = $headers['X-Requested-With'] ?? $headers['x-requested-with'] ?? ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? null);
 if ($requestedWith !== 'XMLHttpRequest') {
@@ -9,17 +10,19 @@ if ($requestedWith !== 'XMLHttpRequest') {
     exit('Direct access not allowed');
 }
 
-// Enforce read-only access
+// --- Keep the endpoint read-only to avoid accidental writes ---
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     header('HTTP/1.1 405 Method Not Allowed');
     exit('Only GET requests allowed');
 }
 
+ // --- Handle state polling requests from the frontend ---
 if (isset($_GET['action']) && $_GET['action'] === 'get_script_states') {
     header('Content-Type: application/json');
     header('Cache-Control: no-cache, must-revalidate');
     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 
+    // --- Load plugin configuration to decide which scripts to inspect ---
     $cfg = parse_plugin_cfg('scriptlogs', true);
     $enabled_scripts_str = $cfg['ENABLED_SCRIPTS'] ?? '';
     $enabled_scripts = !empty($enabled_scripts_str) ? explode(',', $enabled_scripts_str) : [];
@@ -27,6 +30,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_script_states') {
 
     $response_data = [];
 
+    // --- Build response payload for each enabled script ---
     foreach ($enabled_scripts as $script_name_raw) {
         $script_name = basename(trim($script_name_raw));
         if ($script_name === '') {
@@ -34,8 +38,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_script_states') {
         }
 
         $script_data = ['name' => $script_name, 'status' => 'idle', 'log' => ''];
-
-        // Hybrid status check (foreground first, then background)
+ 
+        // --- Evaluate process state across foreground/background execution modes ---
         $fg_search_pattern = "startScript.sh /tmp/user.scripts/tmpScripts/{$script_name}/script";
         $command_fg = "ps -ef 2>&1 | grep " . escapeshellarg($fg_search_pattern) . " | grep -v 'grep'";
         $process_output_fg = @shell_exec($command_fg);
@@ -43,13 +47,16 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_script_states') {
 
         $status_file_bg = "/tmp/user.scripts/running/{$script_name}";
         $is_running_bg = @file_exists($status_file_bg);
-
+ 
+        // --- Shared log path: populated when the User Scripts plugin writes to tmpScripts ---
         $log_file = "/tmp/user.scripts/tmpScripts/{$script_name}/log.txt";
 
+        // --- Foreground run exposes live log viewing in User Scripts ---
         if ($is_running_fg) {
             $script_data['status'] = 'running';
             $script_data['log'] = "Script is running in the foreground.\nView its live log in the 'User Scripts' plugin window.";
         } elseif ($is_running_bg) {
+            // --- Background run: deliver recent log output when available ---
             $script_data['status'] = 'running';
             if (@file_exists($log_file) && @is_readable($log_file)) {
                 $file_lines = @file($log_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -66,6 +73,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_script_states') {
                 $script_data['log'] = "Script is running, but its log file has not been created yet.";
             }
         } else {
+            // --- Idle state: optionally surface the most recent background log ---
             if ($show_idle_logs === '1') {
                 if (@file_exists($log_file) && @is_readable($log_file)) {
                     $file_lines = @file($log_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -92,5 +100,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_script_states') {
 }
 
 header('HTTP/1.1 400 Bad Request');
+// --- Reached when action parameter is missing or unsupported ---
 echo json_encode(['error' => 'Invalid action']);
 ?>

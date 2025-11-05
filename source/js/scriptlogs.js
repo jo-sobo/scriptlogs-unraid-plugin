@@ -1,12 +1,17 @@
 /* global $ */
+// Quick note: this widget script drives polling and UI updates in the dashboard tile.
 
 // Configuration is provided via window.scriptlogsConfig from Scriptlogs.page
+
+// ---------------------------------------------------------------------------
+// Compact view helpers
+// ---------------------------------------------------------------------------
 function scriptlogs_updateCompactIndicators(scripts) {
     const compactContainer = $('#scriptlogs-compact-indicators');
     if (!compactContainer.length) return;
-    
+
     compactContainer.empty();
-    
+
     let runningCount = 0;
 
     if (Array.isArray(scripts) && scripts.length > 0) {
@@ -15,6 +20,7 @@ function scriptlogs_updateCompactIndicators(scripts) {
                 .addClass('scriptlogs-compact-indicator')
                 .toggleClass('scriptlogs-compact-indicator--running', script.status === 'running')
                 .text(script.name);
+
             compactContainer.append(indicator);
 
             if (script.status === 'running') {
@@ -22,7 +28,6 @@ function scriptlogs_updateCompactIndicators(scripts) {
             }
         });
     }
-
 
     const summaryText = $('#scriptlogs-head-summary-text');
     if (summaryText.length) {
@@ -34,8 +39,12 @@ function scriptlogs_updateCompactIndicators(scripts) {
     }
 }
 
+// ---------------------------------------------------------------------------
+// Polling workflow
+// ---------------------------------------------------------------------------
 function scriptlogs_status() {
     const config = window.scriptlogsConfig || {};
+
     const enabledScripts = config.enabledScripts || [];
     const tabContainer = $('#script-tabs-container');
     const logContainer = $('#scriptlogs-container');
@@ -45,6 +54,7 @@ function scriptlogs_status() {
     const scrollTarget = logContainer.length ? logContainer.get(0) : null;
     const autoscrollEnabled = autoscrollCheckbox.length ? autoscrollCheckbox.prop('checked') : true;
 
+    // Nothing configured? Surface guidance and bail out early.
     if (!enabledScripts || enabledScripts.length === 0) {
         tabContainer.empty();
         logDisplay.text('No scripts selected. Please check your Scriptlogs settings.');
@@ -55,6 +65,7 @@ function scriptlogs_status() {
         return;
     }
 
+    // Preserve selection and scroll position across refreshes.
     const previouslySelected = tabContainer.find('.selected-script').attr('data-script-name');
     const wasScrolledToBottom = autoscrollEnabled && scrollTarget
         ? scrollTarget.scrollHeight - Math.ceil(scrollTarget.scrollTop) - scrollTarget.clientHeight <= 1
@@ -62,8 +73,8 @@ function scriptlogs_status() {
 
     $.getJSON('/plugins/scriptlogs/scriptlogs_api.php?action=get_script_states', function(scripts) {
         tabContainer.empty();
-        
-        // Update compact indicators
+
+        // Keep the compact summary aligned with the latest statuses.
         scriptlogs_updateCompactIndicators(scripts);
 
         if (Array.isArray(scripts) && scripts.length > 0) {
@@ -92,6 +103,7 @@ function scriptlogs_status() {
                 tabContainer.append(tab);
             });
 
+            // Restore previous selection when possible.
             const selectedTab = previouslySelected
                 ? tabContainer.find(`.script-tab[data-script-name="${CSS.escape(previouslySelected)}"]`)
                 : $();
@@ -120,6 +132,7 @@ function scriptlogs_status() {
             timestampDisplay.text(new Date().toLocaleTimeString());
         }
     }).fail(function(jqXHR, textStatus, errorThrown) {
+        // Keep console output for debugging while showing a user-friendly notice.
         console.error('Scriptlogs AJAX Error:', textStatus, errorThrown);
         tabContainer.empty();
         scriptlogs_updateCompactIndicators([]);
@@ -130,16 +143,20 @@ function scriptlogs_status() {
     });
 }
 
+// ---------------------------------------------------------------------------
+// Bootstrapping
+// ---------------------------------------------------------------------------
 $(function() {
     const config = window.scriptlogsConfig || {};
     const widgetRoot = $('.scriptlogs-body');
 
+    // Align styles with the configured layout mode.
     if (widgetRoot.length) {
         widgetRoot.toggleClass('scriptlogs-body--responsive', !!config.isResponsive);
         widgetRoot.toggleClass('scriptlogs-body--legacy', !config.isResponsive);
     }
 
-    // Apply font size setting to the log container and pre element
+    // Apply the selected log font size.
     if (config.fontSize) {
         const logContainer = $('#scriptlogs-container');
         const logPre = $('#scriptlogs-logs');
@@ -151,21 +168,16 @@ $(function() {
         }
     }
 
-    // Setup custom toggle for compact indicators (show when collapsed, hide when expanded)
     const compactWrapper = $('#scriptlogs-compact-wrapper');
-    
-    // Watch the collapsible row which gets toggled by Unraid's openClose() function
     const collapsibleRow = $('.dash_scriptlogs_toggle');
-    
+
     if (compactWrapper.length && collapsibleRow.length) {
-        // Function to update compact indicator visibility
+        // Keep compact indicator visibility synced with the dashboard toggle.
         function updateCompactVisibility() {
             const isHidden = collapsibleRow.css('display') === 'none';
-            // Show compact when content is hidden, hide when content is shown
             compactWrapper.css('display', isHidden ? 'flex' : 'none');
         }
-        
-        // Create MutationObserver to watch for style/class changes on the row
+
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.attributeName === 'style' || mutation.attributeName === 'class') {
@@ -173,22 +185,21 @@ $(function() {
                 }
             });
         });
-        
+
         observer.observe(collapsibleRow[0], {
             attributes: true,
             attributeFilter: ['style', 'class']
         });
-        
-        // Set initial state
+
         updateCompactVisibility();
-        
-        // Also check periodically in case toggle happens without mutation
+        // Safety net for manual DOM tweaks outside observer callbacks.
         setInterval(updateCompactVisibility, 500);
     }
 
     scriptlogs_status();
 
     if (config.refreshEnabled && config.refreshInterval > 0) {
+        // Schedule periodic polling when auto-refresh is enabled.
         setInterval(scriptlogs_status, config.refreshInterval);
     }
 });

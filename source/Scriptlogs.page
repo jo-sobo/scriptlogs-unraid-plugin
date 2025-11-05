@@ -2,8 +2,10 @@ Menu="Dashboard:0"
 Icon="ScriptLogsLogo.png"
 ---
 <?php
+// Quick note: builds the dashboard tile markup for the Scriptlogs widget.
 require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
 
+// --- Load plugin configuration to drive the tile ---
 $cfg = parse_plugin_cfg('scriptlogs', true);
 $enabled_scripts_str = $cfg['ENABLED_SCRIPTS'] ?? '';
 $enabled_scripts = !empty($enabled_scripts_str)
@@ -17,7 +19,7 @@ $tile_config = [
     'fontSize' => $cfg['LOG_FONT_SIZE'] ?? '1rem',
 ];
 
-// Determine tile version (responsive vs legacy)
+// --- Decide between responsive and legacy tile variants ---
 $version_override = $cfg['VERSION_OVERRIDE'] ?? 'auto';
 
 if ($version_override === 'legacy') {
@@ -25,7 +27,7 @@ if ($version_override === 'legacy') {
 } elseif ($version_override === 'responsive') {
     $isResponsiveWebgui = true;
 } else {
-    // Auto-detect based on Unraid version
+    // Auto-detect based on Unraid version.
     $version_data = @parse_ini_file('/etc/unraid-version');
     $webgui_version = $version_data['version'] ?? '0.0.0';
     $isResponsiveWebgui = version_compare($webgui_version, '7.2.0-beta', '>=');
@@ -34,6 +36,7 @@ if ($version_override === 'legacy') {
 $tile_config['isResponsive'] = $isResponsiveWebgui;
 $tile_config_json = json_encode($tile_config, JSON_UNESCAPED_SLASHES);
 
+// --- Base tile registration payload ---
 $tile = [
     'name'   => 'scriptlogs',
     'title'  => 'Script Logs',
@@ -52,7 +55,7 @@ $tabs_aria_label = htmlspecialchars(_('Script logs tabs'), ENT_QUOTES, 'UTF-8');
 $log_placeholder = htmlspecialchars(_('Select a script to see its log.'), ENT_QUOTES, 'UTF-8');
 $last_update_label = htmlspecialchars(_('Last Update:'), ENT_QUOTES, 'UTF-8');
 
-// Split tile body into tabs and collapsible sections
+// --- Tile body sections (tabs, content, and compact summary) ---
 $tile_tabs = <<<HTML
 <div class="scriptlogs-body">
     <div id="script-tabs-container" class="scriptlogs-tabs" role="tablist" aria-label="{$tabs_aria_label}"></div>
@@ -93,6 +96,7 @@ $config_script = <<<HTML
 HTML;
 
 if ($isResponsiveWebgui) {
+    // --- Render tile content for responsive layouts ---
     $tile['content'] = <<<HTML
 <span class="tile-header scriptlogs-header">
     <span class="tile-header-left scriptlogs-header__left">
@@ -115,6 +119,7 @@ if ($isResponsiveWebgui) {
 {$config_script}
 HTML;
 } else {
+    // --- Render tile content for the legacy dashboard ---
     $tile['content'] = <<<HTML
 <div class="scriptlogs-legacy-header">
     <div class="scriptlogs-legacy-header__left">
@@ -136,9 +141,8 @@ HTML;
 HTML;
 }
 
-// Build fallback markup based on responsive/legacy mode
 if ($isResponsiveWebgui) {
-    // For responsive mode, use modern table-based fallback
+    // --- Build fallback markup for environments without register_dashboard_tile ---
     $fallback_tile_markup = <<<HTML
 <link rel="stylesheet" type="text/css" href="/plugins/scriptlogs/css/scriptlogs.css">
 <tbody id="db-scriptlogs" title="{$tile_title}">
@@ -177,7 +181,7 @@ if ($isResponsiveWebgui) {
 <script defer src="/plugins/scriptlogs/js/scriptlogs.js"></script>
 HTML;
 } else {
-    // For legacy mode, use traditional legacy header
+    // --- Build legacy fallback markup when the responsive view is unavailable ---
     $fallback_tile_markup = <<<HTML
 <link rel="stylesheet" type="text/css" href="/plugins/scriptlogs/css/scriptlogs.css">
 <tbody id="db-scriptlogs" title="{$tile_title}">
@@ -215,31 +219,21 @@ HTML;
 HTML;
 }
 
-// Add debug logging via console
-$debug_script = <<<HTML
-<script>
-console.log('[scriptlogs] Tile registration attempt:', {
-    hasRegisterFunction: typeof register_dashboard_tile !== 'undefined',
-    isResponsiveMode: {$tile_config_json}['isResponsive'],
-    versionOverride: '{$version_override}'
-});
-</script>
-HTML;
-
 if (function_exists('register_dashboard_tile')) {
+    // --- Attempt to register the tile when helper support is available ---
     $registration_result = @register_dashboard_tile($tile);
 
     if (is_string($registration_result) && trim($registration_result) !== '') {
-        echo $registration_result . $debug_script;
+        echo $registration_result;
         return;
     }
 
     if ($registration_result) {
-        echo $debug_script;
         return;
     }
 }
 
-$mytiles['scriptlogs']['column1'] = $fallback_tile_markup . $debug_script;
+// --- Fallback to legacy mytiles injection when registration is unavailable ---
+$mytiles['scriptlogs']['column1'] = $fallback_tile_markup;
 return;
 ?>

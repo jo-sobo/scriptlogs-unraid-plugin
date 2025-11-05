@@ -1,4 +1,6 @@
-/* Scriptlogs Dashboard Widget */
+/* Quick note: styling bundle for the Scriptlogs dashboard widget. */
+
+/* Layout shell and shared design tokens */
 .scriptlogs-body {
     display: flex;
     flex-direction: column;
@@ -23,6 +25,7 @@
     --scriptlogs-success-border: var(--success-border, #2f6f2a);
 }
 
+/* Responsive spacing adjustments */
 .scriptlogs-body--responsive {
     gap: 0 !important;
 }
@@ -37,6 +40,7 @@
     }
 }
 
+/* Tab strip container */
 .scriptlogs-tabs {
     display: flex;
     flex-wrap: wrap;
@@ -55,6 +59,7 @@
     display: none;
 }
 
+/* Primary tab appearance */
 .scriptlogs-tabs .script-tab {
     appearance: none !important;
     -webkit-appearance: none !important;
@@ -97,6 +102,7 @@
     padding: 0.65rem 1.05rem !important;
 }
 
+/* Running state accents */
 .scriptlogs-tabs .script-tab.script-tab--running {
     background-color: var(--scriptlogs-tab-bg) !important;
     border-top: 3px solid var(--success-border, #2f6f2a) !important;
@@ -113,6 +119,7 @@
     padding-top: calc(0.65rem - 2px) !important;
 }
 
+/* Active tab styling */
 .scriptlogs-tabs .script-tab.selected-script,
 .scriptlogs-tabs .script-tab[aria-pressed="true"],
 .scriptlogs-tabs .script-tab[aria-selected="true"] {
@@ -164,6 +171,7 @@
     padding-bottom: calc(0.65rem - 2px) !important;
 }
 
+/* Hover, focus, and disabled ergonomics */
 .scriptlogs-tabs .script-tab:not(.selected-script):hover,
 .scriptlogs-tabs .script-tab:not([aria-pressed="true"]):hover {
     border-color: var(--scriptlogs-tab-hover-border) !important;
@@ -198,6 +206,7 @@
     box-shadow: none !important;
 }
 
+/* Log display container */
 .scriptlogs-log {
     position: relative;
     background-color: var(--scriptlogs-bg);
@@ -225,6 +234,7 @@
     }
 }
 
+/* Scrollbar tweaks */
 #scriptlogs-container {
     position: relative;
 }
@@ -274,6 +284,7 @@
     padding: 0 !important;
 }
 
+/* Footer utilities (autoscroll + timestamp) */
 .scriptlogs-footer {
     display: flex;
     justify-content: space-between;
@@ -328,6 +339,7 @@
     font-variant-numeric: tabular-nums;
 }
 
+/* Header accessory icon */
 #scriptlogs-settings-icon {
     display: inline-flex;
     align-items: center;
@@ -354,6 +366,7 @@
     line-height: 1;
 }
 
+/* Responsive header layout variants */
 .scriptlogs-header {
     align-items: flex-start;
     gap: 1.25rem;
@@ -392,6 +405,7 @@
     gap: 0.75rem;
 }
 
+/* Legacy dashboard layout alignment */
 .scriptlogs-legacy-header {
     display: flex;
     align-items: flex-start;
@@ -464,6 +478,7 @@
     color: var(--scriptlogs-accent);
 }
 
+/* Compact summary view (shown when tile collapses) */
 .scriptlogs-compact {
     display: none;
     flex-direction: column;
@@ -524,6 +539,7 @@
     background-color: var(--scriptlogs-success-border, #2f6f2a);
 }
 
+/* Settings page scaffolding */
 .scriptlogs-settings {
     display: grid;
     gap: 1.5rem;

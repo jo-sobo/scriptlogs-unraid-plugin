@@ -3,12 +3,13 @@ Icon="ScriptLogsLogo.png"
 Title="Scriptlogs Settings"
 ---
 <?php
+// Quick note: handles the settings form and persists plugin preferences.
 require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
 
 $plugin_name = 'scriptlogs';
 $cfg_file = "/boot/config/plugins/{$plugin_name}/{$plugin_name}.cfg";
 
-// Save the new settings when the form is submitted
+// --- Persist new configuration when the form is submitted ---
 if (isset($_POST['#apply'])) {
   $new_cfg = [
     'REFRESH_ENABLED' => $_POST['REFRESH_ENABLED'],
@@ -19,18 +20,21 @@ if (isset($_POST['#apply'])) {
     'VERSION_OVERRIDE' => $_POST['VERSION_OVERRIDE'] ?? 'auto'
   ];
 
-  $ini = '';
+ // --- Serialize the configuration to the plugin .cfg file ---
+ $ini = '';
   foreach ($new_cfg as $key => $value) {
     $ini .= "{$key}=\"{$value}\"\n";
   }
   file_put_contents($cfg_file, $ini);
   
   $cfg = $new_cfg;
+  // --- Continue using the freshly saved values below ---
 } else {
+  // --- Bootstrap existing configuration for initial render ---
   $cfg = parse_plugin_cfg($plugin_name, true);
 }
 
-// Find all available user scripts
+// --- Discover user scripts to populate the selection list ---
 $user_scripts_path = '/boot/config/plugins/user.scripts/scripts';
 $available_scripts = [];
 if (is_dir($user_scripts_path)) {
@@ -42,7 +46,7 @@ if (is_dir($user_scripts_path)) {
   }
 }
 
-// Check if this is a main branch build
+// --- Hide developer-only controls in main release builds ---
 $branch_meta_file = '/usr/local/emhttp/plugins/scriptlogs/branch.meta';
 $is_main_branch = true; // default to hiding the setting
 if (file_exists($branch_meta_file)) {
@@ -50,6 +54,7 @@ if (file_exists($branch_meta_file)) {
     $is_main_branch = ($branch_meta['IS_MAIN_BRANCH'] ?? '1') === '1';
 }
 
+// --- Determine which scripts are currently enabled ---
 $enabled_scripts_array = isset($cfg['ENABLED_SCRIPTS']) ? explode(',', $cfg['ENABLED_SCRIPTS']) : [];
 ?>
 
