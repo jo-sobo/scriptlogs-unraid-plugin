@@ -477,7 +477,7 @@
 .scriptlogs-compact-indicators {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem;
+    gap: 0.3rem;
     padding: 0;
     width: 100%;
     order: 1;
@@ -498,8 +498,13 @@
     color: var(--scriptlogs-text-secondary);
     pointer-events: none;
     user-select: none;
-    flex: 0 1 9rem;
-    min-width: 9rem;
+    flex: 1 1 clamp(10rem, 25vw, 18rem);
+    min-width: 8rem;
+    max-width: 100%;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    line-height: 1.2;
 }
 
 .scriptlogs-compact-indicator::before {
