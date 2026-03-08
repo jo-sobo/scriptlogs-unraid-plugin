@@ -91,13 +91,17 @@ $mytiles[$pluginname]['column1'] = <<<EOT
                         <a href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings">
                             <i class="fa fa-fw fa-cog control"></i>
                         </a>
-                        <i class="fa fa-fw fa-chevron-up control openclose" onclick="openClose($(this))" title="Show/Hide Content"></i>
                     </span>
                 </span>
             </span>
         </td>
     </tr>
-    <tr>
+    <tr id="scriptlogs-collapsed-row" style="display:none;">
+        <td>
+            <div id="scriptlogs-chips"></div>
+        </td>
+    </tr>
+    <tr id="scriptlogs-content-row">
         <td>
             <div id="scriptlogs-tab-bar"></div>
             <div id="scriptlogs-log-box">
@@ -132,6 +136,37 @@ EOT;
     background: #2d6e2d;
     color: #7dce7d;
 }
+#scriptlogs-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 6px 0;
+}
+.scriptlogs-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    padding: 3px 8px;
+    border: 1px solid #444;
+    color: #999;
+    background: #222;
+    white-space: nowrap;
+}
+.scriptlogs-chip .sl-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: #555;
+}
+.scriptlogs-chip.sl-running {
+    border-color: #3a6b3a;
+    color: #ccc;
+}
+.scriptlogs-chip.sl-running .sl-dot {
+    background: #4CAF50;
+}
 #scriptlogs-tab-bar {
     display: flex;
     flex-direction: row;
@@ -144,7 +179,6 @@ EOT;
     color: #999;
     cursor: pointer;
     border: 1px solid #555;
-    border-bottom: none;
     background: #222;
     user-select: none;
     white-space: nowrap;
@@ -206,6 +240,20 @@ EOT;
     var refreshEnabled = <?=json_encode($refresh_enabled)?>;
     var refreshInterval = <?=json_encode($refresh_interval_ms)?>;
 
+    var scriptlogs_lastScripts = [];
+
+    function scriptlogs_build_chips(scripts) {
+        var chips = $('#scriptlogs-chips');
+        chips.empty();
+        (scripts || []).forEach(function(script) {
+            var isRunning = script.status === 'running';
+            var chip = $('<div>').addClass('scriptlogs-chip').toggleClass('sl-running', isRunning);
+            $('<span>').addClass('sl-dot').appendTo(chip);
+            $('<span>').text(script.name).appendTo(chip);
+            chips.append(chip);
+        });
+    }
+
     function scriptlogs_status() {
         if (!enabledScripts || enabledScripts.length === 0) {
             $('#scriptlogs-logs').text('No scripts selected. Please check your Scriptlogs settings.');
@@ -214,6 +262,8 @@ EOT;
         }
 
         $.getJSON('/plugins/scriptlogs/scriptlogs_api.php?action=get_script_states', function(scripts) {
+            scriptlogs_lastScripts = scripts || [];
+
             const tabBar     = $('#scriptlogs-tab-bar');
             const logBox     = $('#scriptlogs-log-box');
             const logDisplay = $('#scriptlogs-logs');
@@ -265,6 +315,9 @@ EOT;
                 indicator.text('0 running').removeClass('sl-running');
             }
 
+            // Update chips for collapsed view
+            scriptlogs_build_chips(scripts);
+
             // Restore selected tab or pick first
             var selectedTab = tabBar.find('.scriptlogs-tab').filter(function() {
                 return $(this).data('script-name') === previouslySelected;
@@ -292,8 +345,23 @@ EOT;
         });
     }
 
+    // Watch for Unraid's openClose toggling the content row, and swap in/out chips row
+    function scriptlogs_watch_collapse() {
+        var contentRow = document.getElementById('scriptlogs-content-row');
+        var collapsedRow = document.getElementById('scriptlogs-collapsed-row');
+        if (!contentRow || !collapsedRow) return;
+
+        var observer = new MutationObserver(function() {
+            var isCollapsed = contentRow.style.display === 'none' || contentRow.hidden;
+            collapsedRow.style.display = isCollapsed ? '' : 'none';
+        });
+
+        observer.observe(contentRow, { attributes: true, attributeFilter: ['style', 'hidden'] });
+    }
+
     $(function() {
         scriptlogs_status();
+        scriptlogs_watch_collapse();
 
         if (refreshEnabled && refreshInterval > 0) {
             setInterval(scriptlogs_status, refreshInterval);
