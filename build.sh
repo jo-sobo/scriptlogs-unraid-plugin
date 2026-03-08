@@ -28,7 +28,7 @@ else
   # Settings for a 'release' build
   BRANCH="main"
   PLUGIN_URL_STRUCTURE="&gitURL;/releases/download/&version;/&name;-&version;.txz"
-  CHANGES_TEXT="- Automated main build release."
+  CHANGES_TEXT="- Automated build release."
 fi
 
 # --- Build Process ---
@@ -36,7 +36,8 @@ echo "Starting build for version ${VERSION} on branch ${BRANCH}..."
 
 # Clean up
 rm -rf ${PACKAGE_DIR_TEMP}
-rm -rf ${PACKAGE_DIR_FINAL}
+# The following line is commented out to prevent deleting previous builds from the final packages directory.
+# rm -rf ${PACKAGE_DIR_FINAL}
 mkdir -p ${PACKAGE_DIR_TEMP}
 mkdir -p ${PACKAGE_DIR_FINAL}
 
@@ -44,12 +45,6 @@ mkdir -p ${PACKAGE_DIR_FINAL}
 PLUGIN_DEST_PATH="${PACKAGE_DIR_TEMP}/usr/local/emhttp/plugins/${PLUGIN_NAME}"
 mkdir -p "${PLUGIN_DEST_PATH}"
 cp -R source/* "${PLUGIN_DEST_PATH}/"
-
-# Create branch metadata file
-cat > "${PLUGIN_DEST_PATH}/branch.meta" << METAEOF
-BRANCH="${BRANCH}"
-IS_MAIN_BRANCH=$([[ "$BRANCH" == "main" ]] && echo "1" || echo "0")
-METAEOF
 
 # Set correct permissions before packaging
 find "${PLUGIN_DEST_PATH}" -type d -exec chmod 755 {} \;
@@ -102,17 +97,17 @@ ${CHANGES_TEXT}
     REFRESH_INTERVAL="10"
     ENABLED_SCRIPTS=""
     SHOW_IDLE_LOGS="0"
+    LOG_FONT_SIZE="1rem"
     VERSION_OVERRIDE="auto"
   </INLINE>
 </FILE>
 
 <FILE Run="/bin/bash">
 <INLINE>
-# Fix ownership and permissions after unpacking on the Unraid server
 chown -R root:root /usr/local/emhttp/plugins/&name;
-chmod -R 755 /usr/local/emhttp/plugins/&name;
-find /usr/local/emhttp/plugins/&name; -type f -exec chmod 644 {} \;
-find /usr/local/emhttp/plugins/&name; -name "*.page" -exec chmod 755 {} \;
+find -P /usr/local/emhttp/plugins/&name; -type d -exec chmod 755 {} \;
+find -P /usr/local/emhttp/plugins/&name; -type f -exec chmod 644 {} \;
+find -P /usr/local/emhttp/plugins/&name; -name "*.page" -exec chmod 755 {} \;
 
 echo ""
 echo "----------------------------------------------------"

@@ -3,7 +3,7 @@
     <Plugin>True</Plugin>
     <PluginURL>https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs.plg</PluginURL>
     <PluginAuthor>jo-sobo</PluginAuthor>
-    <Beta>false</Beta>
+    <Beta>true</Beta>
     <Category>Tools:Utilities</Category>
     <Name>Scriptlogs</Name>
     <Description>
@@ -13,7 +13,7 @@
         **User Scripts** plugin by Andrew Zawadzki
     </Requires>
     <Project>https://github.com/jo-sobo/scriptlogs-unraid-plugin</Project>
-    <Support>https://forums.unraid.net/topic/192397-plugin-scriptlogs</Support>
-    <Icon>https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/source/scriptlogslogo.png</Icon>
-    <License>GPL v3</License>
+    <Support>https://github.com/jo-sobo/scriptlogs-unraid-plugin/issues</Support>
+    <Icon>https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/source/scriptlogs.png</Icon>
+    <License>MIT License</License>
 </Container>
