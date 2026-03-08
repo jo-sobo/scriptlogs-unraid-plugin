@@ -231,8 +231,6 @@ EOT;
     var refreshEnabled = <?=json_encode($refresh_enabled)?>;
     var refreshInterval = <?=json_encode($refresh_interval_ms)?>;
 
-    var scriptlogs_lastScripts = [];
-
     function scriptlogs_build_chips(scripts) {
         var chips = $('#scriptlogs-chips');
         chips.empty();
@@ -253,8 +251,6 @@ EOT;
         }
 
         $.getJSON('/plugins/scriptlogs/scriptlogs_api.php?action=get_script_states', function(scripts) {
-            scriptlogs_lastScripts = scripts || [];
-
             const tabBar     = $('#scriptlogs-tab-bar');
             const logBox     = $('#scriptlogs-log-box');
             const logDisplay = $('#scriptlogs-logs');
@@ -272,11 +268,8 @@ EOT;
                 return;
             }
 
-            var runningCount = 0;
-
             scripts.forEach(function(script) {
                 var isRunning = script.status === 'running';
-                if (isRunning) runningCount++;
 
                 var tab = $('<div>')
                     .addClass('scriptlogs-tab')
