@@ -174,15 +174,17 @@ EOT;
 }
 .scriptlogs-tab {
     padding: 7px 14px;
-    font-size: 12px;
+    font-size: 14.4px;
     font-weight: bold;
     color: #999;
     cursor: pointer;
     border: 1px solid #555;
+    border-bottom: none;
     background: #222;
     user-select: none;
     white-space: nowrap;
     border-top: 3px solid transparent;
+    position: relative;
 }
 .scriptlogs-tab + .scriptlogs-tab {
     border-left: none;
@@ -193,7 +195,15 @@ EOT;
 .scriptlogs-tab.sl-selected {
     background: #1a1a1a;
     color: #eee;
-    box-shadow: inset 0 -3px 0 0 #e07b00;
+}
+.scriptlogs-tab.sl-selected::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(to right, #e52f29, #fd8830);
 }
 #scriptlogs-log-box {
     border: 1px solid #555;
