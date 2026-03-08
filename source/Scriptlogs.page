@@ -171,7 +171,7 @@ EOT;
     border-left: none;
 }
 .scriptlogs-tab.sl-running {
-    border-top-color: #4CAF50;
+    border-top: 3px solid #4CAF50;
 }
 .scriptlogs-tab.sl-selected {
     background: #1a1a1a;
