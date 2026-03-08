@@ -120,32 +120,6 @@ function scriptlogs_tail_log($path, $maxLines = 100, $maxBytes = 262144)
     return $result;
 }
 
-function scriptlogs_limit_output($text, $maxBytes = 65536)
-{
-    $text = (string)$text;
-    if (strlen($text) <= $maxBytes) {
-        return $text;
-    }
-
-    return rtrim(substr($text, 0, $maxBytes)) . "\n\n[output truncated]";
-}
-
-function scriptlogs_add_truncation_note($text)
-{
-    if ($text === '') {
-        return '[output truncated]';
-    }
-
-    return rtrim($text) . "\n\n[output truncated]";
-}
-
-$headers = function_exists('getallheaders') ? getallheaders() : [];
-$requestedWith = $headers['X-Requested-With'] ?? $headers['x-requested-with'] ?? ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? null);
-if ($requestedWith !== 'XMLHttpRequest') {
-    header('HTTP/1.1 403 Forbidden');
-    exit('Direct access not allowed');
-}
-
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'GET') {
     header('HTTP/1.1 405 Method Not Allowed');
     exit('Only GET requests allowed');
@@ -200,9 +174,7 @@ foreach ($enabledScripts as $scriptNameRaw) {
             $tail = scriptlogs_tail_log($logFile);
             if ($tail['ok']) {
                 if ($tail['text'] !== '') {
-                    $scriptData['log'] = $tail['truncated']
-                        ? scriptlogs_add_truncation_note($tail['text'])
-                        : $tail['text'];
+                    $scriptData['log'] = $tail['text'];
                 } else {
                     $scriptData['log'] = 'Script is running, but has not produced any output yet.';
                 }
@@ -218,10 +190,7 @@ foreach ($enabledScripts as $scriptNameRaw) {
                 $tail = scriptlogs_tail_log($logFile);
                 if ($tail['ok']) {
                     if ($tail['text'] !== '') {
-                        $idleLog = $tail['truncated']
-                            ? scriptlogs_add_truncation_note($tail['text'])
-                            : $tail['text'];
-                        $scriptData['log'] = "Script is not running. Last log:\n\n{$idleLog}";
+                        $scriptData['log'] = "Script is not running. Last log:\n\n{$tail['text']}";
                     } else {
                         $scriptData['log'] = 'Script is not running. No previous log found (or it was last run in the foreground).';
                     }
@@ -236,7 +205,6 @@ foreach ($enabledScripts as $scriptNameRaw) {
         }
     }
 
-    $scriptData['log'] = scriptlogs_limit_output($scriptData['log']);
     $responseData[] = $scriptData;
 }
 

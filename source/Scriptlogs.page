@@ -79,7 +79,7 @@ $mytiles[$pluginname]['column1'] = <<<EOT
     <tr>
         <td class="next" colspan="3">
 
-            <a id="scriptlogs-settings-icon" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings"><i class="fa fa-fw fa-cog control"></i></a>
+            <a class="control" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings"><i class="fa fa-fw fa-cog"></i></a>
             
             <i class="fa fa-terminal fa-lg"></i>
             <div class="section">
@@ -94,7 +94,7 @@ $mytiles[$pluginname]['column1'] = <<<EOT
     <tr class="dash_scriptlogs_toggle scriptlogs-content">
         <td colspan="3">
             <div id="scriptlogs-container" style="height:200px; overflow-y:auto; font-family: monospace; font-size: {$log_font_size}; background-color: #1a1a1a; color: #e0e0e0; padding: 8px; border: 1px solid #444; border-radius: 3px;">
-                <pre id="scriptlogs-logs" style="margin: 0; white-space: pre-wrap; word-wrap: break-word;">Select a script to see its log.</pre>
+                <pre id="scriptlogs-logs" style="margin: 0; border: none; background: transparent; white-space: pre-wrap; word-wrap: break-word;">Select a script to see its log.</pre>
             </div>
             <div style="margin-top: 5px; font-size: 10px; color: #888; text-align: right;">
                 Last Update: <span id="scriptlogs-timestamp"></span>
