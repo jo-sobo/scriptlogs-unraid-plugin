@@ -1,5 +1,5 @@
 Menu="Utilities"
-Icon="ScriptLogsLogo.png"
+Icon="scriptlogs.png"
 Title="Scriptlogs Settings"
 ---
 <?php
@@ -8,65 +8,212 @@ require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
 $plugin_name = 'scriptlogs';
 $cfg_file = "/boot/config/plugins/{$plugin_name}/{$plugin_name}.cfg";
 
-// Save the new settings when the form is submitted
-if (isset($_POST['#apply'])) {
-  $new_cfg = [
-    'REFRESH_ENABLED' => $_POST['REFRESH_ENABLED'],
-    'REFRESH_INTERVAL' => $_POST['REFRESH_INTERVAL'],
-    'ENABLED_SCRIPTS' => isset($_POST['ENABLED_SCRIPTS']) ? implode(',', $_POST['ENABLED_SCRIPTS']) : '',
-    'SHOW_IDLE_LOGS' => isset($_POST['SHOW_IDLE_LOGS']) ? '1' : '0'
-  ];
+function scriptlogs_normalize_script_list($items)
+{
+    if (!is_array($items)) {
+        return [];
+    }
 
-  $ini = '';
-  foreach ($new_cfg as $key => $value) {
-    $ini .= "{$key}=\"{$value}\"\n";
-  }
-  file_put_contents($cfg_file, $ini);
-  
-  $cfg = $new_cfg;
-} else {
-  $cfg = parse_plugin_cfg($plugin_name, true);
+    $normalized = [];
+    $seen = [];
+    foreach ($items as $item) {
+        $name = trim((string)$item);
+        if ($name === '' || isset($seen[$name])) {
+            continue;
+        }
+        $seen[$name] = true;
+        $normalized[] = $name;
+    }
+
+    return $normalized;
 }
 
-// Find all available user scripts
+function scriptlogs_parse_enabled_scripts($rawValue)
+{
+    $rawValue = is_string($rawValue) ? trim($rawValue) : '';
+    if ($rawValue === '') {
+        return [];
+    }
+
+    if (strpos($rawValue, 'json:') === 0) {
+        $encoded = substr($rawValue, 5);
+        if ($encoded !== '') {
+            $decodedJson = base64_decode($encoded, true);
+            if (is_string($decodedJson) && $decodedJson !== '') {
+                $decoded = json_decode($decodedJson, true);
+                if (is_array($decoded)) {
+                    return scriptlogs_normalize_script_list($decoded);
+                }
+            }
+        }
+    }
+
+    return scriptlogs_normalize_script_list(explode(',', $rawValue));
+}
+
+function scriptlogs_encode_enabled_scripts($scripts)
+{
+    $normalized = scriptlogs_normalize_script_list($scripts);
+    $json = json_encode($normalized);
+    if (!is_string($json)) {
+        $json = '[]';
+    }
+
+    return 'json:' . base64_encode($json);
+}
+
+function scriptlogs_escape_cfg_value($value)
+{
+    $value = (string)$value;
+    $value = preg_replace('/[\x00-\x1F\x7F]/', '', $value);
+    if (!is_string($value)) {
+        $value = '';
+    }
+
+    return str_replace(['\\', '"'], ['\\\\', '\\"'], $value);
+}
+
+function scriptlogs_write_cfg($path, $cfg)
+{
+    $lines = [];
+    foreach ($cfg as $key => $value) {
+        $safeKey = preg_replace('/[^A-Z0-9_]/', '', (string)$key);
+        if (!is_string($safeKey) || $safeKey === '') {
+            continue;
+        }
+        $lines[] = $safeKey . '="' . scriptlogs_escape_cfg_value($value) . '"';
+    }
+
+    $payload = implode("\n", $lines) . "\n";
+    return @file_put_contents($path, $payload, LOCK_EX) !== false;
+}
+
 $user_scripts_path = '/boot/config/plugins/user.scripts/scripts';
 $available_scripts = [];
 if (is_dir($user_scripts_path)) {
-  $scripts = array_diff(scandir($user_scripts_path), ['.', '..']);
-  foreach ($scripts as $script_name) {
-    if (is_dir("{$user_scripts_path}/{$script_name}")) {
-      $available_scripts[] = $script_name;
+    $scripts = array_diff(scandir($user_scripts_path), ['.', '..']);
+    foreach ($scripts as $script_name) {
+        if (is_dir("{$user_scripts_path}/{$script_name}")) {
+            $available_scripts[] = $script_name;
+        }
     }
-  }
+}
+sort($available_scripts, SORT_NATURAL | SORT_FLAG_CASE);
+
+$cfg = parse_plugin_cfg($plugin_name, true);
+if (!is_array($cfg)) {
+    $cfg = [];
 }
 
-$enabled_scripts_array = isset($cfg['ENABLED_SCRIPTS']) ? explode(',', $cfg['ENABLED_SCRIPTS']) : [];
+$save_error = '';
+
+if (isset($_POST['#apply'])) {
+    $refresh_enabled = (isset($_POST['REFRESH_ENABLED']) && $_POST['REFRESH_ENABLED'] === '0') ? '0' : '1';
+    $refresh_interval_input = isset($_POST['REFRESH_INTERVAL']) ? trim((string)$_POST['REFRESH_INTERVAL']) : '10';
+    $refresh_interval = ctype_digit($refresh_interval_input) ? (int)$refresh_interval_input : 10;
+    if ($refresh_interval < 1) {
+        $refresh_interval = 1;
+    } elseif ($refresh_interval > 86400) {
+        $refresh_interval = 86400;
+    }
+
+    $show_idle_logs = isset($_POST['SHOW_IDLE_LOGS']) ? '1' : '0';
+
+    $allowed_font_sizes = ['0.75rem', '0.875rem', '1rem', '1.125rem', '1.25rem'];
+    $log_font_size = isset($_POST['LOG_FONT_SIZE']) ? (string)$_POST['LOG_FONT_SIZE'] : '1rem';
+    if (!in_array($log_font_size, $allowed_font_sizes, true)) {
+        $log_font_size = '1rem';
+    }
+
+    $allowed_overrides = ['auto', 'legacy', 'responsive'];
+    $version_override = isset($_POST['VERSION_OVERRIDE']) ? (string)$_POST['VERSION_OVERRIDE'] : ($cfg['VERSION_OVERRIDE'] ?? 'auto');
+    if (!in_array($version_override, $allowed_overrides, true)) {
+        $version_override = 'auto';
+    }
+
+    $requested_scripts = isset($_POST['ENABLED_SCRIPTS']) && is_array($_POST['ENABLED_SCRIPTS'])
+        ? $_POST['ENABLED_SCRIPTS']
+        : [];
+
+    $allowed_scripts = array_fill_keys($available_scripts, true);
+    $selected_scripts = [];
+    $selected_seen = [];
+    foreach ($requested_scripts as $script_name) {
+        $script_name = trim((string)$script_name);
+        if ($script_name === '' || !isset($allowed_scripts[$script_name]) || isset($selected_seen[$script_name])) {
+            continue;
+        }
+        $selected_seen[$script_name] = true;
+        $selected_scripts[] = $script_name;
+    }
+
+    $new_cfg = [
+        'REFRESH_ENABLED' => $refresh_enabled,
+        'REFRESH_INTERVAL' => (string)$refresh_interval,
+        'ENABLED_SCRIPTS' => scriptlogs_encode_enabled_scripts($selected_scripts),
+        'SHOW_IDLE_LOGS' => $show_idle_logs,
+        'LOG_FONT_SIZE' => $log_font_size,
+        'VERSION_OVERRIDE' => $version_override
+    ];
+
+    if (scriptlogs_write_cfg($cfg_file, $new_cfg)) {
+        $cfg = $new_cfg;
+    } else {
+        $save_error = 'Unable to save settings.';
+    }
+}
+
+$enabled_scripts_array = scriptlogs_parse_enabled_scripts($cfg['ENABLED_SCRIPTS'] ?? '');
 ?>
 
 <form name="scriptlogs_settings" method="post">
   <div class="content">
     <div class="settings">
+      <?php if ($save_error !== ''): ?>
+        <p style="color: #d9534f;"><?php echo htmlspecialchars($save_error, ENT_QUOTES, 'UTF-8'); ?></p>
+      <?php endif; ?>
+
       <h3>General Settings</h3>
       <dl>
         <dt>Automatic Refresh:</dt>
         <dd>
           <select name="REFRESH_ENABLED" class="form-control">
-            <?php echo mk_option($cfg['REFRESH_ENABLED'] ?? '1', "1", "Enabled");?>
-            <?php echo mk_option($cfg['REFRESH_ENABLED'] ?? '1', "0", "Disabled");?>
+            <?php echo mk_option($cfg['REFRESH_ENABLED'] ?? '1', '1', 'Enabled');?>
+            <?php echo mk_option($cfg['REFRESH_ENABLED'] ?? '1', '0', 'Disabled');?>
           </select>
         </dd>
-        
+
         <dt>Refresh Interval (in seconds):</dt>
         <dd>
-          <input type="number" name="REFRESH_INTERVAL" class="form-control" min="1" value="<?php echo htmlspecialchars($cfg['REFRESH_INTERVAL'] ?? '10'); ?>">
+          <input
+            type="number"
+            name="REFRESH_INTERVAL"
+            class="form-control"
+            min="1"
+            max="86400"
+            value="<?php echo htmlspecialchars($cfg['REFRESH_INTERVAL'] ?? '10', ENT_QUOTES, 'UTF-8'); ?>"
+          >
         </dd>
 
         <dt>Show Last Log for Idle Scripts:</dt>
         <dd>
           <input type="checkbox" name="SHOW_IDLE_LOGS" value="1" <?php echo (($cfg['SHOW_IDLE_LOGS'] ?? '0') === '1' ? 'checked' : ''); ?>>
-          <span>(Shows the last available log. Note: Only runs in the background produce a log file that can be displayed here.)</span>
+          <span>(Only scripts that ran in the background can provide a cached log here.)</span>
+        </dd>
+
+        <dt>Log Font Size:</dt>
+        <dd>
+          <select name="LOG_FONT_SIZE" class="form-control">
+            <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '0.75rem', 'Extra Small');?>
+            <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '0.875rem', 'Small');?>
+            <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '1rem', 'Medium');?>
+            <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '1.125rem', 'Large');?>
+            <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '1.25rem', 'Extra Large');?>
+          </select>
         </dd>
       </dl>
+
+      <input type="hidden" name="VERSION_OVERRIDE" value="<?php echo htmlspecialchars($cfg['VERSION_OVERRIDE'] ?? 'auto', ENT_QUOTES, 'UTF-8'); ?>">
 
       <h3>Script Selection</h3>
       <p>Select which scripts should be displayed in the dashboard widget.</p>
@@ -76,13 +223,18 @@ $enabled_scripts_array = isset($cfg['ENABLED_SCRIPTS']) ? explode(',', $cfg['ENA
         <?php else: ?>
           <?php foreach ($available_scripts as $script): ?>
             <div class="script-item">
-              <input type="checkbox" name="ENABLED_SCRIPTS[]" value="<?php echo htmlspecialchars($script); ?>" <?php echo (in_array($script, $enabled_scripts_array) ? 'checked' : ''); ?>>
-              <label><?php echo htmlspecialchars($script); ?></label>
+              <input
+                type="checkbox"
+                name="ENABLED_SCRIPTS[]"
+                value="<?php echo htmlspecialchars($script, ENT_QUOTES, 'UTF-8'); ?>"
+                <?php echo (in_array($script, $enabled_scripts_array, true) ? 'checked' : ''); ?>
+              >
+              <label><?php echo htmlspecialchars($script, ENT_QUOTES, 'UTF-8'); ?></label>
             </div>
           <?php endforeach; ?>
         <?php endif; ?>
       </div>
-      
+
       <div class="buttons">
         <input type="submit" name="#apply" value="Apply">
         <input type="button" value="Done" onclick="done()">

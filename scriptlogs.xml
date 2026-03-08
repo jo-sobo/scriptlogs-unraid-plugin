@@ -14,6 +14,6 @@
     </Requires>
     <Project>https://github.com/jo-sobo/scriptlogs-unraid-plugin</Project>
     <Support>https://github.com/jo-sobo/scriptlogs-unraid-plugin/issues</Support>
-    <Icon>https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/source/ScriptLogsLogo.png</Icon>
+    <Icon>https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/source/scriptlogs.png</Icon>
     <License>MIT License</License>
 </Container>

@@ -1,15 +1,78 @@
 Menu="Dashboard:0"
-Icon="ScriptLogsLogo.png"
+Icon="scriptlogs.png"
 ---
 <?php
 require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
 
+function scriptlogs_normalize_script_list($items)
+{
+    if (!is_array($items)) {
+        return [];
+    }
+
+    $normalized = [];
+    $seen = [];
+    foreach ($items as $item) {
+        $name = trim((string)$item);
+        if ($name === '' || isset($seen[$name])) {
+            continue;
+        }
+        $seen[$name] = true;
+        $normalized[] = $name;
+    }
+
+    return $normalized;
+}
+
+function scriptlogs_parse_enabled_scripts($rawValue)
+{
+    $rawValue = is_string($rawValue) ? trim($rawValue) : '';
+    if ($rawValue === '') {
+        return [];
+    }
+
+    if (strpos($rawValue, 'json:') === 0) {
+        $encoded = substr($rawValue, 5);
+        if ($encoded !== '') {
+            $decodedJson = base64_decode($encoded, true);
+            if (is_string($decodedJson) && $decodedJson !== '') {
+                $decoded = json_decode($decodedJson, true);
+                if (is_array($decoded)) {
+                    return scriptlogs_normalize_script_list($decoded);
+                }
+            }
+        }
+    }
+
+    return scriptlogs_normalize_script_list(explode(',', $rawValue));
+}
+
 $cfg = parse_plugin_cfg('scriptlogs', true);
-$enabled_scripts_str = $cfg['ENABLED_SCRIPTS'] ?? '';
-$enabled_scripts_js = !empty($enabled_scripts_str) ? json_encode(explode(',', $enabled_scripts_str)) : '[]';
+if (!is_array($cfg)) {
+    $cfg = [];
+}
 
+$enabled_scripts = scriptlogs_parse_enabled_scripts($cfg['ENABLED_SCRIPTS'] ?? '');
+$enabled_scripts_js = json_encode($enabled_scripts);
+if (!is_string($enabled_scripts_js)) {
+    $enabled_scripts_js = '[]';
+}
 
-$pluginname = "scriptlogs";
+$refresh_enabled = ($cfg['REFRESH_ENABLED'] ?? '1') === '1';
+$refresh_interval = (int)($cfg['REFRESH_INTERVAL'] ?? 10);
+if ($refresh_interval < 1) {
+    $refresh_interval = 1;
+}
+$refresh_interval_ms = $refresh_interval * 1000;
+
+$allowed_font_sizes = ['0.75rem', '0.875rem', '1rem', '1.125rem', '1.25rem'];
+$log_font_size = $cfg['LOG_FONT_SIZE'] ?? '1rem';
+if (!in_array($log_font_size, $allowed_font_sizes, true)) {
+    $log_font_size = '1rem';
+}
+$log_font_size = htmlspecialchars($log_font_size, ENT_QUOTES, 'UTF-8');
+
+$pluginname = 'scriptlogs';
 
 $mytiles[$pluginname]['column1'] = <<<EOT
 <tbody id="db-scriptlogs" title="Script Logs">
@@ -24,13 +87,13 @@ $mytiles[$pluginname]['column1'] = <<<EOT
             </div>
             
             <div id="script-tabs-container" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px;">
-                </div>
+            </div>
 
         </td>
     </tr>
     <tr class="dash_scriptlogs_toggle scriptlogs-content">
         <td colspan="3">
-            <div id="scriptlogs-container" style="height:200px; overflow-y:auto; font-family: monospace; font-size: 11px; background-color: #1a1a1a; color: #e0e0e0; padding: 8px; border: 1px solid #444; border-radius: 3px;">
+            <div id="scriptlogs-container" style="height:200px; overflow-y:auto; font-family: monospace; font-size: {$log_font_size}; background-color: #1a1a1a; color: #e0e0e0; padding: 8px; border: 1px solid #444; border-radius: 3px;">
                 <pre id="scriptlogs-logs" style="margin: 0; white-space: pre-wrap; word-wrap: break-word;">Select a script to see its log.</pre>
             </div>
             <div style="margin-top: 5px; font-size: 10px; color: #888; text-align: right;">
@@ -45,6 +108,8 @@ EOT;
 <script type="text/javascript">
     /* global $ */
     var enabledScripts = <?=$enabled_scripts_js?>;
+    var refreshEnabled = <?=json_encode($refresh_enabled)?>;
+    var refreshInterval = <?=json_encode($refresh_interval_ms)?>;
     
     function scriptlogs_status() {
         if (!enabledScripts || enabledScripts.length === 0) {
@@ -58,19 +123,18 @@ EOT;
             const logContainer = $('#scriptlogs-container');
             const logDisplay = $('#scriptlogs-logs');
             const timestampDisplay = $('#scriptlogs-timestamp');
-            const logEl = logContainer[0]; // Pure DOM element for precise calculations
+            const logEl = logContainer[0];
 
             const previouslySelected = tabContainer.find('.selected-script').data('script-name');
 
-            // Smart Scrolling Logic - Part 1: Check position BEFORE updating content
             const isScrolledToBottom = logEl.scrollHeight - Math.ceil(logEl.scrollTop) - logEl.clientHeight <= 1;
             
             tabContainer.empty();
 
             if (scripts && Array.isArray(scripts) && scripts.length > 0) {
                 scripts.forEach(script => {
-                    let bgColor = '#555'; // idle
-                    if (script.status === 'running') bgColor = '#4CAF50'; // running
+                    let bgColor = '#555';
+                    if (script.status === 'running') bgColor = '#4CAF50';
 
                     const tab = $('<div>')
                         .addClass('script-tab')
@@ -83,7 +147,7 @@ EOT;
                         tabContainer.find('.script-tab').removeClass('selected-script').css('border', '1px solid transparent');
                         $(this).addClass('selected-script').css('border', '1px solid #FFF');
                         logDisplay.text($(this).data('log-content'));
-                        logEl.scrollTop = logEl.scrollHeight; // Always scroll to bottom on manual click
+                        logEl.scrollTop = logEl.scrollHeight;
                     });
 
                     tabContainer.append(tab);
@@ -95,20 +159,18 @@ EOT;
 
                 if (selectedTab.length > 0) {
                     selectedTab.addClass('selected-script').css('border', '1px solid #FFF');
-                    // Update the log content for the currently selected tab
                     const activeScript = scripts.find(s => s.name === previouslySelected);
                     if (activeScript) {
                         logDisplay.text(activeScript.log);
                     }
                 } else if (tabContainer.children().length > 0) {
                     tabContainer.children().first().trigger('click');
-                    return; // Exit, as the click handler manages the scroll
+                    return;
                 }
             } else {
                 logDisplay.text('No scripts selected to display.');
             }
 
-            // Smart Scrolling Logic - Part 2: Only scroll if we were at the bottom before
             if (isScrolledToBottom) {
                 logEl.scrollTop = logEl.scrollHeight;
             }
@@ -121,14 +183,10 @@ EOT;
     }
 
     $(function() {
-        var refreshEnabled = <?=json_encode($cfg['REFRESH_ENABLED'] === '1')?>;
-        var refreshInterval = <?=json_encode(intval($cfg['REFRESH_INTERVAL']) * 1000)?>;
-        
+        scriptlogs_status();
+
         if (refreshEnabled && refreshInterval > 0) {
-            scriptlogs_status();
             setInterval(scriptlogs_status, refreshInterval);
-        } else {
-            scriptlogs_status();
         }
     });
 </script>

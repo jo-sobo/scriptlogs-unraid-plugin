@@ -97,25 +97,17 @@ ${CHANGES_TEXT}
     REFRESH_INTERVAL="10"
     ENABLED_SCRIPTS=""
     SHOW_IDLE_LOGS="0"
+    LOG_FONT_SIZE="1rem"
+    VERSION_OVERRIDE="auto"
   </INLINE>
 </FILE>
 
 <FILE Run="/bin/bash">
 <INLINE>
-# --- CORRECTED PERMISSION SETTINGS ---
-# This new method is more precise and avoids using the overly broad 'chmod -R 755',
-
-# Set ownership for all plugin files and directories.
 chown -R root:root /usr/local/emhttp/plugins/&name;
-
-# Set permissions for directories to 755 to allow traversal.
-find -P /usr/local/emhttp/plugins/&name; -type d -exec chmod 755 {} +
-
-# Set a secure default permission for all files to 644 (read/write for owner, read-only for others).
-find -P /usr/local/emhttp/plugins/&name; -type f -exec chmod 644 {} +
-
-# Specifically grant execute permissions only to .page files, as required by Unraid.
-find -P /usr/local/emhttp/plugins/&name; -name "*.page" -exec chmod 755 {} +
+find -P /usr/local/emhttp/plugins/&name -type d -exec chmod 755 {} \;
+find -P /usr/local/emhttp/plugins/&name -type f -exec chmod 644 {} \;
+find -P /usr/local/emhttp/plugins/&name -name "*.page" -exec chmod 755 {} \;
 
 echo ""
 echo "----------------------------------------------------"
