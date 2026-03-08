@@ -77,14 +77,28 @@ $pluginname = 'scriptlogs';
 $mytiles[$pluginname]['column1'] = <<<EOT
 <tbody id="db-scriptlogs" title="Script Logs">
     <tr>
-        <td class="next" colspan="3">
-            <a class="control" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings" style="float:right;"><i class="fa fa-fw fa-cog"></i></a>
-            <i class="fa fa-terminal fa-lg"></i>
-            <div class="section tile-header-main">Script Logs <span id="scriptlogs-run-indicator">0 running</span></div>
+        <td>
+            <i class="fa fa-fw fa-close control tile" onclick="dismiss($(this))" title="Close Tile"></i>
+            <span class="tile-header">
+                <span class="tile-header-left">
+                    <i class="fa fa-terminal fa-lg"></i>
+                    <div class="section">
+                        <h3 class="tile-header-main">Script Logs <span id="scriptlogs-run-indicator">0 running</span></h3>
+                    </div>
+                </span>
+                <span class="tile-header-right">
+                    <span class="tile-header-right-controls">
+                        <a href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings">
+                            <i class="fa fa-fw fa-cog control"></i>
+                        </a>
+                        <i class="fa fa-fw fa-chevron-up control openclose" onclick="openClose($(this))" title="Show/Hide Content"></i>
+                    </span>
+                </span>
+            </span>
         </td>
     </tr>
-    <tr class="dash_scriptlogs_toggle scriptlogs-content">
-        <td colspan="3">
+    <tr>
+        <td>
             <div id="scriptlogs-tab-bar"></div>
             <div id="scriptlogs-log-box">
                 <pre id="scriptlogs-logs">Select a script to see its log.</pre>
