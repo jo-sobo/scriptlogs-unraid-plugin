@@ -105,9 +105,9 @@ ${CHANGES_TEXT}
 <FILE Run="/bin/bash">
 <INLINE>
 chown -R root:root /usr/local/emhttp/plugins/&name;
-find -P /usr/local/emhttp/plugins/&name -type d -exec chmod 755 {} \;
-find -P /usr/local/emhttp/plugins/&name -type f -exec chmod 644 {} \;
-find -P /usr/local/emhttp/plugins/&name -name "*.page" -exec chmod 755 {} \;
+find -P /usr/local/emhttp/plugins/&name; -type d -exec chmod 755 {} \;
+find -P /usr/local/emhttp/plugins/&name; -type f -exec chmod 644 {} \;
+find -P /usr/local/emhttp/plugins/&name; -name "*.page" -exec chmod 755 {} \;
 
 echo ""
 echo "----------------------------------------------------"
