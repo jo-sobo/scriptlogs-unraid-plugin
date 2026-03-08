@@ -75,29 +75,108 @@ $log_font_size = htmlspecialchars($log_font_size, ENT_QUOTES, 'UTF-8');
 $pluginname = 'scriptlogs';
 
 $mytiles[$pluginname]['column1'] = <<<EOT
+<style>
+#scriptlogs-run-indicator {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: normal;
+    letter-spacing: 0;
+    text-transform: none;
+    padding: 2px 7px;
+    border-radius: 8px;
+    margin-left: 8px;
+    line-height: 1.6;
+    vertical-align: middle;
+    background: #444;
+    color: #aaa;
+}
+#scriptlogs-run-indicator.sl-running {
+    background: #2d6e2d;
+    color: #7dce7d;
+}
+#scriptlogs-tab-bar {
+    display: flex;
+    flex-direction: row;
+    padding-top: 10px;
+}
+.scriptlogs-tab {
+    padding: 5px 14px;
+    font-size: 11px;
+    color: #999;
+    cursor: pointer;
+    border: 1px solid #555;
+    border-bottom: none;
+    background: #222;
+    user-select: none;
+    white-space: nowrap;
+    border-top: 3px solid transparent;
+}
+.scriptlogs-tab + .scriptlogs-tab {
+    border-left: none;
+}
+.scriptlogs-tab.sl-running {
+    border-top-color: #4CAF50;
+}
+.scriptlogs-tab.sl-selected {
+    background: #1a1a1a;
+    color: #eee;
+    box-shadow: inset 0 -3px 0 0 #e07b00;
+}
+#scriptlogs-log-box {
+    border: 1px solid #555;
+    border-top: none;
+    background: #1a1a1a;
+    height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+#scriptlogs-logs {
+    margin: 0;
+    padding: 8px;
+    color: #e0e0e0;
+    font-family: monospace;
+    font-size: {$log_font_size};
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-all;
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    background: transparent;
+}
+#scriptlogs-footer {
+    margin-top: 5px;
+    font-size: 10px;
+    color: #888;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#scriptlogs-footer label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    color: #888;
+}
+</style>
 <tbody id="db-scriptlogs" title="Script Logs">
     <tr>
         <td class="next" colspan="3">
-
             <a class="control" href="/Settings/ScriptlogsSettings" title="Scriptlogs Settings" style="float:right;"><i class="fa fa-fw fa-cog"></i></a>
-            
             <i class="fa fa-terminal fa-lg"></i>
-            <div class="section">
-                Script Logs
-            </div>
-            
-            <div id="script-tabs-container" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px;">
-            </div>
-
+            <div class="section">Script Logs <span id="scriptlogs-run-indicator">0 running</span></div>
         </td>
     </tr>
     <tr class="dash_scriptlogs_toggle scriptlogs-content">
         <td colspan="3">
-            <div id="scriptlogs-container" style="height:200px; overflow-x:hidden; overflow-y:auto; font-family: monospace; font-size: {$log_font_size}; background-color: #1a1a1a; color: #e0e0e0; padding: 8px; border: 1px solid #444; border-radius: 3px;">
-                <pre id="scriptlogs-logs" style="margin: 0; border: none; background: transparent; white-space: pre-wrap; overflow-wrap: break-word; word-break: break-all; width: 100%; box-sizing: border-box;">Select a script to see its log.</pre>
+            <div id="scriptlogs-tab-bar"></div>
+            <div id="scriptlogs-log-box">
+                <pre id="scriptlogs-logs">Select a script to see its log.</pre>
             </div>
-            <div style="margin-top: 5px; font-size: 10px; color: #888; text-align: right;">
-                Last Update: <span id="scriptlogs-timestamp"></span>
+            <div id="scriptlogs-footer">
+                <label><input type="checkbox" id="scriptlogs-autoscroll" checked> Auto-scroll</label>
+                <span>Last Update: <span id="scriptlogs-timestamp"></span></span>
             </div>
         </td>
     </tr>
@@ -110,72 +189,88 @@ EOT;
     var enabledScripts = <?=$enabled_scripts_js?>;
     var refreshEnabled = <?=json_encode($refresh_enabled)?>;
     var refreshInterval = <?=json_encode($refresh_interval_ms)?>;
-    
+
     function scriptlogs_status() {
         if (!enabledScripts || enabledScripts.length === 0) {
             $('#scriptlogs-logs').text('No scripts selected. Please check your Scriptlogs settings.');
-            $('#script-tabs-container').empty();
+            $('#scriptlogs-tab-bar').empty();
             return;
         }
 
         $.getJSON('/plugins/scriptlogs/scriptlogs_api.php?action=get_script_states', function(scripts) {
-            const tabContainer = $('#script-tabs-container');
-            const logContainer = $('#scriptlogs-container');
+            const tabBar     = $('#scriptlogs-tab-bar');
+            const logBox     = $('#scriptlogs-log-box');
             const logDisplay = $('#scriptlogs-logs');
-            const timestampDisplay = $('#scriptlogs-timestamp');
-            const logEl = logContainer[0];
+            const logEl      = logBox[0];
+            const timestamp  = $('#scriptlogs-timestamp');
+            const indicator  = $('#scriptlogs-run-indicator');
+            const autoscroll = $('#scriptlogs-autoscroll').is(':checked');
 
-            const previouslySelected = tabContainer.find('.selected-script').data('script-name');
-
+            const previouslySelected = tabBar.find('.sl-selected').data('script-name');
             const isScrolledToBottom = logEl.scrollHeight - Math.ceil(logEl.scrollTop) - logEl.clientHeight <= 1;
-            
-            tabContainer.empty();
 
-            if (scripts && Array.isArray(scripts) && scripts.length > 0) {
-                scripts.forEach(script => {
-                    let bgColor = '#555';
-                    if (script.status === 'running') bgColor = '#4CAF50';
+            tabBar.empty();
 
-                    const tab = $('<div>')
-                        .addClass('script-tab')
-                        .text(script.name)
-                        .css({ 'background-color': bgColor, 'color': 'white', 'padding': '4px 8px', 'border-radius': '3px', 'cursor': 'pointer', 'font-size': '10px' })
-                        .data('script-name', script.name)
-                        .data('log-content', script.log);
-
-                    tab.on('click', function() {
-                        tabContainer.find('.script-tab').removeClass('selected-script').css('border', '1px solid transparent');
-                        $(this).addClass('selected-script').css('border', '1px solid #FFF');
-                        logDisplay.text($(this).data('log-content'));
-                        logEl.scrollTop = logEl.scrollHeight;
-                    });
-
-                    tabContainer.append(tab);
-                });
-                
-                let selectedTab = tabContainer.find('.script-tab').filter(function() {
-                    return $(this).data('script-name') === previouslySelected;
-                });
-
-                if (selectedTab.length > 0) {
-                    selectedTab.addClass('selected-script').css('border', '1px solid #FFF');
-                    const activeScript = scripts.find(s => s.name === previouslySelected);
-                    if (activeScript) {
-                        logDisplay.text(activeScript.log);
-                    }
-                } else if (tabContainer.children().length > 0) {
-                    tabContainer.children().first().trigger('click');
-                    return;
-                }
-            } else {
+            if (!scripts || !Array.isArray(scripts) || scripts.length === 0) {
                 logDisplay.text('No scripts selected to display.');
+                indicator.text('0 running').removeClass('sl-running');
+                timestamp.text(new Date().toLocaleTimeString());
+                return;
             }
 
-            if (isScrolledToBottom) {
+            var runningCount = 0;
+
+            scripts.forEach(function(script) {
+                var isRunning = script.status === 'running';
+                if (isRunning) runningCount++;
+
+                var tab = $('<div>')
+                    .addClass('scriptlogs-tab')
+                    .toggleClass('sl-running', isRunning)
+                    .text(script.name)
+                    .data('script-name', script.name)
+                    .data('log-content', script.log);
+
+                tab.on('click', function() {
+                    tabBar.find('.scriptlogs-tab').removeClass('sl-selected');
+                    $(this).addClass('sl-selected');
+                    logDisplay.text($(this).data('log-content'));
+                    if (autoscroll) {
+                        logEl.scrollTop = logEl.scrollHeight;
+                    }
+                });
+
+                tabBar.append(tab);
+            });
+
+            // Update running indicator
+            if (runningCount > 0) {
+                indicator.text(runningCount + ' running').addClass('sl-running');
+            } else {
+                indicator.text('0 running').removeClass('sl-running');
+            }
+
+            // Restore selected tab or pick first
+            var selectedTab = tabBar.find('.scriptlogs-tab').filter(function() {
+                return $(this).data('script-name') === previouslySelected;
+            });
+
+            if (selectedTab.length > 0) {
+                selectedTab.addClass('sl-selected');
+                var activeScript = scripts.find(function(s) { return s.name === previouslySelected; });
+                if (activeScript) {
+                    logDisplay.text(activeScript.log);
+                }
+            } else {
+                tabBar.find('.scriptlogs-tab').first().trigger('click');
+                return;
+            }
+
+            if (autoscroll && isScrolledToBottom) {
                 logEl.scrollTop = logEl.scrollHeight;
             }
 
-            timestampDisplay.text(new Date().toLocaleTimeString());
+            timestamp.text(new Date().toLocaleTimeString());
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.error("Scriptlogs AJAX Error:", textStatus, errorThrown);
             $('#scriptlogs-logs').text('Error loading script states. Check browser console (F12) for details.');
