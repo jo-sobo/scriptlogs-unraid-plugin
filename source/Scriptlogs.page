@@ -83,7 +83,7 @@ $mytiles[$pluginname]['column1'] = <<<EOT
                 <span class="tile-header-left">
                     <i class="fa fa-terminal fa-lg"></i>
                     <div class="section">
-                        <h3 class="tile-header-main">Script Logs <span id="scriptlogs-run-indicator">0 running</span></h3>
+                        <h3 class="tile-header-main">Script Logs</h3>
                     </div>
                 </span>
                 <span class="tile-header-right">
@@ -118,24 +118,6 @@ EOT;
 ?>
 
 <style>
-#scriptlogs-run-indicator {
-    display: inline-block;
-    font-size: 10px;
-    font-weight: normal;
-    letter-spacing: 0;
-    text-transform: none;
-    padding: 2px 7px;
-    border-radius: 8px;
-    margin-left: 8px;
-    line-height: 1.6;
-    vertical-align: middle;
-    background: #444;
-    color: #aaa;
-}
-#scriptlogs-run-indicator.sl-running {
-    background: #2d6e2d;
-    color: #7dce7d;
-}
 #scriptlogs-chips {
     display: flex;
     flex-wrap: wrap;
@@ -183,7 +165,6 @@ EOT;
     background: #222;
     user-select: none;
     white-space: nowrap;
-    border-top: 3px solid transparent;
     position: relative;
 }
 .scriptlogs-tab + .scriptlogs-tab {
@@ -279,7 +260,6 @@ EOT;
             const logDisplay = $('#scriptlogs-logs');
             const logEl      = logBox[0];
             const timestamp  = $('#scriptlogs-timestamp');
-            const indicator  = $('#scriptlogs-run-indicator');
 
             const previouslySelected = tabBar.find('.sl-selected').data('script-name');
             const isScrolledToBottom = logEl.scrollHeight - Math.ceil(logEl.scrollTop) - logEl.clientHeight <= 1;
@@ -288,7 +268,6 @@ EOT;
 
             if (!scripts || !Array.isArray(scripts) || scripts.length === 0) {
                 logDisplay.text('No scripts selected to display.');
-                indicator.text('0 running').removeClass('sl-running');
                 timestamp.text(new Date().toLocaleTimeString());
                 return;
             }
@@ -317,13 +296,6 @@ EOT;
 
                 tabBar.append(tab);
             });
-
-            // Update running indicator
-            if (runningCount > 0) {
-                indicator.text(runningCount + ' running').addClass('sl-running');
-            } else {
-                indicator.text('0 running').removeClass('sl-running');
-            }
 
             // Update chips for collapsed view
             scriptlogs_build_chips(scripts);
