@@ -12,3 +12,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Local planning and verification artifacts
+.local/

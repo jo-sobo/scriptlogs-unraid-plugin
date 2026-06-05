@@ -153,6 +153,24 @@ EOT;
     display: flex;
     flex-direction: row;
     padding-top: 10px;
+    width: 0;
+    min-width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #555 transparent;
+}
+#scriptlogs-tab-bar::-webkit-scrollbar {
+    height: 6px;
+}
+#scriptlogs-tab-bar::-webkit-scrollbar-track {
+    background: transparent;
+}
+#scriptlogs-tab-bar::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 3px;
 }
 .scriptlogs-tab {
     padding: 7px 14px;
@@ -166,6 +184,7 @@ EOT;
     user-select: none;
     white-space: nowrap;
     position: relative;
+    flex: 0 0 auto;
 }
 .scriptlogs-tab + .scriptlogs-tab {
     border-left: none;
@@ -191,6 +210,7 @@ EOT;
     margin-top: 2px;
     background: #1a1a1a;
     height: 200px;
+    min-width: min(360px, 100%);
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -243,6 +263,32 @@ EOT;
         });
     }
 
+    function scriptlogs_is_tab_in_view(tabEl, containerEl) {
+        if (!tabEl || !containerEl) return false;
+
+        var tabRect = tabEl.getBoundingClientRect();
+        var containerRect = containerEl.getBoundingClientRect();
+        return tabRect.left >= containerRect.left && tabRect.right <= containerRect.right;
+    }
+
+    function scriptlogs_restore_tab_scroll(tabBar, previousScrollLeft, previouslySelected, wasSelectedVisible) {
+        tabBar.scrollLeft(previousScrollLeft);
+
+        var selectedTab = tabBar.find('.scriptlogs-tab.sl-selected');
+        if (selectedTab.length === 0) return;
+
+        var selectedEl = selectedTab[0];
+        if (!selectedEl.scrollIntoView) return;
+
+        var selectedName = selectedTab.data('script-name');
+        const selectionChanged = !previouslySelected || selectedName !== previouslySelected;
+        var nowOffScreen = !scriptlogs_is_tab_in_view(selectedEl, tabBar[0]);
+
+        if (selectionChanged || (wasSelectedVisible && nowOffScreen)) {
+            selectedEl.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
+    }
+
     function scriptlogs_status() {
         if (!enabledScripts || enabledScripts.length === 0) {
             $('#scriptlogs-logs').text('No scripts selected. Please check your Scriptlogs settings.');
@@ -258,6 +304,9 @@ EOT;
             const timestamp  = $('#scriptlogs-timestamp');
 
             const previouslySelected = tabBar.find('.sl-selected').data('script-name');
+            const previousScrollLeft = tabBar.scrollLeft();
+            const prevSelectedEl = tabBar.find('.scriptlogs-tab.sl-selected')[0];
+            const wasSelectedVisible = prevSelectedEl ? scriptlogs_is_tab_in_view(prevSelectedEl, tabBar[0]) : false;
             const isScrolledToBottom = logEl.scrollHeight - Math.ceil(logEl.scrollTop) - logEl.clientHeight <= 1;
 
             tabBar.empty();
@@ -306,8 +355,9 @@ EOT;
                 }
             } else {
                 tabBar.find('.scriptlogs-tab').first().trigger('click');
-                return;
             }
+
+            scriptlogs_restore_tab_scroll(tabBar, previousScrollLeft, previouslySelected, wasSelectedVisible);
 
             if ($('#scriptlogs-autoscroll').is(':checked') && isScrolledToBottom) {
                 logEl.scrollTop = logEl.scrollHeight;
