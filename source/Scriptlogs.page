@@ -263,6 +263,11 @@ EOT;
         });
     }
 
+    function scriptlogs_scroll_log_to_bottom(logEl) {
+        if (!logEl) return;
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
     function scriptlogs_is_tab_in_view(tabEl, containerEl) {
         if (!tabEl || !containerEl) return false;
 
@@ -307,7 +312,6 @@ EOT;
             const previousScrollLeft = tabBar.scrollLeft();
             const prevSelectedEl = tabBar.find('.scriptlogs-tab.sl-selected')[0];
             const wasSelectedVisible = prevSelectedEl ? scriptlogs_is_tab_in_view(prevSelectedEl, tabBar[0]) : false;
-            const isScrolledToBottom = logEl.scrollHeight - Math.ceil(logEl.scrollTop) - logEl.clientHeight <= 1;
 
             tabBar.empty();
 
@@ -332,7 +336,7 @@ EOT;
                     $(this).addClass('sl-selected');
                     logDisplay.text($(this).data('log-content'));
                     if ($('#scriptlogs-autoscroll').is(':checked')) {
-                        logEl.scrollTop = logEl.scrollHeight;
+                        scriptlogs_scroll_log_to_bottom(logEl);
                     }
                 });
 
@@ -359,8 +363,8 @@ EOT;
 
             scriptlogs_restore_tab_scroll(tabBar, previousScrollLeft, previouslySelected, wasSelectedVisible);
 
-            if ($('#scriptlogs-autoscroll').is(':checked') && isScrolledToBottom) {
-                logEl.scrollTop = logEl.scrollHeight;
+            if ($('#scriptlogs-autoscroll').is(':checked')) {
+                scriptlogs_scroll_log_to_bottom(logEl);
             }
 
             timestamp.text(new Date().toLocaleTimeString());
@@ -385,6 +389,12 @@ EOT;
     }
 
     $(function() {
+        $('#scriptlogs-autoscroll').on('change', function() {
+            if ($(this).is(':checked')) {
+                scriptlogs_scroll_log_to_bottom(document.getElementById('scriptlogs-log-box'));
+            }
+        });
+
         scriptlogs_status();
         scriptlogs_watch_collapse();
 
