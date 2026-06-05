@@ -166,76 +166,247 @@ if (isset($_POST['#apply'])) {
 $enabled_scripts_array = scriptlogs_parse_enabled_scripts($cfg['ENABLED_SCRIPTS'] ?? '');
 ?>
 
+<style>
+.scriptlogs-settings-page {
+  max-width: 1080px;
+}
+.scriptlogs-settings-header {
+  padding: 4px 0 18px;
+  border-bottom: 1px solid #3f3f3f;
+}
+.scriptlogs-settings-title h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #e0e0e0;
+}
+.scriptlogs-settings-title p {
+  margin: 6px 0 0;
+  max-width: 650px;
+  color: #aaa;
+}
+.scriptlogs-alert {
+  margin: 16px 0 0;
+  padding: 10px 12px;
+  border-left: 3px solid #d9534f;
+  background: rgba(217, 83, 79, 0.12);
+  color: #f0b5b3;
+}
+.scriptlogs-settings-section {
+  padding: 20px 0;
+  border-bottom: 1px solid #333;
+}
+.scriptlogs-settings-section:last-of-type {
+  border-bottom: none;
+}
+.scriptlogs-section-heading {
+  margin-bottom: 14px;
+}
+.scriptlogs-section-heading h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #e0e0e0;
+}
+.scriptlogs-section-heading p {
+  margin: 5px 0 0;
+  color: #999;
+}
+.scriptlogs-settings-grid {
+  display: grid;
+  gap: 14px;
+  max-width: 860px;
+}
+.scriptlogs-field {
+  display: grid;
+  grid-template-columns: minmax(190px, 260px) minmax(260px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.scriptlogs-field label,
+.scriptlogs-field-title {
+  color: #d0d0d0;
+  font-weight: 600;
+  padding-top: 7px;
+}
+.scriptlogs-field-control {
+  min-width: 0;
+}
+.scriptlogs-field-control select,
+.scriptlogs-field-control input[type="number"] {
+  max-width: 260px;
+}
+.scriptlogs-help {
+  margin: 6px 0 0;
+  color: #888;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.scriptlogs-check-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #d0d0d0;
+  cursor: pointer;
+  padding-top: 0;
+}
+.scriptlogs-script-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+  max-width: 960px;
+}
+.scriptlogs-script-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 1px solid #3f3f3f;
+  background: #222;
+  color: #d0d0d0;
+  box-sizing: border-box;
+}
+.scriptlogs-script-row input {
+  flex: 0 0 auto;
+}
+.scriptlogs-script-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.scriptlogs-empty-state {
+  margin: 0;
+  padding: 12px;
+  border: 1px solid #3f3f3f;
+  background: #222;
+  color: #aaa;
+}
+.scriptlogs-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-top: 18px;
+  border-top: 1px solid #3f3f3f;
+}
+@media (max-width: 720px) {
+  .scriptlogs-field {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+  .scriptlogs-field label,
+  .scriptlogs-field-title {
+    padding-top: 0;
+  }
+}
+</style>
+
 <form name="scriptlogs_settings" method="post">
   <div class="content">
-    <div class="settings">
+    <div class="settings scriptlogs-settings-page">
+      <div class="scriptlogs-settings-header">
+        <div class="scriptlogs-settings-title">
+          <h2>Scriptlogs</h2>
+          <p>Configure how the dashboard widget refreshes, displays logs, and chooses User Scripts.</p>
+        </div>
+      </div>
+
       <?php if ($save_error !== ''): ?>
-        <p style="color: #d9534f;"><?php echo htmlspecialchars($save_error, ENT_QUOTES, 'UTF-8'); ?></p>
+        <p class="scriptlogs-alert"><?php echo htmlspecialchars($save_error, ENT_QUOTES, 'UTF-8'); ?></p>
       <?php endif; ?>
 
-      <h3>General Settings</h3>
-      <dl>
-        <dt>Automatic Refresh:</dt>
-        <dd>
-          <select name="REFRESH_ENABLED" class="form-control">
-            <?php echo mk_option($cfg['REFRESH_ENABLED'] ?? '1', '1', 'Enabled');?>
-            <?php echo mk_option($cfg['REFRESH_ENABLED'] ?? '1', '0', 'Disabled');?>
-          </select>
-        </dd>
+      <section class="scriptlogs-settings-section">
+        <div class="scriptlogs-section-heading">
+          <h3>Dashboard behavior</h3>
+          <p>Control how often the dashboard tile checks for script status and log updates.</p>
+        </div>
+        <div class="scriptlogs-settings-grid">
+          <div class="scriptlogs-field">
+            <label for="scriptlogs-refresh-enabled">Automatic refresh</label>
+            <div class="scriptlogs-field-control">
+              <select id="scriptlogs-refresh-enabled" name="REFRESH_ENABLED" class="form-control">
+                <?php echo mk_option($cfg['REFRESH_ENABLED'] ?? '1', '1', 'Enabled');?>
+                <?php echo mk_option($cfg['REFRESH_ENABLED'] ?? '1', '0', 'Disabled');?>
+              </select>
+            </div>
+          </div>
 
-        <dt>Refresh Interval (in seconds):</dt>
-        <dd>
-          <input
-            type="number"
-            name="REFRESH_INTERVAL"
-            class="form-control"
-            min="1"
-            max="86400"
-            value="<?php echo htmlspecialchars($cfg['REFRESH_INTERVAL'] ?? '10', ENT_QUOTES, 'UTF-8'); ?>"
-          >
-        </dd>
+          <div class="scriptlogs-field">
+            <label for="scriptlogs-refresh-interval">Refresh interval</label>
+            <div class="scriptlogs-field-control">
+              <input
+                id="scriptlogs-refresh-interval"
+                type="number"
+                name="REFRESH_INTERVAL"
+                class="form-control"
+                min="1"
+                max="86400"
+                value="<?php echo htmlspecialchars($cfg['REFRESH_INTERVAL'] ?? '10', ENT_QUOTES, 'UTF-8'); ?>"
+              >
+              <p class="scriptlogs-help">Seconds between dashboard refreshes.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-        <dt>Show Last Log for Idle Scripts:</dt>
-        <dd>
-          <input type="checkbox" name="SHOW_IDLE_LOGS" value="1" <?php echo (($cfg['SHOW_IDLE_LOGS'] ?? '0') === '1' ? 'checked' : ''); ?>>
-          <span>(Only scripts that ran in the background can provide a cached log here.)</span>
-        </dd>
+      <section class="scriptlogs-settings-section">
+        <div class="scriptlogs-section-heading">
+          <h3>Log display</h3>
+          <p>Choose what appears in the log viewer when scripts are selected or idle.</p>
+        </div>
+        <div class="scriptlogs-settings-grid">
+          <div class="scriptlogs-field">
+            <span class="scriptlogs-field-title">Idle script logs</span>
+            <div class="scriptlogs-field-control">
+              <label class="scriptlogs-check-row">
+                <input type="checkbox" name="SHOW_IDLE_LOGS" value="1" <?php echo (($cfg['SHOW_IDLE_LOGS'] ?? '0') === '1' ? 'checked' : ''); ?>>
+                <span>Show last log for idle scripts</span>
+              </label>
+              <p class="scriptlogs-help">Only scripts that ran in the background can provide a cached log here.</p>
+            </div>
+          </div>
 
-        <dt>Log Font Size:</dt>
-        <dd>
-          <select name="LOG_FONT_SIZE" class="form-control">
-            <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '0.75rem', 'Extra Small');?>
-            <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '0.875rem', 'Small');?>
-            <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '1rem', 'Medium');?>
-            <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '1.125rem', 'Large');?>
-            <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '1.25rem', 'Extra Large');?>
-          </select>
-        </dd>
-      </dl>
+          <div class="scriptlogs-field">
+            <label for="scriptlogs-log-font-size">Log font size</label>
+            <div class="scriptlogs-field-control">
+              <select id="scriptlogs-log-font-size" name="LOG_FONT_SIZE" class="form-control">
+                <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '0.75rem', 'Extra Small');?>
+                <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '0.875rem', 'Small');?>
+                <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '1rem', 'Medium');?>
+                <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '1.125rem', 'Large');?>
+                <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '1.25rem', 'Extra Large');?>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <input type="hidden" name="VERSION_OVERRIDE" value="<?php echo htmlspecialchars($cfg['VERSION_OVERRIDE'] ?? 'auto', ENT_QUOTES, 'UTF-8'); ?>">
 
-      <h3>Script Selection</h3>
-      <p>Select which scripts should be displayed in the dashboard widget.</p>
-      <div class="script-list">
-        <?php if (empty($available_scripts)): ?>
-          <p>No user scripts found. Please create scripts in the "User Scripts" plugin first.</p>
-        <?php else: ?>
-          <?php foreach ($available_scripts as $script): ?>
-            <div class="script-item">
-              <input
-                type="checkbox"
-                name="ENABLED_SCRIPTS[]"
-                value="<?php echo htmlspecialchars($script, ENT_QUOTES, 'UTF-8'); ?>"
-                <?php echo (in_array($script, $enabled_scripts_array, true) ? 'checked' : ''); ?>
-              >
-              <label><?php echo htmlspecialchars($script, ENT_QUOTES, 'UTF-8'); ?></label>
-            </div>
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </div>
+      <section class="scriptlogs-settings-section">
+        <div class="scriptlogs-section-heading">
+          <h3>Script selection</h3>
+          <p>Select which scripts should be displayed in the dashboard widget.</p>
+        </div>
+        <div class="scriptlogs-script-list">
+          <?php if (empty($available_scripts)): ?>
+            <p class="scriptlogs-empty-state">No user scripts found. Please create scripts in the "User Scripts" plugin first.</p>
+          <?php else: ?>
+            <?php foreach ($available_scripts as $script): ?>
+              <label class="scriptlogs-script-row">
+                <input
+                  type="checkbox"
+                  name="ENABLED_SCRIPTS[]"
+                  value="<?php echo htmlspecialchars($script, ENT_QUOTES, 'UTF-8'); ?>"
+                  <?php echo (in_array($script, $enabled_scripts_array, true) ? 'checked' : ''); ?>
+                >
+                <span class="scriptlogs-script-name"><?php echo htmlspecialchars($script, ENT_QUOTES, 'UTF-8'); ?></span>
+              </label>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </div>
+      </section>
 
-      <div class="buttons">
+      <div class="buttons scriptlogs-actions">
         <input type="submit" name="#apply" value="Apply">
         <input type="button" value="Done" onclick="done()">
       </div>
