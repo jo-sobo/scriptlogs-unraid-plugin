@@ -1,12 +1,10 @@
 #!/bin/bash
-# --- Configuration ---
 PLUGIN_NAME="scriptlogs"
 AUTHOR="jo-sobo"
 GIT_URL="https://github.com/${AUTHOR}/scriptlogs-unraid-plugin"
 PACKAGE_DIR_FINAL="packages"
 PACKAGE_DIR_TEMP="package-temp"
 
-# --- Versioning ---
 BASE_VERSION=$(date +'%Y.%m.%d')
 LETTER_SUFFIX="$1"
 STAGE_INPUT="$2"
@@ -18,40 +16,31 @@ fi
 
 VERSION="${BASE_VERSION}${LETTER_SUFFIX}${STAGE_SUFFIX}"
 
-# --- Branch & URL Logic based on 'dev' flag ---
 if [[ "$STAGE_INPUT" == "dev" ]]; then
-  # Settings for a 'dev' build
   BRANCH="dev"
   PLUGIN_URL_STRUCTURE="&gitURL;/raw/&branch;/packages/&name;-&version;.txz"
   CHANGES_TEXT="- Development build from the 'dev' branch. For testing purposes only."
 else
-  # Settings for a 'release' build
   BRANCH="main"
   PLUGIN_URL_STRUCTURE="&gitURL;/releases/download/&version;/&name;-&version;.txz"
   CHANGES_TEXT="- Automated build release."
 fi
 
-# --- Build Process ---
 echo "Starting build for version ${VERSION} on branch ${BRANCH}..."
 
-# Clean up
 rm -rf ${PACKAGE_DIR_TEMP}
-# The following line is commented out to prevent deleting previous builds from the final packages directory.
-# rm -rf ${PACKAGE_DIR_FINAL}
+# Previous builds in ${PACKAGE_DIR_FINAL} are kept intentionally, not wiped.
 mkdir -p ${PACKAGE_DIR_TEMP}
 mkdir -p ${PACKAGE_DIR_FINAL}
 
-# Create target structure and copy files
 PLUGIN_DEST_PATH="${PACKAGE_DIR_TEMP}/usr/local/emhttp/plugins/${PLUGIN_NAME}"
 mkdir -p "${PLUGIN_DEST_PATH}"
 cp -R source/* "${PLUGIN_DEST_PATH}/"
 
-# Set correct permissions before packaging
 find "${PLUGIN_DEST_PATH}" -type d -exec chmod 755 {} \;
 find "${PLUGIN_DEST_PATH}" -type f -exec chmod 644 {} \;
 find "${PLUGIN_DEST_PATH}" -name "*.page" -exec chmod 755 {} \;
 
-# Create .txz archive
 FILENAME="${PLUGIN_NAME}-${VERSION}"
 PACKAGE_PATH="${PACKAGE_DIR_FINAL}/${FILENAME}.txz"
 
@@ -65,7 +54,6 @@ fi
 
 echo "✅ Package created: $(du -h ${PACKAGE_PATH} | cut -f1)"
 
-# --- Create .PLG file ---
 echo "Generating ${PLUGIN_NAME}.plg for '${BRANCH}' target..."
 
 cat > "${PLUGIN_NAME}.plg" << EOF
@@ -136,7 +124,6 @@ echo ""
 </PLUGIN>
 EOF
 
-# Clean up temp directory
 rm -rf ${PACKAGE_DIR_TEMP}
 
 echo ""

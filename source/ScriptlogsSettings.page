@@ -4,63 +4,10 @@ Title="Scriptlogs Settings"
 ---
 <?php
 require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
+require_once '/usr/local/emhttp/plugins/scriptlogs/scriptlogs_common.php';
 
 $plugin_name = 'scriptlogs';
 $cfg_file = "/boot/config/plugins/{$plugin_name}/{$plugin_name}.cfg";
-
-function scriptlogs_normalize_script_list($items)
-{
-    if (!is_array($items)) {
-        return [];
-    }
-
-    $normalized = [];
-    $seen = [];
-    foreach ($items as $item) {
-        $name = trim((string)$item);
-        if ($name === '' || isset($seen[$name])) {
-            continue;
-        }
-        $seen[$name] = true;
-        $normalized[] = $name;
-    }
-
-    return $normalized;
-}
-
-function scriptlogs_parse_enabled_scripts($rawValue)
-{
-    $rawValue = is_string($rawValue) ? trim($rawValue) : '';
-    if ($rawValue === '') {
-        return [];
-    }
-
-    if (strpos($rawValue, 'json:') === 0) {
-        $encoded = substr($rawValue, 5);
-        if ($encoded !== '') {
-            $decodedJson = base64_decode($encoded, true);
-            if (is_string($decodedJson) && $decodedJson !== '') {
-                $decoded = json_decode($decodedJson, true);
-                if (is_array($decoded)) {
-                    return scriptlogs_normalize_script_list($decoded);
-                }
-            }
-        }
-    }
-
-    return scriptlogs_normalize_script_list(explode(',', $rawValue));
-}
-
-function scriptlogs_encode_enabled_scripts($scripts)
-{
-    $normalized = scriptlogs_normalize_script_list($scripts);
-    $json = json_encode($normalized);
-    if (!is_string($json)) {
-        $json = '[]';
-    }
-
-    return 'json:' . base64_encode($json);
-}
 
 function scriptlogs_escape_cfg_value($value)
 {
@@ -77,11 +24,11 @@ function scriptlogs_write_cfg($path, $cfg)
 {
     $lines = [];
     foreach ($cfg as $key => $value) {
-        $safeKey = preg_replace('/[^A-Z0-9_]/', '', (string)$key);
-        if (!is_string($safeKey) || $safeKey === '') {
+        $safe_key = preg_replace('/[^A-Z0-9_]/', '', (string)$key);
+        if (!is_string($safe_key) || $safe_key === '') {
             continue;
         }
-        $lines[] = $safeKey . '="' . scriptlogs_escape_cfg_value($value) . '"';
+        $lines[] = $safe_key . '="' . scriptlogs_escape_cfg_value($value) . '"';
     }
 
     $payload = implode("\n", $lines) . "\n";

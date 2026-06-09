@@ -3,49 +3,7 @@ Icon="scriptlogs.png"
 ---
 <?php
 require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
-
-function scriptlogs_normalize_script_list($items)
-{
-    if (!is_array($items)) {
-        return [];
-    }
-
-    $normalized = [];
-    $seen = [];
-    foreach ($items as $item) {
-        $name = trim((string)$item);
-        if ($name === '' || isset($seen[$name])) {
-            continue;
-        }
-        $seen[$name] = true;
-        $normalized[] = $name;
-    }
-
-    return $normalized;
-}
-
-function scriptlogs_parse_enabled_scripts($rawValue)
-{
-    $rawValue = is_string($rawValue) ? trim($rawValue) : '';
-    if ($rawValue === '') {
-        return [];
-    }
-
-    if (strpos($rawValue, 'json:') === 0) {
-        $encoded = substr($rawValue, 5);
-        if ($encoded !== '') {
-            $decodedJson = base64_decode($encoded, true);
-            if (is_string($decodedJson) && $decodedJson !== '') {
-                $decoded = json_decode($decodedJson, true);
-                if (is_array($decoded)) {
-                    return scriptlogs_normalize_script_list($decoded);
-                }
-            }
-        }
-    }
-
-    return scriptlogs_normalize_script_list(explode(',', $rawValue));
-}
+require_once '/usr/local/emhttp/plugins/scriptlogs/scriptlogs_common.php';
 
 $cfg = parse_plugin_cfg('scriptlogs', true);
 if (!is_array($cfg)) {
@@ -586,6 +544,7 @@ EOT;
             const previousScrollLeft = tabBar.scrollLeft();
             const prevSelectedEl = tabBar.find('.scriptlogs-tab.sl-selected')[0];
             const wasSelectedVisible = prevSelectedEl ? scriptlogs_is_tab_in_view(prevSelectedEl, tabBar[0]) : false;
+            const previousSelectedLog = logDisplay.text();
 
             tabBar.empty();
 
@@ -621,10 +580,8 @@ EOT;
                 tabBar.append(tab);
             });
 
-            // Update chips for collapsed view
             scriptlogs_build_chips(scripts);
 
-            // Restore selected tab or pick first
             var selectedTab = tabBar.find('.scriptlogs-tab').filter(function() {
                 return $(this).data('script-name') === previouslySelected;
             });
@@ -634,6 +591,9 @@ EOT;
                 var activeScript = scripts.find(function(s) { return s.name === previouslySelected; });
                 if (activeScript) {
                     logDisplay.text(activeScript.log);
+                    if (activeScript.log !== previousSelectedLog && $('#scriptlogs-autoscroll').is(':checked')) {
+                        scriptlogs_scroll_log_to_bottom(logEl);
+                    }
                 }
             } else {
                 tabBar.find('.scriptlogs-tab').first().trigger('click');
@@ -641,10 +601,6 @@ EOT;
 
             scriptlogs_restore_tab_scroll(tabBar, previousScrollLeft, previouslySelected, wasSelectedVisible);
             scriptlogs_sync_tab_scrollbar();
-
-            if ($('#scriptlogs-autoscroll').is(':checked')) {
-                scriptlogs_scroll_log_to_bottom(logEl);
-            }
 
             timestamp.text(new Date().toLocaleTimeString());
         }).fail(function(jqXHR, textStatus, errorThrown) {
