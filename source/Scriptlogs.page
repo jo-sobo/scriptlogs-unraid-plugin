@@ -71,6 +71,7 @@ $mytiles[$pluginname]['column1'] = <<<EOT
                     </div>
                 </div>
                 <div id="scriptlogs-tab-bar"></div>
+                <div id="scriptlogs-tab-selected-join" aria-hidden="true"></div>
             </div>
             <div id="scriptlogs-log-box">
                 <pre id="scriptlogs-logs">Select a script to see its log.</pre>
@@ -116,7 +117,7 @@ EOT;
 }
 .scriptlogs-chip.sl-running .sl-dot {
     background: #4CAF50;
-    animation: scriptlogs-running-dot-pulse 4.8s ease-in-out infinite;
+    animation: scriptlogs-running-dot-pulse 2.4s ease-in-out infinite;
 }
 #scriptlogs-tab-shell {
     position: relative;
@@ -125,6 +126,8 @@ EOT;
     max-width: 100%;
     box-sizing: border-box;
     padding-top: 10px;
+    --scriptlogs-selected-join-left: 0px;
+    --scriptlogs-selected-join-width: 0px;
 }
 #scriptlogs-tab-shell::before,
 #scriptlogs-tab-shell::after {
@@ -263,8 +266,8 @@ EOT;
     right: 14px;
     height: 1px;
     background: #4CAF50;
-    box-shadow: 0 0 2px rgba(76, 175, 80, 0.12);
-    animation: scriptlogs-running-mark-pulse 4.8s ease-in-out infinite;
+    box-shadow: 0 0 3px rgba(76, 175, 80, 0.18);
+    animation: scriptlogs-running-mark-pulse 2.4s ease-in-out infinite;
     -webkit-mask-image:
         linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%),
         linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
@@ -273,7 +276,10 @@ EOT;
         linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%),
         linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
     mask-composite: intersect;
-    z-index: 1;
+    z-index: 3;
+}
+.scriptlogs-tab.sl-running.sl-selected .scriptlogs-tab-running-mark {
+    height: 3px;
 }
 .scriptlogs-tab.sl-selected {
     background: #1a1a1a;
@@ -283,36 +289,49 @@ EOT;
     display: block;
     left: 0;
     right: 0;
-    bottom: 0;
+    top: 0;
     height: 2px;
     background: #fd8830;
     z-index: 1;
 }
+#scriptlogs-tab-selected-join {
+    display: none;
+    position: absolute;
+    left: var(--scriptlogs-selected-join-left);
+    bottom: -1px;
+    width: var(--scriptlogs-selected-join-width);
+    height: 2px;
+    background: #1a1a1a;
+    pointer-events: none;
+    z-index: 4;
+}
+#scriptlogs-tab-shell.has-selected-join #scriptlogs-tab-selected-join {
+    display: block;
+}
 @keyframes scriptlogs-running-mark-pulse {
     0%,
     100% {
-        opacity: 0.72;
-        box-shadow: 0 0 2px rgba(76, 175, 80, 0.10);
+        opacity: 0.55;
+        box-shadow: 0 0 3px rgba(76, 175, 80, 0.18);
     }
     50% {
         opacity: 1;
-        box-shadow: 0 0 4px rgba(76, 175, 80, 0.22);
+        box-shadow: 0 0 9px rgba(76, 175, 80, 0.48);
     }
 }
 @keyframes scriptlogs-running-dot-pulse {
     0%,
     100% {
-        opacity: 0.72;
-        box-shadow: 0 0 2px rgba(76, 175, 80, 0.10);
+        opacity: 0.55;
+        box-shadow: 0 0 3px rgba(76, 175, 80, 0.18);
     }
     50% {
         opacity: 1;
-        box-shadow: 0 0 5px rgba(76, 175, 80, 0.24);
+        box-shadow: 0 0 10px rgba(76, 175, 80, 0.52);
     }
 }
 #scriptlogs-log-box {
     border: 1px solid #555;
-    margin-top: 2px;
     background: #1a1a1a;
     height: 200px;
     min-width: min(360px, 100%);
@@ -439,6 +458,29 @@ EOT;
         tabShell.classList.toggle('has-right-overflow', hasRightOverflow);
     }
 
+    function scriptlogs_update_selected_join() {
+        var tabShell = document.getElementById('scriptlogs-tab-shell');
+        var tabBar = document.getElementById('scriptlogs-tab-bar');
+        if (!tabShell || !tabBar) return;
+
+        var selectedTab = tabBar.querySelector('.scriptlogs-tab.sl-selected');
+        if (!selectedTab) {
+            tabShell.classList.remove('has-selected-join');
+            return;
+        }
+
+        var tabRect = selectedTab.getBoundingClientRect();
+        var shellRect = tabShell.getBoundingClientRect();
+        var left = Math.max(tabRect.left, shellRect.left) - shellRect.left;
+        var right = Math.min(tabRect.right, shellRect.right) - shellRect.left;
+        var joinInset = 1;
+        var width = Math.max(right - left - joinInset * 2, 0);
+
+        tabShell.style.setProperty('--scriptlogs-selected-join-left', (left + joinInset) + 'px');
+        tabShell.style.setProperty('--scriptlogs-selected-join-width', width + 'px');
+        tabShell.classList.toggle('has-selected-join', width > 0);
+    }
+
     function scriptlogs_sync_tab_scrollbar() {
         var tabBar = document.getElementById('scriptlogs-tab-bar');
         var tabScrollbar = document.getElementById('scriptlogs-tab-scrollbar');
@@ -454,6 +496,7 @@ EOT;
         tabScrollbarThumb.style.width = metrics.thumbWidth + 'px';
 
         scriptlogs_update_tab_edge_fades();
+        scriptlogs_update_selected_join();
     }
 
     function scriptlogs_bind_tab_scrollbar() {
@@ -530,6 +573,7 @@ EOT;
             $('#scriptlogs-logs').text('No scripts selected. Please check your Scriptlogs settings.');
             $('#scriptlogs-tab-bar').empty();
             scriptlogs_sync_tab_scrollbar();
+            scriptlogs_update_selected_join();
             return;
         }
 
@@ -552,6 +596,7 @@ EOT;
                 logDisplay.text('No scripts selected to display.');
                 timestamp.text(new Date().toLocaleTimeString());
                 scriptlogs_sync_tab_scrollbar();
+                scriptlogs_update_selected_join();
                 return;
             }
 
@@ -571,6 +616,7 @@ EOT;
                 tab.on('click', function() {
                     tabBar.find('.scriptlogs-tab').removeClass('sl-selected');
                     $(this).addClass('sl-selected');
+                    scriptlogs_update_selected_join();
                     logDisplay.text($(this).data('log-content'));
                     if ($('#scriptlogs-autoscroll').is(':checked')) {
                         scriptlogs_scroll_log_to_bottom(logEl);
