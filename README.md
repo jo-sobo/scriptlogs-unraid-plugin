@@ -1,76 +1,102 @@
 # Scriptlogs for Unraid
 
-> A dashboard widget to monitor your User Scripts in real-time.
+Scriptlogs adds a compact dashboard widget for selected User Scripts. It shows script status and log output directly on the Unraid Dashboard, without keeping the User Scripts page open.
 
-This plugin adds a configurable widget to the Unraid Dashboard, allowing you to see the status and log output of your favorite scripts without needing to keep the User Scripts page open.
+## Screenshots
 
-![Scriptlogs Widget Screenshot slim script](https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs_screenshot_slim.png)
-![Scriptlogs Widget Screenshot running script](https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs_screenshot_running.png)
-![Scriptlogs Widget Screenshot idle script](https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs_screenshot_idle.png)
+| Compact view | Running script |
+| --- | --- |
+| ![Compact Scriptlogs dashboard widget](scriptlogs_screenshot_slim.png) | ![Running script in the Scriptlogs dashboard widget](scriptlogs_screenshot_running.png) |
 
-## ✨ Features
+| Idle script | Scrollable log output |
+| --- | --- |
+| ![Idle script in the Scriptlogs dashboard widget](scriptlogs_screenshot_idle.png) | ![Scrollable Scriptlogs log output](scriptlogs_screenshot_scroll.png) |
 
-**Fully configurable via a dedicated settings page**
+## Features
 
-* Displays a compact, movable widget on your Unraid Dashboard.
-* Compact status overview when collapsed
-* Shows the real-time status of selected User Scripts with color-coded tabs (**Green** for running, **Gray** for idle).
-* Differentiates between **foreground scripts** (showing a notice to check the User Scripts window) and **background scripts** (showing a live log).
-* Optionally displays the last known log for idle scripts (from their last background run).
-* Auto-scrolling that can be switched on/off
-* Selectable log text size
+- Dashboard tile for selected User Scripts.
+- Color-coded script tabs for running and idle scripts.
+- Collapsed dashboard state with compact status chips.
+- Scrollable log viewer with optional auto-scroll.
+- Live log output for scripts running in the background.
+- Optional display of the last known background log for idle scripts.
+- Configurable refresh interval.
+- Configurable log font size.
+- Optional removal of empty log lines.
+- Script selection from a dedicated settings page.
 
+## Requirements
 
-## Prerequisites
+- Unraid 6.9 or newer.
+- [User Scripts](https://forums.unraid.net/topic/48286-plugin-user-scripts/) by Andrew Zawadzki.
 
-This plugin **requires** the **[User Scripts](https://forums.unraid.net/topic/48286-plugin-user-scripts/)** plugin by Andrew Zawadzki to be installed and functional.
+## Installation
 
-## 💾 Installation
+Scriptlogs is available through Unraid Community Applications.
 
-**Availiable in the UNRAID Community Apps Store**
+For manual installation:
 
+1. Open the Unraid web interface.
+2. Go to **Plugins**.
+3. Click **Install Plugin**.
+4. Paste this URL and install:
 
-or via manual install:
+   ```text
+   https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs.plg
+   ```
 
-1.  In the Unraid web interface, go to the **Plugins** tab.
-2.  Click on **Install Plugin**.
-3.  Paste the following URL into the text box and click **Install**:
+## Configuration
 
-    ```
-    https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs.plg
-    ```
+Open **Settings > User Utilities > Scriptlogs Settings** in the Unraid web interface.
 
-## ⚙️ Configuration
+Available settings:
 
-After installation, you can configure the widget to your needs.
+- **Automatic refresh:** Enable or disable dashboard updates.
+- **Refresh interval:** Set how often the widget checks script status and logs.
+- **Idle script logs:** Show the last saved background log when a script is idle.
+- **Log font size:** Choose the text size used in the dashboard log viewer.
+- **Empty log lines:** Remove or preserve blank lines in log output.
+- **Script selection:** Choose which User Scripts appear in the dashboard widget.
 
-1.  Go to the **Utilities** tab in the Unraid web interface.
-2.  Click on **Scriptlogs Settings**.
-3.  From here you can:
-    * **Automatic Refresh:** Turn the live update feature on or off.
-    * **Refresh Interval:** Define how often the widget should update (in seconds).
-    * **Show Last Log for Idle Scripts:** If enabled, the widget will display the last saved log for any idle script that was previously run **in the background**.
-    * **Log Font Size** Change the text size inside the log view of the dashboard tile
-    * **Script Selection:** Use the checkboxes to choose which scripts you want to monitor on your dashboard.
-4.  Click **Apply** to save your changes. The widget on the dashboard will update accordingly.
+Click **Apply** to save changes. The dashboard widget updates on the next refresh.
 
-## 📝 How it Works
+## How It Works
 
-The widget periodically polls a backend API file. This API uses a hybrid approach to determine script status:
-1.  It checks the system's process list (`ps -ef`) for scripts running in the **foreground** (via `startScript.sh`).
-2.  It checks for a status file in `/tmp/user.scripts/running/` for scripts running in the **background**.
+The dashboard widget polls a local plugin API at the configured refresh interval.
 
-Live logs are read from the temporary `log.txt` files created by the User Scripts plugin in `/tmp/user.scripts/tmpScripts/`.
+Status detection uses the User Scripts runtime state:
 
-## 🙏 Acknowledgments
+- Foreground scripts are detected from the process list via `startScript.sh`.
+- Background scripts are detected through `/tmp/user.scripts/running/`.
 
-A big thank you to **Andrew Zawadzki** for creating and maintaining the excellent User Scripts plugin.
+Log output is read from User Scripts log files in:
 
-## ☕ Donation
+```text
+/tmp/user.scripts/tmpScripts/<script-name>/log.txt
+```
 
-If you appreciate my work and would like to support my efforts as a hobbyist developer, you can buy me a coffee! Every bit of support helps me to continue creating and maintaining projects like this one.
+Scriptlogs tails the most recent log output, optionally removes empty lines, and displays it in the dashboard tile. Foreground scripts still write their live output to the User Scripts window, so Scriptlogs shows a short notice instead of duplicating that stream.
 
-You can donate here: https://coff.ee/magnum.308
+## Support
+
+For general support, use the Unraid forum thread:
+
+https://forums.unraid.net/topic/192397-plugin-scriptlogs
+
+Source code and issue tracking are on GitHub:
+
+https://github.com/jo-sobo/scriptlogs-unraid-plugin/issues
+
+## Acknowledgments
+
+Thanks to Andrew Zawadzki for creating and maintaining the User Scripts plugin.
+
+## Donation
+
+If Scriptlogs is useful to you, donations are welcome:
+
+https://coff.ee/magnum.308
 
 ## License
-This project is licensed under the GPL v3 License - see the [LICENSE](LICENSE) file for details.
+
+This project is licensed under the GPL v3. See [LICENSE](LICENSE) for details.

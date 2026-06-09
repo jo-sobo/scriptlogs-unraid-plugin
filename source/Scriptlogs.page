@@ -3,49 +3,7 @@ Icon="scriptlogs.png"
 ---
 <?php
 require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
-
-function scriptlogs_normalize_script_list($items)
-{
-    if (!is_array($items)) {
-        return [];
-    }
-
-    $normalized = [];
-    $seen = [];
-    foreach ($items as $item) {
-        $name = trim((string)$item);
-        if ($name === '' || isset($seen[$name])) {
-            continue;
-        }
-        $seen[$name] = true;
-        $normalized[] = $name;
-    }
-
-    return $normalized;
-}
-
-function scriptlogs_parse_enabled_scripts($rawValue)
-{
-    $rawValue = is_string($rawValue) ? trim($rawValue) : '';
-    if ($rawValue === '') {
-        return [];
-    }
-
-    if (strpos($rawValue, 'json:') === 0) {
-        $encoded = substr($rawValue, 5);
-        if ($encoded !== '') {
-            $decodedJson = base64_decode($encoded, true);
-            if (is_string($decodedJson) && $decodedJson !== '') {
-                $decoded = json_decode($decodedJson, true);
-                if (is_array($decoded)) {
-                    return scriptlogs_normalize_script_list($decoded);
-                }
-            }
-        }
-    }
-
-    return scriptlogs_normalize_script_list(explode(',', $rawValue));
-}
+require_once '/usr/local/emhttp/plugins/scriptlogs/scriptlogs_common.php';
 
 $cfg = parse_plugin_cfg('scriptlogs', true);
 if (!is_array($cfg)) {
@@ -103,7 +61,18 @@ $mytiles[$pluginname]['column1'] = <<<EOT
     </tr>
     <tr id="scriptlogs-content-row">
         <td>
-            <div id="scriptlogs-tab-bar"></div>
+            <div id="scriptlogs-tab-shell">
+                <div id="scriptlogs-tab-scrollbar-shell">
+                    <div id="scriptlogs-tab-scrollbar-visual" aria-hidden="true">
+                        <div id="scriptlogs-tab-scrollbar-thumb"></div>
+                    </div>
+                    <div id="scriptlogs-tab-scrollbar" aria-hidden="true">
+                        <div id="scriptlogs-tab-scrollbar-spacer"></div>
+                    </div>
+                </div>
+                <div id="scriptlogs-tab-bar"></div>
+                <div id="scriptlogs-tab-selected-join" aria-hidden="true"></div>
+            </div>
             <div id="scriptlogs-log-box">
                 <pre id="scriptlogs-logs">Select a script to see its log.</pre>
             </div>
@@ -121,23 +90,23 @@ EOT;
 #scriptlogs-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
-    padding: 6px 0;
+    gap: 6px;
+    padding: 7px 0;
 }
 .scriptlogs-chip {
     display: flex;
     align-items: center;
-    gap: 5px;
-    font-size: 10px;
-    padding: 3px 8px;
+    gap: 6px;
+    font-size: 12px;
+    padding: 4px 10px;
     border: 1px solid #444;
     color: #999;
     background: #222;
     white-space: nowrap;
 }
 .scriptlogs-chip .sl-dot {
-    width: 6px;
-    height: 6px;
+    width: 7.2px;
+    height: 7.2px;
     border-radius: 50%;
     flex-shrink: 0;
     background: #555;
@@ -148,11 +117,117 @@ EOT;
 }
 .scriptlogs-chip.sl-running .sl-dot {
     background: #4CAF50;
+    animation: scriptlogs-running-dot-pulse 2.4s ease-in-out infinite;
+}
+#scriptlogs-tab-shell {
+    position: relative;
+    width: 0;
+    min-width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding-top: 10px;
+    --scriptlogs-selected-join-left: 0px;
+    --scriptlogs-selected-join-width: 0px;
+}
+#scriptlogs-tab-shell::before,
+#scriptlogs-tab-shell::after {
+    content: "";
+    position: absolute;
+    top: 14px;
+    bottom: 0;
+    width: 18px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 160ms ease;
+    z-index: 5;
+}
+#scriptlogs-tab-shell::before {
+    left: 0;
+    background: linear-gradient(90deg, rgba(26, 26, 26, 0.88), transparent);
+}
+#scriptlogs-tab-shell::after {
+    right: 0;
+    background: linear-gradient(270deg, rgba(26, 26, 26, 0.88), transparent);
+}
+#scriptlogs-tab-shell.has-left-overflow::before,
+#scriptlogs-tab-shell.has-right-overflow::after {
+    opacity: 1;
+}
+#scriptlogs-tab-scrollbar-shell {
+    position: relative;
+    width: 100%;
+    height: 4px;
+    margin-bottom: 1px;
+    opacity: 0;
+    transition: opacity 180ms ease;
+}
+#scriptlogs-tab-shell.has-tab-overflow:hover #scriptlogs-tab-scrollbar-shell,
+#scriptlogs-tab-scrollbar-shell.is-dragging {
+    opacity: 1;
+}
+#scriptlogs-tab-scrollbar {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+#scriptlogs-tab-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+#scriptlogs-tab-scrollbar-visual {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 1px;
+    height: 2px;
+    background: #1a1a1a;
+    border: 1px solid #2c2c2c;
+    cursor: pointer;
+    touch-action: none;
+    z-index: 2;
+}
+#scriptlogs-tab-scrollbar-thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 2px;
+    min-width: 24px;
+    background: #4a4a4a;
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.06);
+    cursor: grab;
+    touch-action: none;
+    transition: background 140ms ease, box-shadow 140ms ease;
+}
+#scriptlogs-tab-scrollbar-thumb:active {
+    cursor: grabbing;
+}
+#scriptlogs-tab-scrollbar-visual:hover #scriptlogs-tab-scrollbar-thumb,
+#scriptlogs-tab-scrollbar-shell.is-dragging #scriptlogs-tab-scrollbar-thumb {
+    background: #676767;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.16);
+}
+#scriptlogs-tab-scrollbar-spacer {
+    height: 1px;
 }
 #scriptlogs-tab-bar {
     display: flex;
     flex-direction: row;
-    padding-top: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    border-bottom: 1px solid #555;
+}
+#scriptlogs-tab-bar::-webkit-scrollbar {
+    display: none;
 }
 .scriptlogs-tab {
     padding: 7px 14px;
@@ -166,31 +241,100 @@ EOT;
     user-select: none;
     white-space: nowrap;
     position: relative;
+    flex: 0 0 auto;
 }
 .scriptlogs-tab + .scriptlogs-tab {
     border-left: none;
 }
+.scriptlogs-tab-label {
+    position: relative;
+    z-index: 2;
+}
+.scriptlogs-tab-running-mark,
+.scriptlogs-tab-selected-mark {
+    display: none;
+    position: absolute;
+    pointer-events: none;
+}
 .scriptlogs-tab.sl-running {
-    border-top: 3px solid #4CAF50;
+    padding-top: 8px;
+}
+.scriptlogs-tab.sl-running .scriptlogs-tab-running-mark {
+    display: block;
+    top: 0;
+    left: 14px;
+    right: 14px;
+    height: 1px;
+    background: #4CAF50;
+    box-shadow: 0 0 3px rgba(76, 175, 80, 0.18);
+    animation: scriptlogs-running-mark-pulse 2.4s ease-in-out infinite;
+    -webkit-mask-image:
+        linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%),
+        linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+        linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%),
+        linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+    mask-composite: intersect;
+    z-index: 3;
+}
+.scriptlogs-tab.sl-running.sl-selected .scriptlogs-tab-running-mark {
+    height: 3px;
 }
 .scriptlogs-tab.sl-selected {
     background: #1a1a1a;
     color: #eee;
 }
-.scriptlogs-tab.sl-selected::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
+.scriptlogs-tab.sl-selected .scriptlogs-tab-selected-mark {
+    display: block;
     left: 0;
     right: 0;
-    height: 3px;
-    background: linear-gradient(to right, #e52f29, #fd8830);
+    top: 0;
+    height: 2px;
+    background: #fd8830;
+    z-index: 1;
+}
+#scriptlogs-tab-selected-join {
+    display: none;
+    position: absolute;
+    left: var(--scriptlogs-selected-join-left);
+    bottom: -1px;
+    width: var(--scriptlogs-selected-join-width);
+    height: 2px;
+    background: #1a1a1a;
+    pointer-events: none;
+    z-index: 4;
+}
+#scriptlogs-tab-shell.has-selected-join #scriptlogs-tab-selected-join {
+    display: block;
+}
+@keyframes scriptlogs-running-mark-pulse {
+    0%,
+    100% {
+        opacity: 0.55;
+        box-shadow: 0 0 3px rgba(76, 175, 80, 0.18);
+    }
+    50% {
+        opacity: 1;
+        box-shadow: 0 0 9px rgba(76, 175, 80, 0.48);
+    }
+}
+@keyframes scriptlogs-running-dot-pulse {
+    0%,
+    100% {
+        opacity: 0.55;
+        box-shadow: 0 0 3px rgba(76, 175, 80, 0.18);
+    }
+    50% {
+        opacity: 1;
+        box-shadow: 0 0 10px rgba(76, 175, 80, 0.52);
+    }
 }
 #scriptlogs-log-box {
     border: 1px solid #555;
-    margin-top: 2px;
     background: #1a1a1a;
     height: 200px;
+    min-width: min(360px, 100%);
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -211,7 +355,7 @@ EOT;
 #scriptlogs-footer {
     margin-top: 5px;
     font-size: 10px;
-    color: #888;
+    color: #777;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -221,7 +365,13 @@ EOT;
     align-items: center;
     gap: 5px;
     cursor: pointer;
-    color: #888;
+    color: #858585;
+}
+#scriptlogs-footer input[type="checkbox"] {
+    width: 11px;
+    height: 11px;
+    margin: 0;
+    accent-color: #fd8830;
 }
 </style>
 
@@ -243,10 +393,187 @@ EOT;
         });
     }
 
+    function scriptlogs_scroll_log_to_bottom(logEl) {
+        if (!logEl) return;
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function scriptlogs_is_tab_in_view(tabEl, containerEl) {
+        if (!tabEl || !containerEl) return false;
+
+        var tabRect = tabEl.getBoundingClientRect();
+        var containerRect = containerEl.getBoundingClientRect();
+        return tabRect.left >= containerRect.left && tabRect.right <= containerRect.right;
+    }
+
+    function scriptlogs_restore_tab_scroll(tabBar, previousScrollLeft, previouslySelected, wasSelectedVisible) {
+        tabBar.scrollLeft(previousScrollLeft);
+
+        var selectedTab = tabBar.find('.scriptlogs-tab.sl-selected');
+        if (selectedTab.length === 0) return;
+
+        var selectedEl = selectedTab[0];
+        if (!selectedEl.scrollIntoView) return;
+
+        var selectedName = selectedTab.data('script-name');
+        const selectionChanged = !previouslySelected || selectedName !== previouslySelected;
+        var nowOffScreen = !scriptlogs_is_tab_in_view(selectedEl, tabBar[0]);
+
+        if (selectionChanged || (wasSelectedVisible && nowOffScreen)) {
+            selectedEl.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
+    }
+
+    function scriptlogs_get_tab_scroll_metrics(tabScrollbar) {
+        var maxScroll = tabScrollbar.scrollWidth - tabScrollbar.clientWidth;
+        var trackWidth = tabScrollbar.clientWidth;
+        var thumbWidth = maxScroll > 0
+            ? Math.min(Math.max((tabScrollbar.clientWidth / tabScrollbar.scrollWidth) * trackWidth, 24), trackWidth)
+            : trackWidth;
+        var maxThumbLeft = Math.max(trackWidth - thumbWidth, 0);
+        var thumbLeft = maxScroll > 0
+            ? (tabScrollbar.scrollLeft / maxScroll) * maxThumbLeft
+            : 0;
+
+        return {
+            maxScroll: maxScroll,
+            trackWidth: trackWidth,
+            thumbWidth: thumbWidth,
+            maxThumbLeft: maxThumbLeft,
+            thumbLeft: thumbLeft
+        };
+    }
+
+    function scriptlogs_update_tab_edge_fades() {
+        var tabShell = document.getElementById('scriptlogs-tab-shell');
+        var tabBar = document.getElementById('scriptlogs-tab-bar');
+        if (!tabShell || !tabBar) return;
+
+        var maxScroll = tabBar.scrollWidth - tabBar.clientWidth;
+        var hasLeftOverflow = tabBar.scrollLeft > 1;
+        var hasRightOverflow = maxScroll - tabBar.scrollLeft > 1;
+
+        tabShell.classList.toggle('has-tab-overflow', maxScroll > 1);
+        tabShell.classList.toggle('has-left-overflow', hasLeftOverflow);
+        tabShell.classList.toggle('has-right-overflow', hasRightOverflow);
+    }
+
+    function scriptlogs_update_selected_join() {
+        var tabShell = document.getElementById('scriptlogs-tab-shell');
+        var tabBar = document.getElementById('scriptlogs-tab-bar');
+        if (!tabShell || !tabBar) return;
+
+        var selectedTab = tabBar.querySelector('.scriptlogs-tab.sl-selected');
+        if (!selectedTab) {
+            tabShell.classList.remove('has-selected-join');
+            return;
+        }
+
+        var tabRect = selectedTab.getBoundingClientRect();
+        var shellRect = tabShell.getBoundingClientRect();
+        var left = Math.max(tabRect.left, shellRect.left) - shellRect.left;
+        var right = Math.min(tabRect.right, shellRect.right) - shellRect.left;
+        var joinInset = 1;
+        var width = Math.max(right - left - joinInset * 2, 0);
+
+        tabShell.style.setProperty('--scriptlogs-selected-join-left', (left + joinInset) + 'px');
+        tabShell.style.setProperty('--scriptlogs-selected-join-width', width + 'px');
+        tabShell.classList.toggle('has-selected-join', width > 0);
+    }
+
+    function scriptlogs_sync_tab_scrollbar() {
+        var tabBar = document.getElementById('scriptlogs-tab-bar');
+        var tabScrollbar = document.getElementById('scriptlogs-tab-scrollbar');
+        var tabScrollbarSpacer = document.getElementById('scriptlogs-tab-scrollbar-spacer');
+        var tabScrollbarThumb = document.getElementById('scriptlogs-tab-scrollbar-thumb');
+        if (!tabBar || !tabScrollbar || !tabScrollbarSpacer || !tabScrollbarThumb) return;
+
+        tabScrollbarSpacer.style.width = tabBar.scrollWidth + 'px';
+        tabScrollbar.scrollLeft = tabBar.scrollLeft;
+
+        var metrics = scriptlogs_get_tab_scroll_metrics(tabScrollbar);
+        tabScrollbarThumb.style.left = metrics.thumbLeft + 'px';
+        tabScrollbarThumb.style.width = metrics.thumbWidth + 'px';
+
+        scriptlogs_update_tab_edge_fades();
+        scriptlogs_update_selected_join();
+    }
+
+    function scriptlogs_bind_tab_scrollbar() {
+        var tabBar = document.getElementById('scriptlogs-tab-bar');
+        var tabScrollbar = document.getElementById('scriptlogs-tab-scrollbar');
+        var tabScrollbarVisual = document.getElementById('scriptlogs-tab-scrollbar-visual');
+        var tabScrollbarShell = document.getElementById('scriptlogs-tab-scrollbar-shell');
+        if (!tabBar || !tabScrollbar || !tabScrollbarVisual || !tabScrollbarShell) return;
+
+        var isDraggingThumb = false;
+        var dragStartX = 0;
+        var dragStartScrollLeft = 0;
+
+        tabScrollbar.addEventListener('scroll', function() {
+            tabBar.scrollLeft = tabScrollbar.scrollLeft;
+            scriptlogs_sync_tab_scrollbar();
+        });
+
+        tabBar.addEventListener('scroll', function() {
+            tabScrollbar.scrollLeft = tabBar.scrollLeft;
+            scriptlogs_sync_tab_scrollbar();
+        });
+
+        tabScrollbarVisual.addEventListener('pointerdown', function(event) {
+            var metrics = scriptlogs_get_tab_scroll_metrics(tabScrollbar);
+            if (metrics.maxScroll <= 0 || metrics.maxThumbLeft <= 0) return;
+
+            var rect = tabScrollbarVisual.getBoundingClientRect();
+            var clickX = event.clientX - rect.left;
+
+            if (clickX < metrics.thumbLeft || clickX > metrics.thumbLeft + metrics.thumbWidth) {
+                var centeredLeft = Math.min(
+                    Math.max(clickX - metrics.thumbWidth / 2, 0),
+                    metrics.maxThumbLeft
+                );
+                tabScrollbar.scrollLeft = (centeredLeft / metrics.maxThumbLeft) * metrics.maxScroll;
+            }
+
+            isDraggingThumb = true;
+            tabScrollbarShell.classList.add('is-dragging');
+            dragStartX = event.clientX;
+            dragStartScrollLeft = tabScrollbar.scrollLeft;
+            if (tabScrollbarVisual.setPointerCapture) {
+                tabScrollbarVisual.setPointerCapture(event.pointerId);
+            }
+        });
+
+        tabScrollbarVisual.addEventListener('pointermove', function(event) {
+            if (!isDraggingThumb) return;
+
+            var metrics = scriptlogs_get_tab_scroll_metrics(tabScrollbar);
+            if (metrics.maxScroll <= 0 || metrics.maxThumbLeft <= 0) return;
+
+            var deltaX = event.clientX - dragStartX;
+            tabScrollbar.scrollLeft = dragStartScrollLeft + (deltaX / metrics.maxThumbLeft) * metrics.maxScroll;
+        });
+
+        function stopDrag(event) {
+            isDraggingThumb = false;
+            tabScrollbarShell.classList.remove('is-dragging');
+            if (event && tabScrollbarVisual.releasePointerCapture) {
+                tabScrollbarVisual.releasePointerCapture(event.pointerId);
+            }
+        }
+
+        tabScrollbarVisual.addEventListener('pointerup', stopDrag);
+        tabScrollbarVisual.addEventListener('pointercancel', stopDrag);
+        tabScrollbarVisual.addEventListener('lostpointercapture', stopDrag);
+        window.addEventListener('resize', scriptlogs_sync_tab_scrollbar);
+    }
+
     function scriptlogs_status() {
         if (!enabledScripts || enabledScripts.length === 0) {
             $('#scriptlogs-logs').text('No scripts selected. Please check your Scriptlogs settings.');
             $('#scriptlogs-tab-bar').empty();
+            scriptlogs_sync_tab_scrollbar();
+            scriptlogs_update_selected_join();
             return;
         }
 
@@ -258,13 +585,18 @@ EOT;
             const timestamp  = $('#scriptlogs-timestamp');
 
             const previouslySelected = tabBar.find('.sl-selected').data('script-name');
-            const isScrolledToBottom = logEl.scrollHeight - Math.ceil(logEl.scrollTop) - logEl.clientHeight <= 1;
+            const previousScrollLeft = tabBar.scrollLeft();
+            const prevSelectedEl = tabBar.find('.scriptlogs-tab.sl-selected')[0];
+            const wasSelectedVisible = prevSelectedEl ? scriptlogs_is_tab_in_view(prevSelectedEl, tabBar[0]) : false;
+            const previousSelectedLog = logDisplay.text();
 
             tabBar.empty();
 
             if (!scripts || !Array.isArray(scripts) || scripts.length === 0) {
                 logDisplay.text('No scripts selected to display.');
                 timestamp.text(new Date().toLocaleTimeString());
+                scriptlogs_sync_tab_scrollbar();
+                scriptlogs_update_selected_join();
                 return;
             }
 
@@ -274,26 +606,28 @@ EOT;
                 var tab = $('<div>')
                     .addClass('scriptlogs-tab')
                     .toggleClass('sl-running', isRunning)
-                    .text(script.name)
                     .data('script-name', script.name)
                     .data('log-content', script.log);
+
+                $('<span>').addClass('scriptlogs-tab-running-mark').appendTo(tab);
+                $('<span>').addClass('scriptlogs-tab-label').text(script.name).appendTo(tab);
+                $('<span>').addClass('scriptlogs-tab-selected-mark').appendTo(tab);
 
                 tab.on('click', function() {
                     tabBar.find('.scriptlogs-tab').removeClass('sl-selected');
                     $(this).addClass('sl-selected');
+                    scriptlogs_update_selected_join();
                     logDisplay.text($(this).data('log-content'));
                     if ($('#scriptlogs-autoscroll').is(':checked')) {
-                        logEl.scrollTop = logEl.scrollHeight;
+                        scriptlogs_scroll_log_to_bottom(logEl);
                     }
                 });
 
                 tabBar.append(tab);
             });
 
-            // Update chips for collapsed view
             scriptlogs_build_chips(scripts);
 
-            // Restore selected tab or pick first
             var selectedTab = tabBar.find('.scriptlogs-tab').filter(function() {
                 return $(this).data('script-name') === previouslySelected;
             });
@@ -303,15 +637,16 @@ EOT;
                 var activeScript = scripts.find(function(s) { return s.name === previouslySelected; });
                 if (activeScript) {
                     logDisplay.text(activeScript.log);
+                    if (activeScript.log !== previousSelectedLog && $('#scriptlogs-autoscroll').is(':checked')) {
+                        scriptlogs_scroll_log_to_bottom(logEl);
+                    }
                 }
             } else {
                 tabBar.find('.scriptlogs-tab').first().trigger('click');
-                return;
             }
 
-            if ($('#scriptlogs-autoscroll').is(':checked') && isScrolledToBottom) {
-                logEl.scrollTop = logEl.scrollHeight;
-            }
+            scriptlogs_restore_tab_scroll(tabBar, previousScrollLeft, previouslySelected, wasSelectedVisible);
+            scriptlogs_sync_tab_scrollbar();
 
             timestamp.text(new Date().toLocaleTimeString());
         }).fail(function(jqXHR, textStatus, errorThrown) {
@@ -335,6 +670,13 @@ EOT;
     }
 
     $(function() {
+        $('#scriptlogs-autoscroll').on('change', function() {
+            if ($(this).is(':checked')) {
+                scriptlogs_scroll_log_to_bottom(document.getElementById('scriptlogs-log-box'));
+            }
+        });
+
+        scriptlogs_bind_tab_scrollbar();
         scriptlogs_status();
         scriptlogs_watch_collapse();
 
