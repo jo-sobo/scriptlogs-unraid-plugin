@@ -118,6 +118,7 @@ if (isset($_POST['#apply'])) {
     }
 
     $show_idle_logs = isset($_POST['SHOW_IDLE_LOGS']) ? '1' : '0';
+    $remove_empty_log_lines = isset($_POST['REMOVE_EMPTY_LOG_LINES']) ? '1' : '0';
 
     $allowed_font_sizes = ['0.75rem', '0.875rem', '1rem', '1.125rem', '1.25rem'];
     $log_font_size = isset($_POST['LOG_FONT_SIZE']) ? (string)$_POST['LOG_FONT_SIZE'] : '1rem';
@@ -153,6 +154,7 @@ if (isset($_POST['#apply'])) {
         'ENABLED_SCRIPTS' => scriptlogs_encode_enabled_scripts($selected_scripts),
         'SHOW_IDLE_LOGS' => $show_idle_logs,
         'LOG_FONT_SIZE' => $log_font_size,
+        'REMOVE_EMPTY_LOG_LINES' => $remove_empty_log_lines,
         'VERSION_OVERRIDE' => $version_override
     ];
 
@@ -375,6 +377,17 @@ $enabled_scripts_array = scriptlogs_parse_enabled_scripts($cfg['ENABLED_SCRIPTS'
                 <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '1.125rem', 'Large');?>
                 <?php echo mk_option($cfg['LOG_FONT_SIZE'] ?? '1rem', '1.25rem', 'Extra Large');?>
               </select>
+            </div>
+          </div>
+
+          <div class="scriptlogs-field">
+            <span class="scriptlogs-field-title">Empty log lines</span>
+            <div class="scriptlogs-field-control">
+              <label class="scriptlogs-check-row">
+                <input type="checkbox" name="REMOVE_EMPTY_LOG_LINES" value="1" <?php echo (($cfg['REMOVE_EMPTY_LOG_LINES'] ?? '1') === '1' ? 'checked' : ''); ?>>
+                <span>Remove empty lines from logs</span>
+              </label>
+              <p class="scriptlogs-help">Disable this to keep blank spacing exactly as written by User Scripts.</p>
             </div>
           </div>
         </div>

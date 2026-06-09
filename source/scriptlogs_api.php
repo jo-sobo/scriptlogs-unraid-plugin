@@ -44,7 +44,7 @@ function scriptlogs_parse_enabled_scripts($rawValue)
     return scriptlogs_normalize_script_list(explode(',', $rawValue));
 }
 
-function scriptlogs_tail_log($path, $maxLines = 100, $maxBytes = 262144)
+function scriptlogs_tail_log($path, $maxLines = 100, $maxBytes = 262144, $removeEmptyLines = true)
 {
     $result = ['ok' => false, 'text' => '', 'truncated' => false];
 
@@ -104,11 +104,15 @@ function scriptlogs_tail_log($path, $maxLines = 100, $maxBytes = 262144)
         $lines = [];
     }
 
-    $filtered = [];
-    foreach ($lines as $line) {
-        if ($line !== '') {
-            $filtered[] = $line;
+    if ($removeEmptyLines) {
+        $filtered = [];
+        foreach ($lines as $line) {
+            if ($line !== '') {
+                $filtered[] = $line;
+            }
         }
+    } else {
+        $filtered = $lines;
     }
 
     if (count($filtered) > $maxLines) {
@@ -143,6 +147,7 @@ if (!is_array($cfg)) {
 
 $enabledScripts = scriptlogs_parse_enabled_scripts($cfg['ENABLED_SCRIPTS'] ?? '');
 $showIdleLogs = ($cfg['SHOW_IDLE_LOGS'] ?? '0') === '1';
+$removeEmptyLogLines = ($cfg['REMOVE_EMPTY_LOG_LINES'] ?? '1') === '1';
 
 $psOutput = @shell_exec('ps -ef 2>&1');
 if (!is_string($psOutput)) {
@@ -171,7 +176,7 @@ foreach ($enabledScripts as $scriptNameRaw) {
     } elseif ($isRunningBackground) {
         $scriptData['status'] = 'running';
         if (@file_exists($logFile) && @is_readable($logFile)) {
-            $tail = scriptlogs_tail_log($logFile);
+            $tail = scriptlogs_tail_log($logFile, 100, 262144, $removeEmptyLogLines);
             if ($tail['ok']) {
                 if ($tail['text'] !== '') {
                     $scriptData['log'] = $tail['text'];
@@ -187,7 +192,7 @@ foreach ($enabledScripts as $scriptNameRaw) {
     } else {
         if ($showIdleLogs) {
             if (@file_exists($logFile) && @is_readable($logFile)) {
-                $tail = scriptlogs_tail_log($logFile);
+                $tail = scriptlogs_tail_log($logFile, 100, 262144, $removeEmptyLogLines);
                 if ($tail['ok']) {
                     if ($tail['text'] !== '') {
                         $scriptData['log'] = "Script is not running. Last log:\n\n{$tail['text']}";
