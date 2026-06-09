@@ -4,4 +4,6 @@ A dashboard widget to monitor the status and view the logs of your selected User
 
 **Requirements:** User Scripts plugin by Andrew Zawadzki
 
-**Support:** https://github.com/jo-sobo/scriptlogs-unraid-plugin/issues
+**Support:** https://forums.unraid.net/topic/192397-plugin-scriptlogs
+
+**GitHub:** https://github.com/jo-sobo/scriptlogs-unraid-plugin/issues

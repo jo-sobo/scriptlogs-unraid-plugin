@@ -2,6 +2,7 @@
 PLUGIN_NAME="scriptlogs"
 AUTHOR="jo-sobo"
 GIT_URL="https://github.com/${AUTHOR}/scriptlogs-unraid-plugin"
+SUPPORT_URL="https://forums.unraid.net/topic/192397-plugin-scriptlogs"
 PACKAGE_DIR_FINAL="packages"
 PACKAGE_DIR_TEMP="package-temp"
 
@@ -64,11 +65,12 @@ cat > "${PLUGIN_NAME}.plg" << EOF
  <!ENTITY version "${VERSION}">
  <!ENTITY branch "${BRANCH}">
  <!ENTITY gitURL "${GIT_URL}">
+ <!ENTITY supportURL "${SUPPORT_URL}">
  <!ENTITY pluginURL "${PLUGIN_URL_STRUCTURE}">
  <!ENTITY selfURL "&gitURL;/raw/&branch;/&name;.plg">
 ]>
 
-<PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&selfURL;" min="6.9.0" support="&gitURL;/issues">
+<PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&selfURL;" min="6.9.0" support="&supportURL;">
 
 <CHANGES>
 ### ${VERSION}

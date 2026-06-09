@@ -13,7 +13,7 @@
         **User Scripts** plugin by Andrew Zawadzki
     </Requires>
     <Project>https://github.com/jo-sobo/scriptlogs-unraid-plugin</Project>
-    <Support>https://github.com/jo-sobo/scriptlogs-unraid-plugin/issues</Support>
+    <Support>https://forums.unraid.net/topic/192397-plugin-scriptlogs</Support>
     <Icon>https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/source/scriptlogs.png</Icon>
-    <License>MIT License</License>
+    <License>GPL v3</License>
 </Container>

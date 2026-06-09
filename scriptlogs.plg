@@ -2,17 +2,18 @@
 <!DOCTYPE PLUGIN [
  <!ENTITY name "scriptlogs">
  <!ENTITY author "jo-sobo">
- <!ENTITY version "2026.06.09b-dev">
+ <!ENTITY version "2026.06.09c-dev">
  <!ENTITY branch "dev">
  <!ENTITY gitURL "https://github.com/jo-sobo/scriptlogs-unraid-plugin">
+ <!ENTITY supportURL "https://forums.unraid.net/topic/192397-plugin-scriptlogs">
  <!ENTITY pluginURL "&gitURL;/raw/&branch;/packages/&name;-&version;.txz">
  <!ENTITY selfURL "&gitURL;/raw/&branch;/&name;.plg">
 ]>
 
-<PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&selfURL;" min="6.9.0" support="&gitURL;/issues">
+<PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&selfURL;" min="6.9.0" support="&supportURL;">
 
 <CHANGES>
-### 2026.06.09b-dev
+### 2026.06.09c-dev
 - Development build from the 'dev' branch. For testing purposes only.
 </CHANGES>
 
