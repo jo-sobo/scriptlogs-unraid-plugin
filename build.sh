@@ -24,7 +24,10 @@ if [[ "$STAGE_INPUT" == "dev" ]]; then
 else
   BRANCH="main"
   PLUGIN_URL_STRUCTURE="&gitURL;/releases/download/&version;/&name;-&version;.txz"
-  CHANGES_TEXT="- Automated build release."
+  CHANGES_TEXT="- Fixed dashboard widget overflow when many scripts are selected.
+- Added a contained script tab scroller with a separate scrollbar lane.
+- Refined selected and running script indicators.
+- Improved log display behavior, settings layout, README screenshots, and plugin metadata."
 fi
 
 echo "Starting build for version ${VERSION} on branch ${BRANCH}..."
