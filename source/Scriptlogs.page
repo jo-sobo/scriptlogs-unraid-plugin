@@ -25,6 +25,8 @@ $refresh_enabled = ($cfg['REFRESH_ENABLED'] ?? '1') === '1';
 $refresh_interval = (int)($cfg['REFRESH_INTERVAL'] ?? 10);
 if ($refresh_interval < 1) {
     $refresh_interval = 1;
+} elseif ($refresh_interval > 86400) {
+    $refresh_interval = 86400;
 }
 $refresh_interval_ms = $refresh_interval * 1000;
 
@@ -639,6 +641,28 @@ html.azure #db-scriptlogs {
         }).first();
     }
 
+    function scriptlogs_tab_id(scriptName) {
+        var hash = 0;
+        var value = String(scriptName || '');
+        for (var index = 0; index < value.length; index++) {
+            hash = ((hash << 5) - hash) + value.charCodeAt(index);
+            hash |= 0;
+        }
+        return 'scriptlogs-tab-' + Math.abs(hash);
+    }
+
+    function scriptlogs_place_tab(tabBar, tab, index) {
+        var tabEl = tab[0];
+        var currentEl = tabBar.children('.scriptlogs-tab').get(index);
+        if (currentEl === tabEl) return;
+
+        if (currentEl) {
+            tab.insertBefore(currentEl);
+        } else if (tabEl.parentNode !== tabBar[0] || tabEl !== tabBar.children('.scriptlogs-tab').last()[0]) {
+            tabBar[0].appendChild(tabEl);
+        }
+    }
+
     function scriptlogs_select_tab(tab, shouldScroll) {
         var selectedTab = $(tab);
         if (selectedTab.length === 0) return;
@@ -661,6 +685,7 @@ html.azure #db-scriptlogs {
         if (logDisplay.text() !== nextLog) {
             logDisplay.text(nextLog);
         }
+        logDisplay.attr('aria-labelledby', selectedTab.attr('id') || '');
 
         scriptlogs_update_selected_join();
         if (shouldScroll && $('#scriptlogs-autoscroll').is(':checked')) {
@@ -672,7 +697,7 @@ html.azure #db-scriptlogs {
         var tabBar = $('#scriptlogs-tab-bar');
         var seen = {};
 
-        (scripts || []).forEach(function(script) {
+        (scripts || []).forEach(function(script, index) {
             var scriptName = script.name || '';
             var tab = scriptlogs_find_tab(tabBar, scriptName);
             var isRunning = script.status === 'running';
@@ -682,7 +707,8 @@ html.azure #db-scriptlogs {
                     .addClass('scriptlogs-tab')
                     .attr('role', 'tab')
                     .attr('tabindex', '-1')
-                    .attr('aria-selected', 'false');
+                    .attr('aria-selected', 'false')
+                    .attr('aria-controls', 'scriptlogs-logs');
 
                 $('<span>').addClass('scriptlogs-tab-running-mark').appendTo(tab);
                 $('<span>').addClass('scriptlogs-tab-label').appendTo(tab);
@@ -693,6 +719,8 @@ html.azure #db-scriptlogs {
             tab.toggleClass('sl-running', isRunning)
                 .data('script-name', scriptName)
                 .data('log-content', script.log || '')
+                .attr('id', scriptlogs_tab_id(scriptName))
+                .attr('aria-controls', 'scriptlogs-logs')
                 .attr('aria-label', scriptName);
 
             var label = tab.find('.scriptlogs-tab-label');
@@ -700,7 +728,7 @@ html.azure #db-scriptlogs {
                 label.text(scriptName);
             }
 
-            tabBar.append(tab);
+            scriptlogs_place_tab(tabBar, tab, index);
         });
 
         tabBar.find('.scriptlogs-tab').each(function() {

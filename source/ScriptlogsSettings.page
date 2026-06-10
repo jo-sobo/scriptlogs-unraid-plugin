@@ -151,32 +151,67 @@ foreach ($ordered_available_scripts as $script) {
 <style>
 .scriptlogs-settings-page {
   max-width: 1080px;
+  --scriptlogs-settings-border: #3f3f3f;
+  --scriptlogs-settings-border-soft: #333;
+  --scriptlogs-settings-surface: #181818;
+  --scriptlogs-settings-row: #202020;
+  --scriptlogs-settings-row-hover: #242424;
+  --scriptlogs-settings-text: #e0e0e0;
+  --scriptlogs-settings-strong-text: #dcdcdc;
+  --scriptlogs-settings-muted-text: #999;
+  --scriptlogs-settings-dim-text: #888;
+  --scriptlogs-settings-disabled-text: #8f8f8f;
+  --scriptlogs-settings-alert-text: #f0b5b3;
+  --scriptlogs-settings-alert-bg: rgba(217, 83, 79, 0.12);
+  --scriptlogs-settings-alert-border: #d9534f;
+  --scriptlogs-settings-accent: #fd8830;
+  --scriptlogs-settings-success: #4caf50;
+  --scriptlogs-settings-focus: rgba(253, 136, 48, 0.32);
+}
+body.white .scriptlogs-settings-page,
+body.azure .scriptlogs-settings-page,
+html.white .scriptlogs-settings-page,
+html.azure .scriptlogs-settings-page {
+  --scriptlogs-settings-border: #bbb;
+  --scriptlogs-settings-border-soft: #d2d2d2;
+  --scriptlogs-settings-surface: #f8f8f8;
+  --scriptlogs-settings-row: #fff;
+  --scriptlogs-settings-row-hover: #f1f1f1;
+  --scriptlogs-settings-text: #222;
+  --scriptlogs-settings-strong-text: #111;
+  --scriptlogs-settings-muted-text: #555;
+  --scriptlogs-settings-dim-text: #666;
+  --scriptlogs-settings-disabled-text: #8a8a8a;
+  --scriptlogs-settings-alert-text: #8a2723;
+  --scriptlogs-settings-alert-bg: rgba(217, 83, 79, 0.1);
+  --scriptlogs-settings-alert-border: #c94d48;
+  --scriptlogs-settings-focus: rgba(253, 136, 48, 0.38);
 }
 .scriptlogs-settings-header {
   padding: 4px 0 18px;
-  border-bottom: 1px solid #3f3f3f;
+  border-bottom: 1px solid var(--scriptlogs-settings-border);
 }
 .scriptlogs-settings-title h2 {
   margin: 0;
   font-size: 24px;
   font-weight: 600;
-  color: #e0e0e0;
+  color: var(--scriptlogs-settings-text);
 }
 .scriptlogs-settings-title p {
   margin: 6px 0 0;
   max-width: 650px;
-  color: #aaa;
+  color: var(--scriptlogs-settings-muted-text);
 }
 .scriptlogs-alert {
   margin: 16px 0 0;
   padding: 10px 12px;
-  border-left: 3px solid #d9534f;
-  background: rgba(217, 83, 79, 0.12);
-  color: #f0b5b3;
+  border-left: 3px solid var(--scriptlogs-settings-alert-border);
+  background: var(--scriptlogs-settings-alert-bg);
+  color: var(--scriptlogs-settings-alert-text);
 }
 .scriptlogs-settings-section {
   padding: 20px 0;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--scriptlogs-settings-border-soft);
 }
 .scriptlogs-settings-section:last-of-type {
   border-bottom: none;
@@ -188,11 +223,11 @@ foreach ($ordered_available_scripts as $script) {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: #e0e0e0;
+  color: var(--scriptlogs-settings-text);
 }
 .scriptlogs-section-heading p {
   margin: 5px 0 0;
-  color: #999;
+  color: var(--scriptlogs-settings-muted-text);
 }
 .scriptlogs-settings-grid {
   display: grid;
@@ -207,7 +242,7 @@ foreach ($ordered_available_scripts as $script) {
 }
 .scriptlogs-field label,
 .scriptlogs-field-title {
-  color: #d0d0d0;
+  color: var(--scriptlogs-settings-strong-text);
   font-weight: 600;
   padding-top: 7px;
 }
@@ -220,7 +255,7 @@ foreach ($ordered_available_scripts as $script) {
 }
 .scriptlogs-help {
   margin: 6px 0 0;
-  color: #888;
+  color: var(--scriptlogs-settings-dim-text);
   font-size: 12px;
   line-height: 1.35;
 }
@@ -228,14 +263,14 @@ foreach ($ordered_available_scripts as $script) {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #d0d0d0;
+  color: var(--scriptlogs-settings-strong-text);
   cursor: pointer;
   padding-top: 0;
 }
 .scriptlogs-script-panel {
   max-width: 850px;
-  border: 1px solid #3f3f3f;
-  background: #181818;
+  border: 1px solid var(--scriptlogs-settings-border);
+  background: var(--scriptlogs-settings-surface);
 }
 .scriptlogs-script-toolbar {
   display: flex;
@@ -244,8 +279,8 @@ foreach ($ordered_available_scripts as $script) {
   gap: 12px;
   min-height: 38px;
   padding: 0 10px 0 12px;
-  border-bottom: 1px solid #333;
-  color: #999;
+  border-bottom: 1px solid var(--scriptlogs-settings-border-soft);
+  color: var(--scriptlogs-settings-muted-text);
   font-size: 12px;
 }
 .scriptlogs-selected-count {
@@ -259,7 +294,7 @@ foreach ($ordered_available_scripts as $script) {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #4caf50;
+  background: var(--scriptlogs-settings-success);
 }
 .scriptlogs-order-label {
   white-space: nowrap;
@@ -275,22 +310,22 @@ foreach ($ordered_available_scripts as $script) {
   grid-template-columns: 30px 28px minmax(0, 1fr) 66px;
   align-items: center;
   min-height: 34px;
-  border-bottom: 1px solid #333;
-  background: #202020;
-  color: #d0d0d0;
+  border-bottom: 1px solid var(--scriptlogs-settings-border-soft);
+  background: var(--scriptlogs-settings-row);
+  color: var(--scriptlogs-settings-strong-text);
   box-sizing: border-box;
 }
 .scriptlogs-script-row:last-child {
   border-bottom: 0;
 }
 .scriptlogs-script-row:hover {
-  background: #242424;
+  background: var(--scriptlogs-settings-row-hover);
 }
 .scriptlogs-script-row.is-dragging {
   opacity: 0.48;
 }
 .scriptlogs-script-row:focus {
-  outline: 2px solid rgba(253, 136, 48, 0.32);
+  outline: 2px solid var(--scriptlogs-settings-focus);
   outline-offset: -2px;
 }
 .scriptlogs-script-row .scriptlogs-row-check {
@@ -303,7 +338,7 @@ foreach ($ordered_available_scripts as $script) {
   display: block;
   min-width: 0;
   padding: 0 10px 0 0;
-  color: #dcdcdc;
+  color: var(--scriptlogs-settings-strong-text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -311,7 +346,7 @@ foreach ($ordered_available_scripts as $script) {
   cursor: pointer;
 }
 .scriptlogs-script-row:not(.is-enabled) .scriptlogs-script-name {
-  color: #8f8f8f;
+  color: var(--scriptlogs-settings-disabled-text);
 }
 .scriptlogs-drag-handle,
 .scriptlogs-move-script {
@@ -324,7 +359,7 @@ foreach ($ordered_available_scripts as $script) {
   border: 0 !important;
   border-radius: 0;
   background: transparent !important;
-  color: #999;
+  color: var(--scriptlogs-settings-muted-text);
   box-shadow: none !important;
   margin: 0;
   padding: 0 !important;
@@ -341,7 +376,7 @@ foreach ($ordered_available_scripts as $script) {
 .scriptlogs-move-script:hover,
 .scriptlogs-drag-handle:focus,
 .scriptlogs-move-script:focus {
-  color: #fd8830;
+  color: var(--scriptlogs-settings-accent);
   outline: none;
 }
 .scriptlogs-order-actions {
@@ -354,15 +389,15 @@ foreach ($ordered_available_scripts as $script) {
 .scriptlogs-empty-state {
   margin: 0;
   padding: 12px;
-  background: #202020;
-  color: #aaa;
+  background: var(--scriptlogs-settings-row);
+  color: var(--scriptlogs-settings-muted-text);
 }
 .scriptlogs-actions {
   display: flex;
   gap: 8px;
   align-items: center;
   padding-top: 18px;
-  border-top: 1px solid #3f3f3f;
+  border-top: 1px solid var(--scriptlogs-settings-border);
 }
 @media (max-width: 720px) {
   .scriptlogs-field {
@@ -492,7 +527,6 @@ foreach ($ordered_available_scripts as $script) {
                 ?>
               <div
                 class="scriptlogs-script-row<?php echo ($script_enabled ? ' is-enabled' : ''); ?>"
-                draggable="true"
                 tabindex="-1"
                 data-script-name="<?php echo htmlspecialchars($script, ENT_QUOTES, 'UTF-8'); ?>"
               >
@@ -580,6 +614,26 @@ foreach ($ordered_available_scripts as $script) {
       }
     }
 
+    var scriptlogs_armed_drag_row = null;
+
+    function scriptlogs_enable_row_drag(row) {
+      if (!row) return;
+
+      scriptlogs_armed_drag_row = row;
+      row.setAttribute('draggable', 'true');
+      row.classList.add('scriptlogs-row-draggable');
+    }
+
+    function scriptlogs_disable_row_drag(row) {
+      if (!row) return;
+
+      row.removeAttribute('draggable');
+      row.classList.remove('scriptlogs-row-draggable');
+      if (scriptlogs_armed_drag_row === row) {
+        scriptlogs_armed_drag_row = null;
+      }
+    }
+
     function scriptlogs_bind_script_ordering() {
       var list = document.getElementById('scriptlogs-script-list');
       if (!list) return;
@@ -601,9 +655,26 @@ foreach ($ordered_available_scripts as $script) {
         selectedCount.textContent = selected + ' selected';
       }
 
+      list.addEventListener('pointerdown', function(event) {
+        var handle = event.target.closest('.scriptlogs-drag-handle');
+        if (!handle) return;
+
+        scriptlogs_enable_row_drag(handle.closest('.scriptlogs-script-row'));
+      });
+
+      list.addEventListener('mousedown', function(event) {
+        var handle = event.target.closest('.scriptlogs-drag-handle');
+        if (!handle) return;
+
+        scriptlogs_enable_row_drag(handle.closest('.scriptlogs-script-row'));
+      });
+
       list.addEventListener('dragstart', function(event) {
         var row = event.target.closest('.scriptlogs-script-row');
-        if (!row) return;
+        if (!row || (row !== scriptlogs_armed_drag_row && !event.target.closest('.scriptlogs-drag-handle'))) {
+          event.preventDefault();
+          return;
+        }
 
         draggedRow = row;
         row.classList.add('is-dragging');
@@ -626,8 +697,28 @@ foreach ($ordered_available_scripts as $script) {
       list.addEventListener('dragend', function() {
         if (draggedRow) {
           draggedRow.classList.remove('is-dragging');
+          scriptlogs_disable_row_drag(draggedRow);
         }
         draggedRow = null;
+      });
+
+      list.addEventListener('drop', function(event) {
+        event.preventDefault();
+        if (draggedRow) {
+          scriptlogs_disable_row_drag(draggedRow);
+        }
+      });
+
+      list.addEventListener('pointerup', function() {
+        if (!draggedRow && scriptlogs_armed_drag_row) {
+          scriptlogs_disable_row_drag(scriptlogs_armed_drag_row);
+        }
+      });
+
+      list.addEventListener('mouseup', function() {
+        if (!draggedRow && scriptlogs_armed_drag_row) {
+          scriptlogs_disable_row_drag(scriptlogs_armed_drag_row);
+        }
       });
 
       list.addEventListener('change', function(event) {

@@ -121,6 +121,7 @@ chown -R root:root /usr/local/emhttp/plugins/&name;
 find -P /usr/local/emhttp/plugins/&name; -type d -exec chmod 755 {} \;
 find -P /usr/local/emhttp/plugins/&name; -type f -exec chmod 644 {} \;
 find -P /usr/local/emhttp/plugins/&name; -name "*.page" -exec chmod 755 {} \;
+find /boot/config/plugins/&name; -maxdepth 1 -type f -name "&name;-*.txz" ! -name "&name;-&version;.txz" -delete 2>/dev/null || true
 
 echo ""
 echo "----------------------------------------------------"

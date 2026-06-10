@@ -1,4 +1,8 @@
 ### 2026.06.10
+- Added light-theme support to the settings page.
+- Refined settings script reordering to drag only from the handle and suppress drop snap-back.
+- Preserved dashboard tab focus and running animations across refreshes.
+- Removed superseded plugin packages during install.
 - Fixed the settings script selection layout on Unraid by switching the reorder UI to a compact list.
 - Added custom ordering for selected scripts from the settings page.
 - Fixed the settings Apply button flow on Unraid settings pages.
@@ -8,7 +12,7 @@
 - Improved dashboard polling to avoid overlapping requests and refresh correctly from an initially empty script selection.
 - Added light-theme-aware dashboard styling, keyboard-accessible tabs, and initial collapsed-state synchronization.
 - Hardened log tailing, truncation reporting, foreground script detection, and JSON output.
-- Improved settings saves with explicit CSRF token handling, atomic config writes, and redirect-after-save.
+- Improved settings saves with explicit CSRF token handling, atomic config writes, and saved-value refresh after Apply.
 - Preserved user settings on uninstall while still removing downloaded package archives.
 
 ### 2026.06.09

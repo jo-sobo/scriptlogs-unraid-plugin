@@ -142,7 +142,7 @@ foreach ($enabled_scripts as $script_name_raw) {
 
     if ($is_running_foreground) {
         $script_data['status'] = 'running';
-        $script_data['log'] = "Script is running in the foreground.\nView its live log in the 'User Scripts' plugin window.";
+        $script_data['log'] = scriptlogs_t("Script is running in the foreground.\nView its live log in the 'User Scripts' plugin window.");
     } elseif ($is_running_background) {
         $script_data['status'] = 'running';
         if (@file_exists($log_file) && @is_readable($log_file)) {
@@ -152,13 +152,13 @@ foreach ($enabled_scripts as $script_name_raw) {
                 if ($tail['text'] !== '') {
                     $script_data['log'] = scriptlogs_format_tail_text($tail);
                 } else {
-                    $script_data['log'] = 'Script is running, but has not produced any output yet.';
+                    $script_data['log'] = scriptlogs_t('Script is running, but has not produced any output yet.');
                 }
             } else {
-                $script_data['log'] = 'Script is running, but log file cannot be read.';
+                $script_data['log'] = scriptlogs_t('Script is running, but log file cannot be read.');
             }
         } else {
-            $script_data['log'] = 'Script is running, but its log file has not been created yet.';
+            $script_data['log'] = scriptlogs_t('Script is running, but its log file has not been created yet.');
         }
     } else {
         if ($show_idle_logs) {
@@ -168,18 +168,18 @@ foreach ($enabled_scripts as $script_name_raw) {
                     $script_data['truncated'] = (bool)$tail['truncated'];
                     if ($tail['text'] !== '') {
                         $tail_text = scriptlogs_format_tail_text($tail);
-                        $script_data['log'] = "Script is not running. Last log:\n\n{$tail_text}";
+                        $script_data['log'] = scriptlogs_t("Script is not running. Last log:\n\n") . $tail_text;
                     } else {
-                        $script_data['log'] = 'Script is not running. No previous log found (or it was last run in the foreground).';
+                        $script_data['log'] = scriptlogs_t('Script is not running. No previous log found (or it was last run in the foreground).');
                     }
                 } else {
-                    $script_data['log'] = 'Script is not running. Log file cannot be read.';
+                    $script_data['log'] = scriptlogs_t('Script is not running. Log file cannot be read.');
                 }
             } else {
-                $script_data['log'] = 'Script is not running. No previous log found (or it was last run in the foreground).';
+                $script_data['log'] = scriptlogs_t('Script is not running. No previous log found (or it was last run in the foreground).');
             }
         } else {
-            $script_data['log'] = 'Script is not running.';
+            $script_data['log'] = scriptlogs_t('Script is not running.');
         }
     }
 
