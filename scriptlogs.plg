@@ -2,7 +2,7 @@
 <!DOCTYPE PLUGIN [
  <!ENTITY name "scriptlogs">
  <!ENTITY author "jo-sobo">
- <!ENTITY version "2026.06.10a-dev">
+ <!ENTITY version "2026.06.10b-dev">
  <!ENTITY branch "dev">
  <!ENTITY gitURL "https://github.com/jo-sobo/scriptlogs-unraid-plugin">
  <!ENTITY supportURL "https://forums.unraid.net/topic/192397-plugin-scriptlogs">
@@ -13,10 +13,11 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&selfURL;" min="6.9.0" support="&supportURL;">
 
 <CHANGES>
-### 2026.06.10a-dev
+### 2026.06.10b-dev
 - Development build from the 'dev' branch. For testing purposes only.
 
 ### 2026.06.10
+- Fixed the settings script selection layout on Unraid by switching the reorder UI to a compact list.
 - Added custom ordering for selected scripts from the settings page.
 - Fixed the settings Apply button flow on Unraid settings pages.
 - Fixed package archive ownership so installs do not alter parent system directory owners.
@@ -45,7 +46,7 @@
 
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.txz" Run="upgradepkg --install-new">
 <URL>&pluginURL;</URL>
-<MD5>cf74086b37aa622536e7c93a38175acc</MD5>
+<MD5>7992b09e523a581c230397e8b43d8b0d</MD5>
 </FILE>
 
 <FILE Name="/boot/config/plugins/&name;/&name;.cfg">

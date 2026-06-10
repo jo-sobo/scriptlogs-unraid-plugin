@@ -1,4 +1,5 @@
 ### 2026.06.10
+- Fixed the settings script selection layout on Unraid by switching the reorder UI to a compact list.
 - Added custom ordering for selected scripts from the settings page.
 - Fixed the settings Apply button flow on Unraid settings pages.
 - Fixed package archive ownership so installs do not alter parent system directory owners.
