@@ -2,7 +2,7 @@
 <!DOCTYPE PLUGIN [
  <!ENTITY name "scriptlogs">
  <!ENTITY author "jo-sobo">
- <!ENTITY version "2026.06.09c-dev">
+ <!ENTITY version "2026.06.10-dev">
  <!ENTITY branch "dev">
  <!ENTITY gitURL "https://github.com/jo-sobo/scriptlogs-unraid-plugin">
  <!ENTITY supportURL "https://forums.unraid.net/topic/192397-plugin-scriptlogs">
@@ -13,12 +13,37 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&selfURL;" min="6.9.0" support="&supportURL;">
 
 <CHANGES>
-### 2026.06.09c-dev
+### 2026.06.10-dev
 - Development build from the 'dev' branch. For testing purposes only.
+
+### 2026.06.10
+- Fixed package archive ownership so installs do not alter parent system directory owners.
+- Added package MD5 checksums to plugin metadata and rebuilt package archives with root-owned entries.
+- Added shipped default configuration and centralized shared defaults, font sizes, tail limits, and JSON options.
+- Improved dashboard polling to avoid overlapping requests and refresh correctly from an initially empty script selection.
+- Added light-theme-aware dashboard styling, keyboard-accessible tabs, and initial collapsed-state synchronization.
+- Hardened log tailing, truncation reporting, foreground script detection, and JSON output.
+- Improved settings saves with explicit CSRF token handling, atomic config writes, and redirect-after-save.
+- Preserved user settings on uninstall while still removing downloaded package archives.
+
+### 2026.06.09
+- Fixed dashboard widget overflow when many scripts are selected.
+- Added a contained script tab scroller with a separate scrollbar lane.
+- Refined selected and running script indicators.
+- Improved log display behavior, settings layout, README screenshots, and plugin metadata.
+
+### 2026.03.08
+- Added shared script list encoding helpers.
+- Improved log autoscroll behavior.
+- Refined dashboard and settings layout.
+
+### 2025.11.05
+- Initial public Scriptlogs release.
 </CHANGES>
 
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.txz" Run="upgradepkg --install-new">
 <URL>&pluginURL;</URL>
+<MD5>74e32032e44568aeab11aebf30d381e5</MD5>
 </FILE>
 
 <FILE Name="/boot/config/plugins/&name;/&name;.cfg">
@@ -29,7 +54,6 @@
     SHOW_IDLE_LOGS="0"
     LOG_FONT_SIZE="1rem"
     REMOVE_EMPTY_LOG_LINES="1"
-    VERSION_OVERRIDE="auto"
   </INLINE>
 </FILE>
 
@@ -53,7 +77,7 @@ echo ""
 <INLINE>
 removepkg &name;-&version;
 rm -rf /usr/local/emhttp/plugins/&name;
-rm -rf /boot/config/plugins/&name;
+find /boot/config/plugins/&name; -maxdepth 1 -type f -name "&name;-*.txz" -delete 2>/dev/null || true
 
 echo ""
 echo "----------------------------------------------------"

@@ -1,5 +1,74 @@
 <?php
 
+function scriptlogs_default_cfg()
+{
+    return [
+        'REFRESH_ENABLED' => '1',
+        'REFRESH_INTERVAL' => '10',
+        'ENABLED_SCRIPTS' => '',
+        'SHOW_IDLE_LOGS' => '0',
+        'LOG_FONT_SIZE' => '1rem',
+        'REMOVE_EMPTY_LOG_LINES' => '1'
+    ];
+}
+
+function scriptlogs_read_cfg($plugin_name = 'scriptlogs')
+{
+    $cfg = parse_plugin_cfg($plugin_name);
+    if (!is_array($cfg)) {
+        $cfg = [];
+    }
+
+    return array_merge(scriptlogs_default_cfg(), $cfg);
+}
+
+function scriptlogs_allowed_font_sizes()
+{
+    return ['0.75rem', '0.875rem', '1rem', '1.125rem', '1.25rem'];
+}
+
+function scriptlogs_tail_limits()
+{
+    return ['lines' => 100, 'bytes' => 262144];
+}
+
+function scriptlogs_json_options()
+{
+    $options = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+    if (defined('JSON_INVALID_UTF8_SUBSTITUTE')) {
+        $options |= JSON_INVALID_UTF8_SUBSTITUTE;
+    }
+
+    return $options;
+}
+
+function scriptlogs_t($text)
+{
+    return function_exists('_') ? _($text) : $text;
+}
+
+function scriptlogs_is_foreground_running($ps_output, $script_name)
+{
+    if (!is_string($ps_output) || $ps_output === '') {
+        return false;
+    }
+
+    $script_path = '/tmp/user.scripts/tmpScripts/' . $script_name . '/script';
+    $pattern = '/(?:^|\s)(?:\S+\/)?startScript\.sh\s+' . preg_quote($script_path, '/') . '(?:\s|$)/';
+    $lines = preg_split('/\r\n|\r|\n/', $ps_output);
+    if (!is_array($lines)) {
+        return false;
+    }
+
+    foreach ($lines as $line) {
+        if (preg_match($pattern, $line) === 1) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 function scriptlogs_normalize_script_list($items)
 {
     if (!is_array($items)) {
