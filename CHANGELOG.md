@@ -1,4 +1,5 @@
 ### 2026.06.10
+- Fixed the settings Apply button flow on Unraid settings pages.
 - Fixed package archive ownership so installs do not alter parent system directory owners.
 - Added package MD5 checksums to plugin metadata and rebuilt package archives with root-owned entries.
 - Added shipped default configuration and centralized shared defaults, font sizes, tail limits, and JSON options.

@@ -17,6 +17,7 @@
 - Development build from the 'dev' branch. For testing purposes only.
 
 ### 2026.06.10
+- Fixed the settings Apply button flow on Unraid settings pages.
 - Fixed package archive ownership so installs do not alter parent system directory owners.
 - Added package MD5 checksums to plugin metadata and rebuilt package archives with root-owned entries.
 - Added shipped default configuration and centralized shared defaults, font sizes, tail limits, and JSON options.
@@ -43,7 +44,7 @@
 
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.txz" Run="upgradepkg --install-new">
 <URL>&pluginURL;</URL>
-<MD5>74e32032e44568aeab11aebf30d381e5</MD5>
+<MD5>12bf50df2035607fadd295ba32777e0a</MD5>
 </FILE>
 
 <FILE Name="/boot/config/plugins/&name;/&name;.cfg">

@@ -114,8 +114,7 @@ if (isset($_POST['#apply'])) {
     ];
 
     if (scriptlogs_write_cfg($cfg_file, $new_cfg)) {
-        header('Location: /Settings/ScriptlogsSettings');
-        exit;
+        $cfg = array_merge($default_cfg, $new_cfg);
     } else {
         $save_error = 'Unable to save settings.';
     }
