@@ -2,7 +2,7 @@
 <!DOCTYPE PLUGIN [
  <!ENTITY name "scriptlogs">
  <!ENTITY author "jo-sobo">
- <!ENTITY version "2026.06.10-dev">
+ <!ENTITY version "2026.06.10a-dev">
  <!ENTITY branch "dev">
  <!ENTITY gitURL "https://github.com/jo-sobo/scriptlogs-unraid-plugin">
  <!ENTITY supportURL "https://forums.unraid.net/topic/192397-plugin-scriptlogs">
@@ -13,7 +13,7 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&selfURL;" min="6.9.0" support="&supportURL;">
 
 <CHANGES>
-### 2026.06.10-dev
+### 2026.06.10a-dev
 - Development build from the 'dev' branch. For testing purposes only.
 
 ### 2026.06.10
@@ -45,7 +45,7 @@
 
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.txz" Run="upgradepkg --install-new">
 <URL>&pluginURL;</URL>
-<MD5>2bb1c4581a25b7e3b9af9e373b501a22</MD5>
+<MD5>cf74086b37aa622536e7c93a38175acc</MD5>
 </FILE>
 
 <FILE Name="/boot/config/plugins/&name;/&name;.cfg">
