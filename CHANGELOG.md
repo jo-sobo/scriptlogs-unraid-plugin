@@ -1,4 +1,5 @@
 ### 2026.06.10
+- Added custom ordering for selected scripts from the settings page.
 - Fixed the settings Apply button flow on Unraid settings pages.
 - Fixed package archive ownership so installs do not alter parent system directory owners.
 - Added package MD5 checksums to plugin metadata and rebuilt package archives with root-owned entries.

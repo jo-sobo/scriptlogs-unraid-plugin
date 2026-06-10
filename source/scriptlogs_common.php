@@ -27,6 +27,31 @@ function scriptlogs_allowed_font_sizes()
     return ['0.75rem', '0.875rem', '1rem', '1.125rem', '1.25rem'];
 }
 
+function scriptlogs_order_available_scripts($available_scripts, $enabled_scripts)
+{
+    $available_scripts = scriptlogs_normalize_script_list($available_scripts);
+    $enabled_scripts = scriptlogs_normalize_script_list($enabled_scripts);
+    $available_lookup = array_fill_keys($available_scripts, true);
+    $ordered = [];
+    $seen = [];
+
+    foreach ($enabled_scripts as $script_name) {
+        if (isset($available_lookup[$script_name]) && !isset($seen[$script_name])) {
+            $ordered[] = $script_name;
+            $seen[$script_name] = true;
+        }
+    }
+
+    foreach ($available_scripts as $script_name) {
+        if (!isset($seen[$script_name])) {
+            $ordered[] = $script_name;
+            $seen[$script_name] = true;
+        }
+    }
+
+    return $ordered;
+}
+
 function scriptlogs_tail_limits()
 {
     return ['lines' => 100, 'bytes' => 262144];
