@@ -4,7 +4,6 @@
 
 # IDE
 .vscode/settings.json
-.idea/
 
 # System files
 .DS_Store
