@@ -100,8 +100,6 @@ EOT;
 ?>
 
 <style>
-/* Theme: prefer Unraid's semantic variables (webGui 7.1+); fall back to a
-   palette picked server-side from $display['theme'] for older versions. */
 #db-scriptlogs {
     --scriptlogs-tab-surface: var(--table-header-background-color, <?= $scriptlogs_theme_light ? '#f7f7f7' : '#222' ?>);
     --scriptlogs-log-surface: var(--background-color, <?= $scriptlogs_theme_light ? '#fff' : '#1a1a1a' ?>);
