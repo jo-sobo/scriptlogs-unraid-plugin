@@ -150,8 +150,6 @@ foreach ($ordered_available_scripts as $script) {
 ?>
 
 <style>
-/* Theme: prefer Unraid's semantic variables (webGui 7.1+); fall back to a
-   palette picked server-side from $display['theme'] for older versions. */
 .scriptlogs-settings-page {
   max-width: 1080px;
   --scriptlogs-settings-border: var(--border-color, <?= $scriptlogs_theme_light ? '#bbb' : '#3f3f3f' ?>);
