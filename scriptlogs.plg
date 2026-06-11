@@ -2,20 +2,17 @@
 <!DOCTYPE PLUGIN [
  <!ENTITY name "scriptlogs">
  <!ENTITY author "jo-sobo">
- <!ENTITY version "2026.06.11-dev">
- <!ENTITY branch "dev">
+ <!ENTITY version "2026.06.11">
+ <!ENTITY branch "main">
  <!ENTITY gitURL "https://github.com/jo-sobo/scriptlogs-unraid-plugin">
  <!ENTITY supportURL "https://forums.unraid.net/topic/192397-plugin-scriptlogs">
- <!ENTITY pluginURL "&gitURL;/raw/&branch;/packages/&name;-&version;.txz">
+ <!ENTITY pluginURL "&gitURL;/releases/download/&version;/&name;-&version;.txz">
  <!ENTITY selfURL "&gitURL;/raw/&branch;/&name;.plg">
 ]>
 
 <PLUGIN name="&name;" author="&author;" version="&version;" pluginURL="&selfURL;" min="6.9.0" support="&supportURL;">
 
 <CHANGES>
-### 2026.06.11-dev
-- Development build from the 'dev' branch. For testing purposes only.
-
 ### 2026.06.11
 - Fixed light-theme support so the dashboard tile and settings page actually follow the active Unraid theme; the previous theme overrides relied on body classes that no Unraid version sets.
 - Switched theme handling to server-side detection of the Unraid theme with native webGui CSS variables on Unraid 7.1+ and tuned fallback palettes for older versions.
@@ -55,7 +52,7 @@
 
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.txz" Run="upgradepkg --install-new">
 <URL>&pluginURL;</URL>
-<MD5>8e6bf7067d20dce92bef317212c645cf</MD5>
+<MD5>12f9d380d04aa37dc891747ad699775a</MD5>
 </FILE>
 
 <FILE Name="/boot/config/plugins/&name;/&name;.cfg">
