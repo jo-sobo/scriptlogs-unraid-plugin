@@ -66,6 +66,7 @@ if (is_dir($user_scripts_path)) {
 sort($available_scripts, SORT_NATURAL | SORT_FLAG_CASE);
 
 $cfg = scriptlogs_read_cfg($plugin_name);
+$scriptlogs_theme_light = scriptlogs_theme_is_light();
 
 $save_error = '';
 
@@ -149,43 +150,26 @@ foreach ($ordered_available_scripts as $script) {
 ?>
 
 <style>
+/* Theme: prefer Unraid's semantic variables (webGui 7.1+); fall back to a
+   palette picked server-side from $display['theme'] for older versions. */
 .scriptlogs-settings-page {
   max-width: 1080px;
-  --scriptlogs-settings-border: #3f3f3f;
-  --scriptlogs-settings-border-soft: #333;
-  --scriptlogs-settings-surface: #181818;
-  --scriptlogs-settings-row: #202020;
-  --scriptlogs-settings-row-hover: #242424;
-  --scriptlogs-settings-text: #e0e0e0;
-  --scriptlogs-settings-strong-text: #dcdcdc;
-  --scriptlogs-settings-muted-text: #999;
-  --scriptlogs-settings-dim-text: #888;
-  --scriptlogs-settings-disabled-text: #8f8f8f;
-  --scriptlogs-settings-alert-text: #f0b5b3;
-  --scriptlogs-settings-alert-bg: rgba(217, 83, 79, 0.12);
-  --scriptlogs-settings-alert-border: #d9534f;
+  --scriptlogs-settings-border: var(--border-color, <?= $scriptlogs_theme_light ? '#bbb' : '#3f3f3f' ?>);
+  --scriptlogs-settings-border-soft: var(--border-color, <?= $scriptlogs_theme_light ? '#d2d2d2' : '#333' ?>);
+  --scriptlogs-settings-surface: var(--table-background-color, <?= $scriptlogs_theme_light ? '#f8f8f8' : '#181818' ?>);
+  --scriptlogs-settings-row: <?= $scriptlogs_theme_light ? '#fff' : '#202020' ?>;
+  --scriptlogs-settings-row-hover: var(--hover-table-row-background-color, <?= $scriptlogs_theme_light ? '#f1f1f1' : '#242424' ?>);
+  --scriptlogs-settings-text: var(--text-color, <?= $scriptlogs_theme_light ? '#222' : '#e0e0e0' ?>);
+  --scriptlogs-settings-strong-text: var(--text-color, <?= $scriptlogs_theme_light ? '#111' : '#dcdcdc' ?>);
+  --scriptlogs-settings-muted-text: <?= $scriptlogs_theme_light ? '#555' : '#999' ?>;
+  --scriptlogs-settings-dim-text: <?= $scriptlogs_theme_light ? '#666' : '#888' ?>;
+  --scriptlogs-settings-disabled-text: <?= $scriptlogs_theme_light ? '#8a8a8a' : '#8f8f8f' ?>;
+  --scriptlogs-settings-alert-text: <?= $scriptlogs_theme_light ? '#8a2723' : '#f0b5b3' ?>;
+  --scriptlogs-settings-alert-bg: <?= $scriptlogs_theme_light ? 'rgba(217, 83, 79, 0.1)' : 'rgba(217, 83, 79, 0.12)' ?>;
+  --scriptlogs-settings-alert-border: <?= $scriptlogs_theme_light ? '#c94d48' : '#d9534f' ?>;
   --scriptlogs-settings-accent: #fd8830;
   --scriptlogs-settings-success: #4caf50;
-  --scriptlogs-settings-focus: rgba(253, 136, 48, 0.32);
-}
-body.white .scriptlogs-settings-page,
-body.azure .scriptlogs-settings-page,
-html.white .scriptlogs-settings-page,
-html.azure .scriptlogs-settings-page {
-  --scriptlogs-settings-border: #bbb;
-  --scriptlogs-settings-border-soft: #d2d2d2;
-  --scriptlogs-settings-surface: #f8f8f8;
-  --scriptlogs-settings-row: #fff;
-  --scriptlogs-settings-row-hover: #f1f1f1;
-  --scriptlogs-settings-text: #222;
-  --scriptlogs-settings-strong-text: #111;
-  --scriptlogs-settings-muted-text: #555;
-  --scriptlogs-settings-dim-text: #666;
-  --scriptlogs-settings-disabled-text: #8a8a8a;
-  --scriptlogs-settings-alert-text: #8a2723;
-  --scriptlogs-settings-alert-bg: rgba(217, 83, 79, 0.1);
-  --scriptlogs-settings-alert-border: #c94d48;
-  --scriptlogs-settings-focus: rgba(253, 136, 48, 0.38);
+  --scriptlogs-settings-focus: <?= $scriptlogs_theme_light ? 'rgba(253, 136, 48, 0.38)' : 'rgba(253, 136, 48, 0.32)' ?>;
 }
 .scriptlogs-settings-header {
   padding: 4px 0 18px;

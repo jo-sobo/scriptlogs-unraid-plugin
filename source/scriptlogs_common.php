@@ -72,6 +72,19 @@ function scriptlogs_t($text)
     return function_exists('_') ? _($text) : $text;
 }
 
+function scriptlogs_theme_name()
+{
+    global $display;
+    // Unraid's ThemeHelper resolves names like "black-sidebar" the same way.
+    $theme = strtok((string)($display['theme'] ?? ''), '-');
+    return is_string($theme) && $theme !== '' ? strtolower($theme) : 'black';
+}
+
+function scriptlogs_theme_is_light()
+{
+    return in_array(scriptlogs_theme_name(), ['white', 'azure'], true);
+}
+
 function scriptlogs_is_foreground_running($ps_output, $script_name)
 {
     if (!is_string($ps_output) || $ps_output === '') {

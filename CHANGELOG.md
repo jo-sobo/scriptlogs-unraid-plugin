@@ -1,3 +1,8 @@
+### 2026.06.11
+- Fixed light-theme support so the dashboard tile and settings page actually follow the active Unraid theme; the previous theme overrides relied on body classes that no Unraid version sets.
+- Switched theme handling to server-side detection of the Unraid theme with native webGui CSS variables on Unraid 7.1+ and tuned fallback palettes for older versions.
+- Fixed unreadable gray settings text and the dark-only script selection panel, dashboard tabs, and log view in light themes.
+
 ### 2026.06.10
 - Added light-theme support to the settings page.
 - Refined settings script reordering to drag only from the handle and suppress drop snap-back.

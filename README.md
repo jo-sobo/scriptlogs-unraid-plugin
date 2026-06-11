@@ -4,26 +4,29 @@ Scriptlogs adds a compact dashboard widget for selected User Scripts. It shows s
 
 ## Screenshots
 
-| Compact view | Running script |
-| --- | --- |
-| ![Compact Scriptlogs dashboard widget](scriptlogs_screenshot_slim.png) | ![Running script in the Scriptlogs dashboard widget](scriptlogs_screenshot_running.png) |
-
-| Idle script | Scrollable log output |
-| --- | --- |
-| ![Idle script in the Scriptlogs dashboard widget](scriptlogs_screenshot_idle.png) | ![Scrollable Scriptlogs log output](scriptlogs_screenshot_scroll.png) |
+<p>
+  <img src="scriptlogs_screenshot_slim.png" alt="Compact Scriptlogs dashboard widget" width="48%">
+  <img src="scriptlogs_screenshot_running.png" alt="Running script in the Scriptlogs dashboard widget" width="48%">
+</p>
+<p>
+  <img src="scriptlogs_screenshot_idle.png" alt="Idle script in the Scriptlogs dashboard widget" width="48%">
+  <img src="scriptlogs_screenshot_scroll.png" alt="Scrollable Scriptlogs log output" width="48%">
+</p>
 
 ## Features
 
 - Dashboard tile for selected User Scripts.
 - Color-coded script tabs for running and idle scripts.
 - Collapsed dashboard state with compact status chips.
+- Custom dashboard order for selected scripts.
 - Scrollable log viewer with optional auto-scroll.
 - Live log output for scripts running in the background.
 - Optional display of the last known background log for idle scripts.
 - Configurable refresh interval.
 - Configurable log font size.
 - Optional removal of empty log lines.
-- Script selection from a dedicated settings page.
+- Light and dark theme support.
+- Dedicated settings page with compact script selection and drag handles.
 
 ## Requirements
 
@@ -57,6 +60,7 @@ Available settings:
 - **Log font size:** Choose the text size used in the dashboard log viewer.
 - **Empty log lines:** Remove or preserve blank lines in log output.
 - **Script selection:** Choose which User Scripts appear in the dashboard widget.
+- **Dashboard order:** Drag selected scripts into the preferred tab order.
 
 Click **Apply** to save changes. The dashboard widget updates on the next refresh.
 
@@ -75,7 +79,7 @@ Log output is read from User Scripts log files in:
 /tmp/user.scripts/tmpScripts/<script-name>/log.txt
 ```
 
-Scriptlogs tails the most recent log output, optionally removes empty lines, and displays it in the dashboard tile. Foreground scripts still write their live output to the User Scripts window, so Scriptlogs shows a short notice instead of duplicating that stream.
+Scriptlogs tails the most recent log output, optionally removes empty lines, and displays it in the dashboard tile. It preserves the selected tab across refreshes when possible. Foreground scripts still write their live output to the User Scripts window, so Scriptlogs shows a short notice instead of duplicating that stream.
 
 ## Support
 
