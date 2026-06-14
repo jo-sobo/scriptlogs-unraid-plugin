@@ -1,4 +1,4 @@
-# Scriptlogs for Unraid
+<h1><img src="source/scriptlogs.png" alt="Scriptlogs icon" width="42"> Scriptlogs for Unraid</h1>
 
 Scriptlogs adds a compact dashboard widget for selected User Scripts. It shows script status and log output directly on the Unraid Dashboard, without keeping the User Scripts page open.
 
