@@ -53,7 +53,7 @@
 
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.txz" Run="upgradepkg --install-new">
 <URL>&pluginURL;</URL>
-<MD5>12f9d380d04aa37dc891747ad699775a</MD5>
+<MD5>d1b32ce00b0036301daab7da84d068a0</MD5>
 </FILE>
 
 <FILE Name="/boot/config/plugins/&name;/&name;.cfg">
