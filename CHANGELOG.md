@@ -32,4 +32,4 @@
 - Refined dashboard and settings layout.
 
 ### 2025.11.05
-- Initial public Scriptlogs release.
+- Initial public ScriptLogs release.

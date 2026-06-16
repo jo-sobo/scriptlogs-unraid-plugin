@@ -9,8 +9,8 @@ $cfg = scriptlogs_read_cfg('scriptlogs');
 $scriptlogs_theme_light = scriptlogs_theme_is_light();
 
 $scriptlogs_text = [
-    'title' => scriptlogs_t('Script Logs'),
-    'settings' => scriptlogs_t('Scriptlogs Settings'),
+    'title' => scriptlogs_t('ScriptLogs'),
+    'settings' => scriptlogs_t('ScriptLogs Settings'),
     'selectScript' => scriptlogs_t('Select a script to see its log.'),
     'autoScroll' => scriptlogs_t('Auto-scroll'),
     'lastUpdate' => scriptlogs_t('Last Update:'),
@@ -59,7 +59,7 @@ $mytiles[$pluginname]['column1'] = <<<EOT
                 </span>
                 <span class="tile-header-right">
                     <span class="tile-header-right-controls">
-                        <a href="/Settings/ScriptlogsSettings" title="{$settings_title}">
+                        <a href="/Settings/ScriptLogsSettings" title="{$settings_title}">
                             <i class="fa fa-fw fa-cog control"></i>
                         </a>
                     </span>
@@ -791,7 +791,7 @@ EOT;
 
             timestamp.text(new Date().toLocaleTimeString());
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.error("Scriptlogs AJAX Error:", textStatus, errorThrown);
+            console.error("ScriptLogs AJAX Error:", textStatus, errorThrown);
             $('#scriptlogs-logs').text(scriptlogs_text('loadError', 'Error loading script states. Check browser console (F12) for details.'));
         }).always(function() {
             scriptlogsRequest = null;

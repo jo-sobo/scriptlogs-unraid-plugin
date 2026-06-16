@@ -2,6 +2,7 @@
 set -euo pipefail
 
 PLUGIN_NAME="scriptlogs"
+PLUGIN_DISPLAY_NAME="ScriptLogs"
 AUTHOR="jo-sobo"
 GIT_URL="https://github.com/${AUTHOR}/scriptlogs-unraid-plugin"
 SUPPORT_URL="https://forums.unraid.net/topic/192397-plugin-scriptlogs"
@@ -87,6 +88,7 @@ cat > "${PLUGIN_NAME}.plg" << EOF
  <!ENTITY author "${AUTHOR}">
  <!ENTITY version "${VERSION}">
  <!ENTITY branch "${BRANCH}">
+ <!ENTITY displayName "${PLUGIN_DISPLAY_NAME}">
  <!ENTITY gitURL "${GIT_URL}">
  <!ENTITY supportURL "${SUPPORT_URL}">
  <!ENTITY pluginURL "${PLUGIN_URL_STRUCTURE}">
@@ -125,7 +127,7 @@ find /boot/config/plugins/&name; -maxdepth 1 -type f -name "&name;-*.txz" ! -nam
 
 echo ""
 echo "----------------------------------------------------"
-echo " &name; (&branch; build) has been installed."
+echo " &displayName; (&branch; build) has been installed."
 echo " Version: &version;"
 echo "----------------------------------------------------"
 echo ""
@@ -140,7 +142,7 @@ find /boot/config/plugins/&name; -maxdepth 1 -type f -name "&name;-*.txz" -delet
 
 echo ""
 echo "----------------------------------------------------"
-echo " &name; has been removed."
+echo " &displayName; has been removed."
 echo "----------------------------------------------------"
 echo ""
 </INLINE>

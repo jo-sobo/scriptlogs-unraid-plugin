@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Plugin>
-  <Name>Scriptlogs</Name>
+  <Name>ScriptLogs</Name>
   <Overview>A dashboard widget to monitor selected User Scripts and view their log output directly from the Unraid dashboard.</Overview>
   <PluginURL>https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs.plg</PluginURL>
   <PluginAuthor>jo-sobo</PluginAuthor>

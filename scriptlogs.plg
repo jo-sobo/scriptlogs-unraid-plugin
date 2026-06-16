@@ -4,6 +4,7 @@
  <!ENTITY author "jo-sobo">
  <!ENTITY version "2026.06.11">
  <!ENTITY branch "main">
+ <!ENTITY displayName "ScriptLogs">
  <!ENTITY gitURL "https://github.com/jo-sobo/scriptlogs-unraid-plugin">
  <!ENTITY supportURL "https://forums.unraid.net/topic/192397-plugin-scriptlogs">
  <!ENTITY pluginURL "&gitURL;/releases/download/&version;/&name;-&version;.txz">
@@ -47,7 +48,7 @@
 - Refined dashboard and settings layout.
 
 ### 2025.11.05
-- Initial public Scriptlogs release.
+- Initial public ScriptLogs release.
 </CHANGES>
 
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;.txz" Run="upgradepkg --install-new">
@@ -76,7 +77,7 @@ find /boot/config/plugins/&name; -maxdepth 1 -type f -name "&name;-*.txz" ! -nam
 
 echo ""
 echo "----------------------------------------------------"
-echo " &name; (&branch; build) has been installed."
+echo " &displayName; (&branch; build) has been installed."
 echo " Version: &version;"
 echo "----------------------------------------------------"
 echo ""
@@ -91,7 +92,7 @@ find /boot/config/plugins/&name; -maxdepth 1 -type f -name "&name;-*.txz" -delet
 
 echo ""
 echo "----------------------------------------------------"
-echo " &name; has been removed."
+echo " &displayName; has been removed."
 echo "----------------------------------------------------"
 echo ""
 </INLINE>
