@@ -1,4 +1,4 @@
-**Scriptlogs**
+**ScriptLogs**
 
 A dashboard widget to monitor the status and view the logs of your selected User Scripts in real-time, directly on the Unraid dashboard.
 

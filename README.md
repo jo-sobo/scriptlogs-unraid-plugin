@@ -1,16 +1,16 @@
-# Scriptlogs for Unraid
+<h1><img src="source/scriptlogs.png" alt="ScriptLogs icon" width="42"> ScriptLogs for Unraid</h1>
 
-Scriptlogs adds a compact dashboard widget for selected User Scripts. It shows script status and log output directly on the Unraid Dashboard, without keeping the User Scripts page open.
+ScriptLogs adds a compact dashboard widget for selected User Scripts. It shows script status and log output directly on the Unraid Dashboard, without keeping the User Scripts page open.
 
 ## Screenshots
 
 <p>
-  <img src="scriptlogs_screenshot_slim.png" alt="Compact Scriptlogs dashboard widget" width="48%">
-  <img src="scriptlogs_screenshot_running.png" alt="Running script in the Scriptlogs dashboard widget" width="48%">
+  <img src="scriptlogs_screenshot_slim.png" alt="Compact ScriptLogs dashboard widget" width="48%">
+  <img src="scriptlogs_screenshot_running.png" alt="Running script in the ScriptLogs dashboard widget" width="48%">
 </p>
 <p>
-  <img src="scriptlogs_screenshot_idle.png" alt="Idle script in the Scriptlogs dashboard widget" width="48%">
-  <img src="scriptlogs_screenshot_scroll.png" alt="Scrollable Scriptlogs log output" width="48%">
+  <img src="scriptlogs_screenshot_idle.png" alt="Idle script in the ScriptLogs dashboard widget" width="48%">
+  <img src="scriptlogs_screenshot_scroll.png" alt="Scrollable ScriptLogs log output" width="48%">
 </p>
 
 ## Features
@@ -35,7 +35,7 @@ Scriptlogs adds a compact dashboard widget for selected User Scripts. It shows s
 
 ## Installation
 
-Scriptlogs is available through Unraid Community Applications.
+ScriptLogs is available through Unraid Community Applications.
 
 For manual installation:
 
@@ -50,7 +50,7 @@ For manual installation:
 
 ## Configuration
 
-Open **Settings > User Utilities > Scriptlogs Settings** in the Unraid web interface.
+Open **Settings > User Utilities > ScriptLogs Settings** in the Unraid web interface.
 
 Available settings:
 
@@ -79,7 +79,7 @@ Log output is read from User Scripts log files in:
 /tmp/user.scripts/tmpScripts/<script-name>/log.txt
 ```
 
-Scriptlogs tails the most recent log output, optionally removes empty lines, and displays it in the dashboard tile. It preserves the selected tab across refreshes when possible. Foreground scripts still write their live output to the User Scripts window, so Scriptlogs shows a short notice instead of duplicating that stream.
+ScriptLogs tails the most recent log output, optionally removes empty lines, and displays it in the dashboard tile. It preserves the selected tab across refreshes when possible. Foreground scripts still write their live output to the User Scripts window, so ScriptLogs shows a short notice instead of duplicating that stream.
 
 ## Support
 
@@ -97,7 +97,7 @@ Thanks to Andrew Zawadzki for creating and maintaining the User Scripts plugin.
 
 ## Donation
 
-If Scriptlogs is useful to you, donations are welcome:
+If ScriptLogs is useful to you, donations are welcome:
 
 https://coff.ee/magnum.308
 

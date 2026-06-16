@@ -1,6 +1,6 @@
 Menu="Utilities"
 Icon="scriptlogs.png"
-Title="Scriptlogs Settings"
+Title="ScriptLogs Settings"
 ---
 <?php
 require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
@@ -402,7 +402,7 @@ foreach ($ordered_available_scripts as $script) {
     <div class="settings scriptlogs-settings-page">
       <div class="scriptlogs-settings-header">
         <div class="scriptlogs-settings-title">
-          <h2>Scriptlogs</h2>
+          <h2>ScriptLogs</h2>
           <p>Configure how the dashboard widget refreshes, displays logs, and chooses User Scripts.</p>
         </div>
       </div>

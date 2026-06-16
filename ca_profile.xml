@@ -1,0 +1,14 @@
+<CommunityApplications>
+  <Profile>
+    ScriptLogs provides an Unraid dashboard plugin for monitoring selected User Scripts and their log output directly from the Unraid dashboard.
+  </Profile>
+  <Icon>https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/source/scriptlogs.png</Icon>
+  <WebPage>https://github.com/jo-sobo/scriptlogs-unraid-plugin</WebPage>
+  <Forum>https://forums.unraid.net/topic/192397-plugin-scriptlogs</Forum>
+  <DonateLink>https://coff.ee/magnum.308</DonateLink>
+  <DonateText>Support ScriptLogs</DonateText>
+  <Photo>https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs_screenshot_slim.png</Photo>
+  <Photo>https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs_screenshot_running.png</Photo>
+  <Photo>https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs_screenshot_idle.png</Photo>
+  <Photo>https://raw.githubusercontent.com/jo-sobo/scriptlogs-unraid-plugin/main/scriptlogs_screenshot_scroll.png</Photo>
+</CommunityApplications>
