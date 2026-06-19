@@ -1,4 +1,5 @@
 ### 2026.06.11
+- Removed obsolete pre-rename dashboard and settings page files during install without touching user configuration.
 - Fixed light-theme support so the dashboard tile and settings page actually follow the active Unraid theme; the previous theme overrides relied on body classes that no Unraid version sets.
 - Switched theme handling to server-side detection of the Unraid theme with native webGui CSS variables on Unraid 7.1+ and tuned fallback palettes for older versions.
 - Fixed unreadable gray settings text and the dark-only script selection panel, dashboard tabs, and log view in light themes.

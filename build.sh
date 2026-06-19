@@ -119,6 +119,7 @@ ${CHANGES_TEXT}
 
 <FILE Run="/bin/bash">
 <INLINE>
+/bin/bash /usr/local/emhttp/plugins/&name;/scriptlogs_migrate.sh
 chown -R root:root /usr/local/emhttp/plugins/&name;
 find -P /usr/local/emhttp/plugins/&name; -type d -exec chmod 755 {} \;
 find -P /usr/local/emhttp/plugins/&name; -type f -exec chmod 644 {} \;
